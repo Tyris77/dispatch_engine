@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Municipal Permit B2B Opportunity Radar | {{ tenant.name }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+            },
+            surface: {
+              base: '#0B0F19',
+              card: '#111827',
+              border: '#1E293B',
+              hover: '#1F2937',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0B0F19;
+      color: #F3F4F6;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #374151;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="sticky top-0 z-40 bg-[#0B0F19]/90 backdrop-blur-md border-b border-surface-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand & Title -->
+      <div class="flex items-center space-x-3.5">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 p-[1px] shadow-lg shadow-blue-500/20">
+          <div class="w-full h-full bg-[#0B0F19] rounded-xl flex items-center justify-center font-black text-blue-400 text-sm">
+            📡
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-base sm:text-lg font-extrabold text-white tracking-tight">Municipal Permit B2B Radar</h1>
+            <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
+              TERRITORY FEED
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 font-mono flex items-center space-x-2 mt-0.5">
+            <span>Contractor: <strong class="text-white">{{ tenant.name }}</strong></span>
+            <span>•</span>
+            <span class="text-emerald-400 flex items-center space-x-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>DC / Arlington / Alexandria Active</span>
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Action Controls -->
+      <div class="flex items-center space-x-3">
+        <a href="/portal/{{ tenant.slug }}" class="inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-surface-card border border-surface-border hover:border-slate-600 transition-all">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          <span>Client Portal</span>
+        </a>
+        <a href="/dashboard?tenant_slug={{ tenant.slug }}" class="hidden sm:inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-surface-card border border-surface-border hover:border-slate-600 transition-all">
+          <span>Console</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-6">
+
+    <!-- KPI Summary Banner -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <!-- Territory Coverage -->
+      <div class="bg-surface-card rounded-2xl p-5 border border-surface-border relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Territories Monitored</p>
+          <div class="p-2 rounded-lg bg-blue-500/10 text-blue-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+        </div>
+        <p class="mt-3 text-2xl font-extrabold text-white tracking-tight">3 Jurisdictions</p>
+        <p class="mt-1 text-xs text-slate-400 font-mono">DC • Arlington • Alexandria</p>
+      </div>
+
+      <!-- Active Permits Tracked -->
+      <div class="bg-surface-card rounded-2xl p-5 border border-surface-border relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Permits Tracked</p>
+          <div class="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+        </div>
+        <p class="mt-3 text-3xl font-extrabold text-white tracking-tight font-mono">{{ total_permits_count }}</p>
+        <p class="mt-1 text-xs text-emerald-400 font-mono">Real-time building & mechanical filings</p>
+      </div>
+
+      <!-- Total Commercial Pipeline Valuation -->
+      <div class="bg-surface-card rounded-2xl p-5 border border-surface-border relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Pipeline Valuation</p>
+          <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+        </div>
+        <p class="mt-3 text-3xl font-extrabold text-emerald-400 tracking-tight font-mono">${{ "{:,.0f}".format(total_pipeline_valuation) }}</p>
+        <p class="mt-1 text-xs text-slate-400 font-mono">Declared commercial construction value</p>
+      </div>
+
+      <!-- AI Bid Engine Status -->
+      <div class="bg-surface-card rounded-2xl p-5 border border-surface-border relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Gemini Sub-Bid Engine</p>
+          <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400">
+            <span class="text-base">⚡</span>
+          </div>
+        </div>
+        <p class="mt-3 text-2xl font-extrabold text-cyan-400 tracking-tight">1-Click Auto-Bid</p>
+        <p class="mt-1 text-xs text-slate-400 font-mono">Tailored trade proposals to GCs</p>
+      </div>
+
+    </section>
+
+    <!-- Filters Bar -->
+    <div class="bg-surface-card p-4 rounded-2xl border border-surface-border flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <!-- Territory Pills -->
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-xs font-semibold text-slate-400 mr-1">Territory:</span>
+        <a href="/permits/{{ tenant.slug }}?jurisdiction=All&trade={{ selected_trade }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {% if selected_jurisdiction == 'All' %}bg-blue-600 text-white shadow-md shadow-blue-600/30{% else %}bg-slate-800 text-slate-300 hover:bg-slate-700{% endif %}">
+          All DMV
+        </a>
+        <a href="/permits/{{ tenant.slug }}?jurisdiction=Washington DC&trade={{ selected_trade }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {% if selected_jurisdiction == 'Washington DC' %}bg-blue-600 text-white shadow-md shadow-blue-600/30{% else %}bg-slate-800 text-slate-300 hover:bg-slate-700{% endif %}">
+          Washington DC
+        </a>
+        <a href="/permits/{{ tenant.slug }}?jurisdiction=Arlington County&trade={{ selected_trade }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {% if selected_jurisdiction == 'Arlington County' %}bg-blue-600 text-white shadow-md shadow-blue-600/30{% else %}bg-slate-800 text-slate-300 hover:bg-slate-700{% endif %}">
+          Arlington County
+        </a>
+        <a href="/permits/{{ tenant.slug }}?jurisdiction=City of Alexandria&trade={{ selected_trade }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {% if selected_jurisdiction == 'City of Alexandria' %}bg-blue-600 text-white shadow-md shadow-blue-600/30{% else %}bg-slate-800 text-slate-300 hover:bg-slate-700{% endif %}">
+          City of Alexandria
+        </a>
+      </div>
+
+      <!-- Trade Filter -->
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-xs font-semibold text-slate-400 mr-1">Trade:</span>
+        <a href="/permits/{{ tenant.slug }}?jurisdiction={{ selected_jurisdiction }}&trade=All" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all {% if selected_trade == 'All' %}bg-indigo-600 text-white{% else %}bg-slate-800 text-slate-300 hover:bg-slate-700{% endif %}">
+          All Trades
+        </a>
+        <a href="/permits/{{ tenant.slug }}?jurisdiction={{ selected_jurisdiction }}&trade=HVAC" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all {% if selected_trade == 'HVAC' %}bg-indigo-600 text-white{% else %}bg-slate-800 text-slate-300 hover:bg-slate-700{% endif %}">
+          HVAC
+        </a>
+        <a href="/permits/{{ tenant.slug }}?jurisdiction={{ selected_jurisdiction }}&trade=Plumbing" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all {% if selected_trade == 'Plumbing' %}bg-indigo-600 text-white{% else %}bg-slate-800 text-slate-300 hover:bg-slate-700{% endif %}">
+          Plumbing
+        </a>
+        <a href="/permits/{{ tenant.slug }}?jurisdiction={{ selected_jurisdiction }}&trade=Roofing" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all {% if selected_trade == 'Roofing' %}bg-indigo-600 text-white{% else %}bg-slate-800 text-slate-300 hover:bg-slate-700{% endif %}">
+          Roofing
+        </a>
+        <a href="/permits/{{ tenant.slug }}?jurisdiction={{ selected_jurisdiction }}&trade=Electrical" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all {% if selected_trade == 'Electrical' %}bg-indigo-600 text-white{% else %}bg-slate-800 text-slate-300 hover:bg-slate-700{% endif %}">
+          Electrical
+        </a>
+      </div>
+    </div>
+
+    <!-- Municipal Permit Cards Feed -->
+    <div class="space-y-4">
+      {% if permits %}
+        {% for permit in permits %}
+        <div class="bg-surface-card rounded-2xl p-6 border border-surface-border hover:border-slate-700 transition-all duration-200">
+          <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+            
+            <!-- Left: Project Scope & Specs -->
+            <div class="space-y-2.5 max-w-3xl">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-1 rounded-md bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs font-mono font-bold">
+                  {{ permit.jurisdiction }}
+                </span>
+                <span class="px-2.5 py-1 rounded-md bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-mono font-semibold">
+                  {{ permit.trade_category }}
+                </span>
+                <span class="text-xs font-mono text-slate-400">
+                  Permit #<strong class="text-slate-200">{{ permit.permit_id }}</strong>
+                </span>
+                <span class="text-slate-600">•</span>
+                <span class="text-xs font-mono text-slate-400">Filed: {{ permit.filing_date }}</span>
+              </div>
+
+              <!-- Address & Valuation -->
+              <div>
+                <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                  <span>📍 {{ permit.job_address }}</span>
+                </h3>
+                <p class="text-sm font-semibold text-emerald-400 font-mono mt-0.5">
+                  Declared Valuation: ${{ "{:,.2f}".format(permit.estimated_valuation) }} USD
+                  <span class="text-xs text-slate-400 font-normal">({{ permit.permit_type }})</span>
+                </p>
+              </div>
+
+              <!-- Description -->
+              <p class="text-xs sm:text-sm text-slate-300 leading-relaxed bg-[#0B0F19]/50 p-3 rounded-xl border border-surface-border">
+                {{ permit.project_description }}
+              </p>
+
+              <!-- General Contractor Contact Info -->
+              <div class="flex flex-wrap items-center gap-4 text-xs font-mono pt-1 text-slate-300">
+                <span class="flex items-center space-x-1.5">
+                  <span class="text-slate-500">General Contractor:</span>
+                  <strong class="text-white">{{ permit.general_contractor }}</strong>
+                </span>
+                {% if permit.gc_contact_email %}
+                <span class="flex items-center space-x-1">
+                  <span class="text-slate-500">Email:</span>
+                  <a href="mailto:{{ permit.gc_contact_email }}" class="text-blue-400 hover:underline">{{ permit.gc_contact_email }}</a>
+                </span>
+                {% endif %}
+                {% if permit.gc_contact_phone %}
+                <span class="flex items-center space-x-1">
+                  <span class="text-slate-500">Phone:</span>
+                  <span class="text-slate-200">{{ permit.gc_contact_phone }}</span>
+                </span>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Right: Action Button -->
+            <div class="flex flex-col sm:flex-row lg:flex-col items-stretch gap-2.5 lg:min-w-[200px] flex-shrink-0">
+              <button onclick="openBidModal('{{ permit.permit_id }}', '{{ permit.general_contractor|replace("'", "\\'") }}', '{{ permit.job_address|replace("'", "\\'") }}', '{{ permit.trade_category }}')" id="bid-btn-{{ permit.permit_id }}" class="px-4 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center space-x-2">
+                <span>⚡</span>
+                <span>Draft Bid with Gemini</span>
+              </button>
+
+              <span class="text-[11px] font-mono text-center text-slate-500">
+                1-Tap Subcontractor Proposal
+              </span>
+            </div>
+
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="bg-surface-card rounded-2xl p-12 text-center border border-surface-border text-slate-400">
+          <p class="text-base font-semibold text-white">No municipal permits matching current filter criteria.</p>
+          <p class="text-xs text-slate-500 mt-1">Select "All DMV" or "All Trades" above to view active opportunities.</p>
+        </div>
+      {% endif %}
+    </div>
+
+  </main>
+
+  <!-- ==================== BID GENERATION MODAL ==================== -->
+  <div id="bid-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#111827] border border-slate-700 rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-fade-in">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-700 flex items-center justify-between bg-[#0B0F19]">
+        <div class="flex items-center space-x-2">
+          <span class="text-lg">📄</span>
+          <h2 class="text-base font-bold text-white tracking-tight" id="modal-title">Subcontractor Bid Package</h2>
+        </div>
+        <button onclick="closeBidModal()" class="text-slate-400 hover:text-white text-xl leading-none">&times;</button>
+      </div>
+
+      <!-- Loading State -->
+      <div id="modal-loading" class="p-12 text-center space-y-4">
+        <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <p class="text-sm font-semibold text-white">Gemini 2.5 Flash is analyzing permit scope...</p>
+        <p class="text-xs text-slate-400 font-mono">Drafting tailored proposal citing code compliance, schedule of values, and licensing.</p>
+      </div>
+
+      <!-- Bid Content Body -->
+      <div id="modal-body" class="p-6 overflow-y-auto custom-scroll flex-grow hidden space-y-4">
+        <div class="flex items-center justify-between bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+          <div>
+            <span class="text-[11px] font-mono uppercase text-slate-400">Target General Contractor:</span>
+            <p class="text-sm font-bold text-white" id="modal-gc-name">Davis Construction</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[11px] font-mono uppercase text-slate-400">Calculated Sub-Bid:</span>
+            <p class="text-base font-extrabold text-emerald-400 font-mono" id="modal-bid-amount">$40,750.00</p>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs font-mono text-slate-400 mb-1 block">Subcontractor Proposal Letter (Markdown):</label>
+          <pre id="modal-bid-text" class="bg-[#0B0F19] text-slate-200 text-xs font-mono p-4 rounded-xl border border-slate-800 overflow-x-auto whitespace-pre-wrap leading-relaxed max-h-96 custom-scroll"></pre>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-4 border-t border-slate-700 bg-[#0B0F19] flex items-center justify-between">
+        <button onclick="copyBidToClipboard()" id="copy-btn" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-all flex items-center space-x-1.5">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+          <span id="copy-btn-label">Copy Proposal</span>
+        </button>
+
+        <div class="flex items-center space-x-2">
+          <button onclick="closeBidModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition-colors">
+            Close
+          </button>
+          <button onclick="simulateSendToGC()" id="send-btn" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg shadow-blue-600/30 transition-all">
+            Send Bid to GC Estimating
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let activeBidResponse = null;
+
+    async function openBidModal(permitId, gcName, address, trade) {
+      const modal = document.getElementById('bid-modal');
+      const loading = document.getElementById('modal-loading');
+      const body = document.getElementById('modal-body');
+      
+      modal.classList.remove('hidden');
+      loading.classList.remove('hidden');
+      body.classList.add('hidden');
+      document.getElementById('modal-title').innerText = `Subcontractor Bid: ${permitId}`;
+      document.getElementById('copy-btn-label').innerText = "Copy Proposal";
+
+      try {
+        const res = await fetch('/api/v1/permits/generate-bid', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            permit_id: permitId,
+            tenant_slug: '{{ tenant.slug }}',
+            custom_scope_notes: 'Includes certified testing, balancing, and 1-year comprehensive warranty.'
+          })
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to generate bid package');
+        }
+
+        activeBidResponse = await res.json();
+        
+        document.getElementById('modal-gc-name').innerText = activeBidResponse.general_contractor;
+        document.getElementById('modal-bid-amount').innerText = '$' + activeBidResponse.estimated_bid_amount.toLocaleString('en-US', { minimumFractionDigits: 2 });
+        document.getElementById('modal-bid-text').innerText = activeBidResponse.bid_letter_markdown;
+
+        loading.classList.add('hidden');
+        body.classList.remove('hidden');
+
+        // Update button on card to reflect bid generated
+        const cardBtn = document.getElementById('bid-btn-' + permitId);
+        if (cardBtn) {
+          cardBtn.innerHTML = '<span>✅</span><span>Bid Generated</span>';
+          cardBtn.classList.remove('from-blue-600', 'to-indigo-600');
+          cardBtn.classList.add('bg-emerald-600');
+        }
+      } catch (err) {
+        alert('Could not generate bid package: ' + err.message);
+        closeBidModal();
+      }
+    }
+
+    function closeBidModal() {
+      document.getElementById('bid-modal').classList.add('hidden');
+    }
+
+    function copyBidToClipboard() {
+      if (activeBidResponse && activeBidResponse.bid_letter_markdown) {
+        navigator.clipboard.writeText(activeBidResponse.bid_letter_markdown);
+        document.getElementById('copy-btn-label').innerText = "Copied to Clipboard!";
+        setTimeout(() => {
+          document.getElementById('copy-btn-label').innerText = "Copy Proposal";
+        }, 2000);
+      }
+    }
+
+    function simulateSendToGC() {
+      const btn = document.getElementById('send-btn');
+      btn.innerText = "Transmitting to GC...";
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.innerText = "✓ Bid Dispatched to GC Estimating";
+        btn.classList.remove('bg-blue-600');
+        btn.classList.add('bg-emerald-600');
+      }, 1200);
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IICRC S500 Water Mitigation Drying Dossier — {{ report.dossier_id }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Cinzel"', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0B0F19;
+      color: #f3f4f6;
+    }
+    .cert-card {
+      background: #111827;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #111827 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .cert-card {
+        border: 1px solid #d1d5db !important;
+        background: #ffffff !important;
+        color: #111827 !important;
+      }
+      .print-dark {
+        color: #111827 !important;
+      }
+      .print-muted {
+        color: #4b5563 !important;
+      }
+      .print-box {
+        border: 1px solid #e5e7eb !important;
+        background: #f9fafb !important;
+        color: #111827 !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen py-8 px-4 sm:px-6 lg:px-8 font-sans">
+  <div class="max-w-5xl mx-auto space-y-6">
+
+    <!-- Action Bar -->
+    <div class="flex items-center justify-between no-print pb-2">
+      <a href="/dashboard" class="inline-flex items-center gap-2 text-xs font-semibold text-gray-400 hover:text-white transition-colors">
+        <span>←</span> Internal Dispatch Dashboard
+      </a>
+      <div class="flex items-center gap-3">
+        <button onclick="document.getElementById('dailyLogModal').classList.remove('hidden')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5">
+          <span>+</span> Record Today's Moisture Log
+        </button>
+        <button onclick="window.print()" class="px-4 py-1.5 rounded-xl text-xs font-bold bg-gray-900 border border-gray-700 hover:bg-gray-800 text-white transition-all flex items-center gap-1.5">
+          <span>🖨️</span> Print Adjuster PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Official IICRC S500 Packet Sheet -->
+    <div class="cert-card rounded-3xl p-6 sm:p-10 bg-gray-900/90 shadow-2xl relative overflow-hidden">
+
+      <!-- Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-gray-800 gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-wider">
+              ANSI/IICRC S500 Certified
+            </span>
+            {% if report.drying_completed %}
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              ✓ DRY STANDARD MET
+            </span>
+            {% else %}
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse">
+              ⚡ ACTIVE DRYING IN PROGRESS
+            </span>
+            {% endif %}
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-black font-serif tracking-tight text-white print-dark mt-2">
+            Psychrometric Drying & Moisture Log Report
+          </h1>
+          <p class="text-xs text-gray-400 print-muted mt-0.5">Insurance Adjuster Submittal Packet • Certificate #: <strong class="font-mono text-cyan-400">{{ report.drying_certificate_number }}</strong></p>
+        </div>
+
+        <div class="sm:text-right font-mono text-xs">
+          <span class="text-gray-500 block text-[10px] uppercase">Dossier Tracking #</span>
+          <span class="text-lg font-bold text-white print-dark">{{ report.dossier_id }}</span>
+          <span class="text-gray-500 block text-[10px] mt-1">{{ report.generated_at }}</span>
+        </div>
+      </div>
+
+      <!-- Claim & Location Metadata -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 py-6 border-b border-gray-800 text-xs">
+        <div>
+          <span class="text-gray-500 uppercase text-[10px] font-mono block">Loss Location</span>
+          <p class="font-bold text-white print-dark mt-0.5">{{ report.job_address }}</p>
+          <p class="text-gray-400 print-muted">Policyholder: {{ report.customer_name }}</p>
+        </div>
+        <div>
+          <span class="text-gray-500 uppercase text-[10px] font-mono block">Restoration Contractor</span>
+          <p class="font-bold text-white print-dark mt-0.5">{{ report.restoration_company }}</p>
+          <p class="text-gray-400 print-muted">Lead Restorer: {{ report.technician_name }}</p>
+        </div>
+        <div class="sm:text-right">
+          <span class="text-gray-500 uppercase text-[10px] font-mono block">Loss Date / Protocol</span>
+          <p class="font-bold text-white print-dark mt-0.5">Date of Loss: {{ report.date_of_loss }}</p>
+          <p class="text-emerald-400 font-mono">Category 1 / Class 2 Loss</p>
+        </div>
+      </div>
+
+      <!-- Psychrometric Chamber Progression Table -->
+      <div class="py-6 border-b border-gray-800">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-bold font-serif text-white tracking-wide flex items-center gap-2 print-dark">
+            <span>🌡️</span> Psychrometric Chamber Conditions (Daily GPP Progression)
+          </h2>
+          <span class="text-[11px] font-mono text-cyan-400">Target Drying Standard: &lt; 35 GPP</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs font-mono">
+            <thead class="bg-gray-950/60 text-gray-400 uppercase text-[10px] border-b border-gray-800">
+              <tr>
+                <th class="p-3">Drying Day</th>
+                <th class="p-3">Date</th>
+                <th class="p-3 text-right">Chamber Temp (°F)</th>
+                <th class="p-3 text-right">Relative Humidity (%)</th>
+                <th class="p-3 text-right">Moisture Ratio (GPP)</th>
+                <th class="p-3 text-right">Dehumids Running</th>
+                <th class="p-3 text-right">Air Movers</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800/60">
+              {% for day in report.daily_logs %}
+              <tr class="hover:bg-gray-900/50">
+                <td class="p-3 font-bold text-white print-dark">Day {{ day.day_number }}</td>
+                <td class="p-3 text-gray-400">{{ day.date }}</td>
+                <td class="p-3 text-right text-gray-300">{{ day.temp_fahrenheit }}°F</td>
+                <td class="p-3 text-right text-gray-300">{{ day.relative_humidity_pct }}%</td>
+                <td class="p-3 text-right font-bold {% if day.gpp_grains_per_pound <= 35 %}text-emerald-400{% elif day.gpp_grains_per_pound <= 60 %}text-amber-400{% else %}text-rose-400{% endif %}">
+                  {{ day.gpp_grains_per_pound }} GPP
+                </td>
+                <td class="p-3 text-right text-indigo-300">{{ day.dehumidifiers_running }} LGR</td>
+                <td class="p-3 text-right text-cyan-300">{{ day.air_movers_running }} Axial</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Room-by-Room Material Moisture Reading Grids -->
+      <div class="py-6 border-b border-gray-800">
+        <h2 class="text-sm font-bold font-serif text-white tracking-wide flex items-center gap-2 mb-4 print-dark">
+          <span>💧</span> Structural Material Moisture Readings Across Drying Cycle
+        </h2>
+
+        {% if report.daily_logs and report.daily_logs[-1].readings %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {% for r in report.daily_logs[-1].readings %}
+          <div class="p-4 rounded-xl bg-gray-950/60 border border-gray-800 print-box flex items-center justify-between">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-sm text-white print-dark">{{ r.room_name }}</span>
+                <span class="text-xs text-indigo-400 font-mono font-medium">({{ r.material_type }})</span>
+              </div>
+              <p class="text-[11px] text-gray-400 mt-1 font-mono">
+                Baseline Dry Standard: <strong class="text-gray-300">{{ r.dry_standard }}%</strong>
+              </p>
+            </div>
+            <div class="text-right">
+              <span class="text-lg font-mono font-extrabold {% if r.drying_status == 'DRY_STANDARD_MET' %}text-emerald-400{% elif r.drying_status == 'DRYING' %}text-amber-400{% else %}text-rose-400{% endif %}">
+                {{ r.moisture_percentage }}%
+              </span>
+              <span class="block text-[10px] font-mono font-bold mt-0.5 {% if r.drying_status == 'DRY_STANDARD_MET' %}text-emerald-400{% elif r.drying_status == 'DRYING' %}text-amber-400{% else %}text-rose-400{% endif %}">
+                {{ r.drying_status }}
+              </span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Certification & Signature Block -->
+      <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div class="text-xs text-gray-400 space-y-1">
+          <p class="font-semibold text-white print-dark">Certified ANSI/IICRC S500 Standard Compliance</p>
+          <p class="text-[11px] text-gray-500">All psychrometric metrics and moisture readings recorded using calibrated Delmhorst & Protimeter instruments.</p>
+        </div>
+
+        <div class="w-full sm:w-64 pt-4 sm:pt-0 sm:pl-6 sm:border-l border-gray-800 text-center sm:text-left">
+          <div class="font-serif italic text-cyan-400 text-base">{{ report.technician_name }}</div>
+          <div class="w-full border-b border-gray-700 my-1"></div>
+          <span class="text-[10px] uppercase font-mono text-gray-500 block">IICRC Master Water Restorer Signature</span>
+          <span class="text-[10px] font-mono text-gray-400">License Verification Active</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Record Daily Log Modal -->
+  <div id="dailyLogModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 no-print">
+    <div class="cert-card w-full max-w-lg p-6 rounded-2xl shadow-2xl border border-gray-700 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-gray-800">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <span>📝</span> Record Daily Moisture & Psychrometric Log
+        </h3>
+        <button onclick="document.getElementById('dailyLogModal').classList.add('hidden')" class="text-gray-400 hover:text-white text-lg">✕</button>
+      </div>
+
+      <form method="POST" action="/mitigation/{{ report.action_id }}/log" class="space-y-4 text-xs">
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-gray-400 uppercase font-mono text-[10px] mb-1">Drying Day #</label>
+            <input type="number" name="day_number" value="{{ report.daily_logs|length + 1 }}" required class="w-full px-3 py-2 rounded-xl bg-gray-900 border border-gray-700 text-white font-mono">
+          </div>
+          <div>
+            <label class="block text-gray-400 uppercase font-mono text-[10px] mb-1">Chamber Temp (°F)</label>
+            <input type="number" step="0.1" name="temp_fahrenheit" value="71.5" required class="w-full px-3 py-2 rounded-xl bg-gray-900 border border-gray-700 text-white font-mono">
+          </div>
+          <div>
+            <label class="block text-gray-400 uppercase font-mono text-[10px] mb-1">Relative Humidity (%)</label>
+            <input type="number" step="0.1" name="relative_humidity_pct" value="32.0" required class="w-full px-3 py-2 rounded-xl bg-gray-900 border border-gray-700 text-white font-mono">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-gray-400 uppercase font-mono text-[10px] mb-1">LGR Dehumidifiers</label>
+            <input type="number" name="dehumidifiers_running" value="2" required class="w-full px-3 py-2 rounded-xl bg-gray-900 border border-gray-700 text-white font-mono">
+          </div>
+          <div>
+            <label class="block text-gray-400 uppercase font-mono text-[10px] mb-1">Centrifugal Air Movers</label>
+            <input type="number" name="air_movers_running" value="4" required class="w-full px-3 py-2 rounded-xl bg-gray-900 border border-gray-700 text-white font-mono">
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-gray-950/60 border border-gray-800 space-y-2">
+          <span class="text-[10px] font-mono text-cyan-400 uppercase font-bold">Room Moisture Meter Readings</span>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <span class="text-gray-400 block text-[10px]">Basement Drywall (%):</span>
+              <input type="number" step="0.1" name="reading_drywall" value="10.5" class="w-full px-2 py-1.5 rounded-lg bg-gray-900 border border-gray-700 text-white font-mono">
+            </div>
+            <div>
+              <span class="text-gray-400 block text-[10px]">Subfloor (%):</span>
+              <input type="number" step="0.1" name="reading_subfloor" value="11.8" class="w-full px-2 py-1.5 rounded-lg bg-gray-900 border border-gray-700 text-white font-mono">
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-gray-800 flex justify-end gap-3">
+          <button type="button" onclick="document.getElementById('dailyLogModal').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-gray-800 text-gray-300 font-medium">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-lg shadow-blue-500/25">Save Drying Log</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>

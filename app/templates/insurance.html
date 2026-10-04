@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insurance Claim Support Dossier | {{ dossier.claim_reference_id }} | {{ tenant.name }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+            },
+            surface: {
+              base: '#0B0F19',
+              card: '#111827',
+              border: '#1E293B',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0B0F19;
+      color: #F3F4F6;
+    }
+    @media print {
+      body {
+        background-color: #FFFFFF !important;
+        color: #111827 !important;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-border {
+        border-color: #D1D5DB !important;
+      }
+      .print-bg {
+        background-color: #F9FAFB !important;
+      }
+      .print-text-dark {
+        color: #111827 !important;
+      }
+      .print-text-muted {
+        color: #4B5563 !important;
+      }
+      .glass-card, .bg-surface-card {
+        background: #FFFFFF !important;
+        border: 1px solid #E5E7EB !important;
+        box-shadow: none !important;
+      }
+      pre {
+        color: #1F2937 !important;
+        background-color: #F9FAFB !important;
+        border: 1px solid #E5E7EB !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans antialiased selection:bg-blue-600 selection:text-white">
+
+  <!-- ==================== TOP ACTION BAR (SCREEN ONLY) ==================== -->
+  <header class="no-print sticky top-0 z-40 bg-[#0B0F19]/90 backdrop-blur-md border-b border-surface-border">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="/portal/{{ tenant.slug }}" class="p-2 rounded-xl bg-surface-card border border-surface-border text-slate-300 hover:text-white hover:border-slate-600 transition-all flex items-center space-x-1.5 text-xs font-semibold">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          <span>Client Portal</span>
+        </a>
+        <span class="text-xs font-mono text-slate-400">Claim: <strong class="text-white">{{ dossier.claim_reference_id }}</strong></span>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <form method="POST" action="/insurance/{{ action_id }}/generate">
+          <button type="submit" class="px-3 py-1.5 rounded-xl bg-surface-card hover:bg-slate-800 text-slate-300 text-xs font-semibold border border-surface-border transition-all flex items-center space-x-1.5">
+            <span>🔄</span>
+            <span>Regenerate Scope</span>
+          </button>
+        </form>
+
+        <button onclick="window.print()" class="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-lg shadow-blue-600/30 transition-all flex items-center space-x-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+          <span>Print / Export PDF</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== DOSSIER DOCUMENT CONTAINER ==================== -->
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+
+    <!-- Official Contractor Header -->
+    <div class="bg-surface-card rounded-2xl p-6 sm:p-8 border border-surface-border print-border">
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-surface-border print-border pb-6">
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🛡️</span>
+            <h1 class="text-xl sm:text-2xl font-extrabold text-white print-text-dark tracking-tight">{{ tenant.name }}</h1>
+          </div>
+          <p class="text-xs font-mono text-slate-400 print-text-muted mt-1">
+            {{ dossier.contractor_license or "Licensed Master Mechanical & Building Contractor" }}
+          </p>
+          <p class="text-xs font-mono text-slate-400 print-text-muted">
+            Direct Estimating Office: {{ tenant.settings.get('phone') or '(202) 555-0199' }} | Email: {{ tenant.settings.get('contact_email') or 'claims@contractor.com' }}
+          </p>
+        </div>
+
+        <div class="text-left sm:text-right space-y-1">
+          <span class="inline-block px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-300 print-text-dark text-xs font-mono font-bold">
+            INSURANCE CLAIM DOSSIER
+          </span>
+          <p class="text-xs font-mono text-slate-300 print-text-dark">Claim File #: <strong class="text-white print-text-dark">{{ dossier.claim_reference_id }}</strong></p>
+          <p class="text-xs font-mono text-slate-400 print-text-muted">Date of Loss: <strong class="text-slate-200 print-text-dark">{{ dossier.date_of_loss }}</strong></p>
+        </div>
+      </div>
+
+      <!-- Claim Metadata Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 text-xs font-mono">
+        <div class="bg-[#0B0F19] print-bg p-3.5 rounded-xl border border-surface-border print-border">
+          <span class="text-slate-500 print-text-muted uppercase text-[10px] block mb-1">Insured Policyholder</span>
+          <strong class="text-white print-text-dark text-sm block">{{ dossier.homeowner_name }}</strong>
+          <span class="text-slate-400 print-text-muted mt-0.5 block">{{ dossier.property_address }}</span>
+        </div>
+
+        <div class="bg-[#0B0F19] print-bg p-3.5 rounded-xl border border-surface-border print-border">
+          <span class="text-slate-500 print-text-muted uppercase text-[10px] block mb-1">Carrier &amp; Policy</span>
+          <strong class="text-white print-text-dark text-sm block">{{ dossier.insurer_name }}</strong>
+          <span class="text-slate-400 print-text-muted mt-0.5 block">Policy: {{ dossier.policy_number }}</span>
+        </div>
+
+        <div class="bg-[#0B0F19] print-bg p-3.5 rounded-xl border border-surface-border print-border">
+          <span class="text-slate-500 print-text-muted uppercase text-[10px] block mb-1">Claim Scope Valuation</span>
+          <strong class="text-emerald-400 print-text-dark text-lg block">${{ "{:,.2f}".format(dossier.total_claim_estimate) }} USD</strong>
+          <span class="text-slate-400 print-text-muted mt-0.5 block">Status: {{ dossier.status }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOAA Meteorological Weather Peril Verification -->
+    <div class="bg-surface-card rounded-2xl p-6 sm:p-8 border border-surface-border print-border space-y-3">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base font-bold text-white print-text-dark flex items-center space-x-2">
+          <span>⛈️</span>
+          <span>NOAA Meteorological Weather Peril Verification</span>
+        </h2>
+        <span class="px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 print-text-dark text-xs font-mono font-bold">
+          RADAR VERIFIED
+        </span>
+      </div>
+
+      <div class="bg-[#0B0F19] print-bg p-4 rounded-xl border border-surface-border print-border text-xs font-mono space-y-2">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+          <span class="text-slate-300 print-text-dark"><strong>Event Classification:</strong> {{ dossier.weather_verification.event_type }}</span>
+          <span class="text-slate-400 print-text-muted">Registered Date: {{ dossier.weather_verification.recorded_date }}</span>
+        </div>
+        <p class="text-slate-400 print-text-muted"><strong>Station:</strong> {{ dossier.weather_verification.station_location }}</p>
+        
+        <div class="flex flex-wrap items-center gap-3 pt-1">
+          {% for k, v in dossier.weather_verification.recorded_metrics.items() %}
+            <span class="px-2 py-0.5 rounded bg-slate-800 print-border border border-slate-700 text-slate-300 print-text-dark text-[11px]">
+              {{ k|replace('_', ' ')|title }}: <strong>{{ v }}</strong>
+            </span>
+          {% endfor %}
+          {% if dossier.weather_verification.noaa_event_id %}
+            <span class="text-slate-500 text-[10px]">Reference: {{ dossier.weather_verification.noaa_event_id }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Mandatory Statutory Building Code Citations -->
+    <div class="bg-surface-card rounded-2xl p-6 sm:p-8 border border-surface-border print-border space-y-3">
+      <h2 class="text-base font-bold text-white print-text-dark flex items-center space-x-2">
+        <span>⚖️</span>
+        <span>Mandatory Statutory Building Code Citations</span>
+      </h2>
+      <p class="text-xs text-slate-400 print-text-muted">
+        Restoration must be performed in strict adherence to municipal building codes. Spot patching violating municipal law is legally prohibited:
+      </p>
+
+      <ul class="space-y-2.5">
+        {% for citation in dossier.code_compliance_citations %}
+        <li class="bg-[#0B0F19] print-bg p-3.5 rounded-xl border border-surface-border print-border text-xs leading-relaxed text-slate-300 print-text-dark">
+          <span class="text-blue-400 print-text-dark font-bold mr-1">§</span>
+          {{ citation }}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Adjuster Scope Justification Narrative -->
+    <div class="bg-surface-card rounded-2xl p-6 sm:p-8 border border-surface-border print-border space-y-3">
+      <h2 class="text-base font-bold text-white print-text-dark flex items-center space-x-2">
+        <span>📋</span>
+        <span>Executive Adjuster Scope of Work Narrative</span>
+      </h2>
+      <div class="bg-[#0B0F19] print-bg p-4 rounded-xl border border-surface-border print-border">
+        <pre class="text-xs font-mono text-slate-200 print-text-dark whitespace-pre-wrap leading-relaxed">{{ dossier.xactimate_scope_narrative }}</pre>
+      </div>
+    </div>
+
+    <!-- Itemized Xactimate Line Items Schedule -->
+    <div class="bg-surface-card rounded-2xl p-6 sm:p-8 border border-surface-border print-border space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base font-bold text-white print-text-dark flex items-center space-x-2">
+          <span>📊</span>
+          <span>Itemized Xactimate Schedule of Values</span>
+        </h2>
+        <span class="text-xs font-mono text-slate-400 print-text-muted">Quarterly Regional Price List</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs font-mono">
+          <thead>
+            <tr class="border-b border-surface-border print-border text-slate-400 print-text-muted uppercase text-[10px]">
+              <th class="py-2.5 px-3">Xactimate Code</th>
+              <th class="py-2.5 px-3">Scope Description</th>
+              <th class="py-2.5 px-3 text-right">Qty</th>
+              <th class="py-2.5 px-3 text-right">Unit</th>
+              <th class="py-2.5 px-3 text-right">Unit Price</th>
+              <th class="py-2.5 px-3 text-right">Total Price</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-surface-border print-border">
+            {% for item in dossier.itemized_line_items %}
+            <tr class="hover:bg-slate-800/30">
+              <td class="py-2.5 px-3 font-bold text-blue-400 print-text-dark">{{ item.xactimate_code }}</td>
+              <td class="py-2.5 px-3 text-slate-200 print-text-dark max-w-md">{{ item.description }}</td>
+              <td class="py-2.5 px-3 text-right text-slate-300 print-text-dark">{{ "%.1f"|format(item.quantity) }}</td>
+              <td class="py-2.5 px-3 text-right text-slate-400 print-text-muted">{{ item.unit }}</td>
+              <td class="py-2.5 px-3 text-right text-slate-300 print-text-dark">${{ "%.2f"|format(item.unit_price) }}</td>
+              <td class="py-2.5 px-3 text-right font-bold text-white print-text-dark">${{ "{:,.2f}".format(item.total_price) }}</td>
+            </tr>
+            {% endfor %}
+            <tr class="bg-blue-950/20 print-bg border-t-2 border-surface-border print-border font-bold">
+              <td colspan="5" class="py-3 px-3 text-right uppercase tracking-wider text-slate-300 print-text-dark">Total Claim Scope Valuation:</td>
+              <td class="py-3 px-3 text-right text-emerald-400 print-text-dark text-sm">${{ "{:,.2f}".format(dossier.total_claim_estimate) }} USD</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Adjuster Sign-Off & Approval Section -->
+    <div class="bg-surface-card rounded-2xl p-6 sm:p-8 border border-surface-border print-border space-y-4">
+      <h2 class="text-base font-bold text-white print-text-dark flex items-center space-x-2">
+        <span>✍️</span>
+        <span>Claim Scope Approval &amp; Authorization</span>
+      </h2>
+      <p class="text-xs text-slate-400 print-text-muted">
+        By signing below, the parties confirm receipt and technical review of the scope of work and municipal code requirements outlined above.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 text-xs font-mono">
+        <div class="border border-surface-border print-border rounded-xl p-4 space-y-6">
+          <span class="text-slate-400 print-text-muted block font-bold">AUTHORIZED CONTRACTOR ESTIMATOR:</span>
+          <div class="border-b border-dashed border-slate-600 print-border pt-8"></div>
+          <div class="flex justify-between text-[11px] text-slate-400 print-text-muted">
+            <span>Signature: Carlos Mendez</span>
+            <span>Date: {{ dossier.date_of_loss }}</span>
+          </div>
+        </div>
+
+        <div class="border border-surface-border print-border rounded-xl p-4 space-y-6">
+          <span class="text-slate-400 print-text-muted block font-bold">CARRIER / FIELD ADJUSTER SIGN-OFF:</span>
+          <div class="border-b border-dashed border-slate-600 print-border pt-8"></div>
+          <div class="flex justify-between text-[11px] text-slate-400 print-text-muted">
+            <span>Field Adjuster Signature</span>
+            <span>Date: ____________</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ board.project_title }} &bull; Jobsite Progress Storyboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfeff',
+              500: '#06b6d4',
+              600: '#0891b2',
+              700: '#0e7490',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .glass-card {
+      background: rgba(17, 24, 39, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card-glow {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(14, 165, 233, 0.25);
+      box-shadow: 0 0 35px -10px rgba(14, 165, 233, 0.15);
+    }
+  </style>
+</head>
+<body class="bg-gray-950 text-gray-100 font-sans min-h-screen antialiased selection:bg-cyan-500 selection:text-white">
+
+  <!-- Top Ambient Glow -->
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-48 bg-gradient-to-b from-cyan-600/10 via-purple-600/5 to-transparent blur-3xl pointer-events-none"></div>
+
+  <div class="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8 relative space-y-8">
+
+    <!-- Header Navigation & Brand -->
+    <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-800 pb-6">
+      <div class="space-y-1">
+        <div class="flex items-center space-x-2 text-xs font-mono text-cyan-400 font-semibold tracking-wider uppercase">
+          <span class="inline-block w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+          <span>Jobsite Progress Storyboard</span>
+          <span class="text-gray-600">&bull;</span>
+          <span class="text-gray-400">{{ tenant.name if tenant else 'Dispatch Engine Contractor' }}</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">{{ board.project_title }}</h1>
+        <p class="text-xs sm:text-sm text-gray-400">
+          Job ID: <span class="font-mono text-gray-300">{{ board.action_id }}</span>
+          {% if lead and lead.extracted_address %}
+          &bull; <span class="text-gray-300">📍 {{ lead.extracted_address }}</span>
+          {% endif %}
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center space-x-3">
+        <button onclick="document.getElementById('foreman-upload-modal').classList.remove('hidden')" class="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 shadow-lg shadow-purple-600/20 border border-purple-400/30 transition">
+          <span>📸</span>
+          <span>Upload Milestone (Foreman)</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Project Completion & Weather-Tight Status Hero Banner -->
+    <div class="glass-card-glow rounded-3xl p-6 sm:p-8 space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <span class="text-xs uppercase font-mono tracking-wider text-cyan-400 font-semibold">Live Project Progress</span>
+          <div class="flex items-baseline space-x-3 mt-1">
+            <span class="text-4xl sm:text-5xl font-black text-white tracking-tight">{{ board.current_completion_pct }}%</span>
+            <span class="text-sm sm:text-base text-gray-400 font-medium">Completed</span>
+          </div>
+          <p class="text-xs text-gray-400 mt-1">
+            Estimated duration: <strong class="text-white font-mono">{{ board.total_days_estimated }} Days</strong> &bull;
+            Logged: <strong class="text-cyan-300 font-mono">{{ board.milestones|length }} Milestone Days</strong>
+          </p>
+        </div>
+
+        <!-- Weather-Tight Badge Card -->
+        <div class="flex items-center space-x-3 p-4 rounded-2xl {% if board.is_weather_tight %}bg-emerald-950/60 border border-emerald-500/40 text-emerald-300{% else %}bg-amber-950/60 border border-amber-500/40 text-amber-300{% endif %}">
+          <div class="text-3xl">
+            {% if board.is_weather_tight %}🛡️{% else %}⚠️{% endif %}
+          </div>
+          <div>
+            <div class="text-xs uppercase font-mono font-bold tracking-wider">
+              {% if board.is_weather_tight %}Weather-Tight Protection Verified{% else %}Weather Envelope In Progress{% endif %}
+            </div>
+            <p class="text-xs text-gray-300 mt-0.5 max-w-xs">
+              {% if board.is_weather_tight %}
+                Structure sealed against rain, wind, and moisture at end of day.
+              {% else %}
+                Envelope is under active construction. Daily protective tarps in place.
+              {% endif %}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Completion Progress Bar -->
+      <div class="space-y-2">
+        <div class="flex justify-between text-xs font-mono text-gray-400">
+          <span>Day 1 Kickoff</span>
+          <span>Day {{ board.total_days_estimated }} Completion Target</span>
+        </div>
+        <div class="w-full bg-gray-900 rounded-full h-3.5 p-0.5 overflow-hidden border border-gray-800">
+          <div class="bg-gradient-to-r from-cyan-500 via-indigo-500 to-emerald-400 h-full rounded-full transition-all duration-1000 shadow-sm shadow-cyan-500/50" style="width: {{ board.current_completion_pct }}%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily Milestones Timeline -->
+    <div class="space-y-6">
+      <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+        <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+          <span>📅</span>
+          <span>Daily Jobsite Photo Log & Milestones</span>
+        </h2>
+        <span class="text-xs font-mono text-gray-400">{{ board.milestones|length }} daily updates recorded</span>
+      </div>
+
+      {% if board.milestones %}
+        <div class="space-y-6">
+          {% for m in board.milestones|reverse %}
+            <div class="glass-card rounded-2xl p-6 sm:p-7 border border-gray-800 hover:border-gray-700 transition">
+              <!-- Milestone Header -->
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-800/80 pb-4">
+                <div class="flex items-center space-x-3">
+                  <span class="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-mono font-bold text-sm flex items-center justify-center">
+                    #{{ m.day_number }}
+                  </span>
+                  <div>
+                    <h3 class="text-base font-bold text-white">Day {{ m.day_number }} Milestone</h3>
+                    <p class="text-xs font-mono text-gray-400">{{ m.date }}</p>
+                  </div>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                  {% if m.weather_tight_verified %}
+                    <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-950 text-emerald-300 border border-emerald-800/60">
+                      <span>✓</span><span>Weather-Tight</span>
+                    </span>
+                  {% else %}
+                    <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-950 text-amber-300 border border-amber-800/60">
+                      <span>⚠️</span><span>Open Envelope</span>
+                    </span>
+                  {% endif %}
+
+                  <span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800/60">
+                    {{ m.completion_percentage }}% Complete
+                  </span>
+                </div>
+              </div>
+
+              <!-- AI Summary & Notes -->
+              <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+                {% if m.summary %}
+                  <div class="p-3.5 rounded-xl bg-gray-900/80 border border-gray-800/80 space-y-1">
+                    <span class="text-[11px] font-mono text-cyan-400 font-semibold uppercase tracking-wider block">AI Progress Assessment</span>
+                    <p class="text-gray-300 leading-relaxed">{{ m.summary }}</p>
+                  </div>
+                {% endif %}
+
+                {% if m.customer_notes %}
+                  <div class="p-3.5 rounded-xl bg-gray-900/80 border border-gray-800/80 space-y-1">
+                    <span class="text-[11px] font-mono text-purple-400 font-semibold uppercase tracking-wider block">Foreman Jobsite Notes</span>
+                    <p class="text-gray-300 leading-relaxed">{{ m.customer_notes }}</p>
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- Photos Grid -->
+              {% if m.photo_urls %}
+                <div class="mt-5 space-y-2">
+                  <span class="text-[11px] font-mono text-gray-400 uppercase tracking-wider font-semibold">Jobsite Photos ({{ m.photo_urls|length }})</span>
+                  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {% for url in m.photo_urls %}
+                      <div class="group relative rounded-xl overflow-hidden aspect-video bg-gray-900 border border-gray-800 shadow-md">
+                        <img src="{{ url }}" alt="Day {{ m.day_number }} Photo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer" onclick="openLightbox('{{ url }}')">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2 pointer-events-none">
+                          <span class="text-[10px] font-mono text-white">🔍 Tap to inspect</span>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="glass-card rounded-2xl p-12 text-center text-gray-500 space-y-3">
+          <div class="text-4xl">📸</div>
+          <p class="text-base font-semibold text-gray-300">No daily milestones uploaded yet.</p>
+          <p class="text-xs text-gray-500 max-w-md mx-auto">
+            The project foreman can upload end-of-day jobsite photos to generate AI progress reports and automatically update the homeowner.
+          </p>
+          <button onclick="document.getElementById('foreman-upload-modal').classList.remove('hidden')" class="mt-4 px-4 py-2 rounded-xl text-xs font-bold text-white bg-cyan-600 hover:bg-cyan-500 shadow-lg shadow-cyan-600/20 transition">
+            Upload Day 1 Photos
+          </button>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-gray-500 pt-6 border-t border-gray-900">
+      &copy; 2026 {{ tenant.name if tenant else 'Dispatch Engine Contractor' }} &bull; Jobsite Progress Storyboard System
+    </footer>
+
+  </div>
+
+  <!-- Foreman Upload Modal -->
+  <div id="foreman-upload-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="glass-card rounded-3xl max-w-lg w-full p-6 sm:p-7 border border-gray-700 shadow-2xl relative space-y-5">
+      <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+        <div class="flex items-center space-x-2">
+          <span class="text-xl">📸</span>
+          <h3 class="text-base font-bold text-white">Upload Daily Milestone Photos</h3>
+        </div>
+        <button onclick="document.getElementById('foreman-upload-modal').classList.add('hidden')" class="text-gray-400 hover:text-white p-1">
+          ✕
+        </button>
+      </div>
+
+      <form action="/storyboard/{{ board.action_id }}/milestone" method="POST" enctype="multipart/form-data" class="space-y-4">
+        <div>
+          <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-2 font-semibold">Select Jobsite Photos</label>
+          <input type="file" name="photos" id="photo-input" accept="image/*" multiple required class="w-full text-xs text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-600 file:text-white hover:file:bg-cyan-500 cursor-pointer bg-gray-900 rounded-xl p-2 border border-gray-800" onchange="previewImages(this)">
+          <p class="text-[11px] text-gray-500 mt-1">Upload 1 to 12 clear photos showing progress and weather barrier protection.</p>
+        </div>
+
+        <!-- Preview Container -->
+        <div id="preview-grid" class="grid grid-cols-4 gap-2 empty:hidden"></div>
+
+        <div>
+          <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-2 font-semibold">Foreman Daily Notes</label>
+          <textarea name="notes" rows="3" placeholder="e.g. Completed tear-off and dry-in synthetic underlayment. Tarped all valleys. Approx 40% complete." class="w-full bg-gray-900 border border-gray-800 rounded-xl p-3 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end space-x-3 pt-2">
+          <button type="button" onclick="document.getElementById('foreman-upload-modal').classList.add('hidden')" class="px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white bg-gray-800 hover:bg-gray-700 transition">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-lg shadow-cyan-600/20 transition">
+            Submit & Notify Homeowner
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lightbox Modal -->
+  <div id="lightbox-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md cursor-pointer" onclick="this.classList.add('hidden')">
+    <div class="max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl relative">
+      <img id="lightbox-img" src="" alt="Full preview" class="w-full h-full object-contain">
+    </div>
+  </div>
+
+  <script>
+    function openLightbox(url) {
+      document.getElementById('lightbox-img').src = url;
+      document.getElementById('lightbox-modal').classList.remove('hidden');
+    }
+
+    function previewImages(input) {
+      const container = document.getElementById('preview-grid');
+      container.innerHTML = '';
+      if (input.files) {
+        Array.from(input.files).slice(0, 8).forEach(file => {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'w-full aspect-square object-cover rounded-lg border border-gray-700';
+            container.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+    }
+  </script>
+</body>
+</html>

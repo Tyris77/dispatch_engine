@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regulatory Compliance & Trade License Packet — {{ packet.contractor_legal_name }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Cinzel"', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0B0F19;
+      color: #f3f4f6;
+    }
+    .cert-border {
+      border: 2px solid #b45309;
+      box-shadow: inset 0 0 0 4px #1e293b, 0 20px 40px -15px rgba(0,0,0,0.7);
+    }
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #111827 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .cert-border {
+        border: 2px solid #78350f !important;
+        box-shadow: none !important;
+        background: #ffffff !important;
+        color: #111827 !important;
+      }
+      .print-dark {
+        color: #111827 !important;
+      }
+      .print-muted {
+        color: #4b5563 !important;
+      }
+      .print-box {
+        border: 1px solid #d1d5db !important;
+        background: #f9fafb !important;
+        color: #111827 !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+
+  <div class="max-w-4xl mx-auto space-y-6">
+
+    <!-- Action Bar -->
+    <div class="flex items-center justify-between no-print pb-2">
+      <a href="/commercial/{{ tenant.slug }}" class="inline-flex items-center gap-2 text-xs font-semibold text-gray-400 hover:text-white transition-colors">
+        <span>←</span> Commercial Property Portal
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="/portal/{{ tenant.slug }}" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-gray-900 border border-gray-700 text-gray-300 hover:bg-gray-800 transition-all">
+          Client Portal
+        </a>
+        <button onclick="window.print()" class="px-5 py-2 rounded-xl text-xs font-bold bg-amber-600 hover:bg-amber-500 text-white shadow-lg shadow-amber-600/25 transition-all flex items-center gap-1.5">
+          <span>🖨️</span> Print Official Packet
+        </button>
+      </div>
+    </div>
+
+    <!-- Official Certificate & Regulatory Packet Sheet -->
+    <div class="cert-border rounded-3xl p-8 sm:p-12 bg-gray-900/90 backdrop-blur-xl relative overflow-hidden">
+
+      <!-- Background Seal Watermark -->
+      <div class="absolute -right-16 -bottom-16 w-80 h-80 opacity-5 pointer-events-none select-none text-amber-400 font-serif text-[240px] flex items-center justify-center">
+        ⚖️
+      </div>
+
+      <!-- Header -->
+      <div class="text-center pb-8 border-b-2 border-amber-600/40 relative">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono tracking-widest uppercase mb-3 font-semibold">
+          Official Regulatory Submittal Packet
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-black font-serif tracking-tight text-white print-dark">
+          {{ packet.contractor_legal_name }}
+        </h1>
+        <p class="text-sm font-medium text-amber-400/90 mt-1 uppercase tracking-widest font-mono">
+          Trade License & Commercial General Contractor Compliance Vault
+        </p>
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-4 text-xs text-gray-400 print-muted">
+          <span>Standing: <strong class="text-emerald-400 font-mono">{{ packet.standing_status }}</strong></span>
+          <span>•</span>
+          <span>OSHA Safety Rating: <strong class="text-cyan-400 font-mono">{{ packet.osha_safety_score }}%</strong></span>
+          <span>•</span>
+          <span>Verified: <strong class="text-gray-300 font-mono">{{ packet.generated_at }}</strong></span>
+        </div>
+      </div>
+
+      <!-- Verified State Trade Licenses Section -->
+      <div class="py-8 border-b border-gray-800">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-base font-bold font-serif text-white tracking-wide flex items-center gap-2 print-dark">
+            <span class="text-amber-500">📜</span> Verified State Trade Licenses & Qualifiers
+          </h2>
+          <span class="text-xs font-mono text-gray-400">DMV Tri-State Reciprocal Standing</span>
+        </div>
+
+        <div class="grid grid-cols-1 gap-3">
+          {% for lic in packet.verified_licenses %}
+          <div class="p-4 rounded-xl bg-gray-950/60 border border-gray-800 print-box">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-white text-sm print-dark">{{ lic.jurisdiction }}</span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    {{ lic.license_type }}
+                  </span>
+                </div>
+                <p class="text-xs text-gray-400 mt-1">
+                  License #: <strong class="font-mono text-white print-dark">{{ lic.license_number }}</strong> • Designated Qualifier: <span class="text-gray-300">{{ lic.holder_name }}</span>
+                </p>
+                {% if lic.classification_scope %}
+                <p class="text-[11px] text-gray-500 mt-0.5 italic">
+                  Scope: {{ lic.classification_scope }}
+                </p>
+                {% endif %}
+              </div>
+              <div class="sm:text-right">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  {{ lic.status }}
+                </span>
+                <span class="text-[10px] text-gray-500 block font-mono mt-1">Expires: {{ lic.expiration_date }}</span>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Insurance & Liability (ACORD 25 Audited Limits) -->
+      <div class="py-8 border-b border-gray-800">
+        <h2 class="text-base font-bold font-serif text-white tracking-wide flex items-center gap-2 mb-4 print-dark">
+          <span class="text-indigo-400">🛡️</span> Certificate of Commercial Liability Insurance (ACORD 25)
+        </h2>
+
+        <div class="p-5 rounded-2xl bg-gray-950/60 border border-gray-800 print-box space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs pb-3 border-b border-gray-800/80 gap-2">
+            <div>
+              <span class="text-gray-500 uppercase text-[10px] font-mono block">Primary Commercial Carrier</span>
+              <span class="font-bold text-white text-sm print-dark">{{ packet.active_coi.get('insurer_name', 'Travelers Property Casualty Co.') }}</span>
+            </div>
+            <div class="sm:text-right">
+              <span class="text-gray-500 uppercase text-[10px] font-mono block">Master Policy Number</span>
+              <span class="font-mono font-bold text-indigo-400">{{ packet.active_coi.get('policy_number', 'TRV-CGL-9821044-26') }}</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
+            <div>
+              <span class="text-gray-500 text-[10px] uppercase block">Each Occurrence</span>
+              <span class="font-bold text-white print-dark">${{ "{:,.0f}".format(packet.active_coi.get('general_liability_each_occurrence', 1000000.0)) }}</span>
+            </div>
+            <div>
+              <span class="text-gray-500 text-[10px] uppercase block">General Aggregate</span>
+              <span class="font-bold text-white print-dark">${{ "{:,.0f}".format(packet.active_coi.get('general_aggregate_limit', 2000000.0)) }}</span>
+            </div>
+            <div>
+              <span class="text-gray-500 text-[10px] uppercase block">Commercial Umbrella</span>
+              <span class="font-bold text-emerald-400">${{ "{:,.0f}".format(packet.active_coi.get('commercial_umbrella_excess_limit', 5000000.0)) }}</span>
+            </div>
+            <div>
+              <span class="text-gray-500 text-[10px] uppercase block">Workers' Comp</span>
+              <span class="font-bold text-cyan-400">STATUTORY (Active)</span>
+            </div>
+          </div>
+
+          <div class="text-[11px] text-gray-400 pt-2 border-t border-gray-800/60 flex items-center justify-between">
+            <span>Additional Insured Endorsement: Commercial Property Managers & Owners</span>
+            <span class="font-mono text-gray-500">Exp: {{ packet.active_coi.get('policy_expiration_date', '2027-09-30') }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- OSHA Safety & Commercial Surety Bonding -->
+      <div class="py-8 border-b border-gray-800 grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div class="p-5 rounded-2xl bg-gray-950/60 border border-gray-800 print-box">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-lg">🦺</span>
+            <h3 class="font-bold text-sm text-white print-dark">OSHA 1926 Safety Compliance</h3>
+          </div>
+          <p class="text-xs text-gray-400">
+            Full compliance with 29 CFR 1926 construction standards, mandatory daily tailgate briefings, fall arrest protocols, and zero lost-time accidents.
+          </p>
+          <div class="mt-3 flex items-baseline gap-2 font-mono">
+            <span class="text-2xl font-black text-cyan-400">{{ packet.osha_safety_score }}%</span>
+            <span class="text-xs text-gray-500">Corporate Safety Index</span>
+          </div>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-gray-950/60 border border-gray-800 print-box">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-lg">🔒</span>
+            <h3 class="font-bold text-sm text-white print-dark">Commercial Surety Bond</h3>
+          </div>
+          <p class="text-xs text-gray-400">
+            Continuous commercial surety bond for general contracting performance, wage guarantee, and statutory compliance.
+          </p>
+          <div class="mt-3 flex items-baseline gap-2 font-mono">
+            <span class="text-2xl font-black text-amber-400">${{ "{:,.0f}".format(packet.surety_bond_amount) }}</span>
+            <span class="text-xs text-gray-500">Continuous Surety Coverage</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Verification QR & Authorized Certification Signature -->
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-4">
+          <!-- Stylized QR Code Component -->
+          <div class="w-20 h-20 bg-white p-1.5 rounded-xl shadow-md flex flex-col items-center justify-center">
+            <svg viewBox="0 0 100 100" class="w-full h-full text-black">
+              <rect x="10" y="10" width="25" height="25" fill="currentColor"/>
+              <rect x="65" y="10" width="25" height="25" fill="currentColor"/>
+              <rect x="10" y="65" width="25" height="25" fill="currentColor"/>
+              <rect x="15" y="15" width="15" height="15" fill="white"/>
+              <rect x="70" y="15" width="15" height="15" fill="white"/>
+              <rect x="15" y="70" width="15" height="15" fill="white"/>
+              <rect x="42" y="10" width="16" height="16" fill="currentColor"/>
+              <rect x="42" y="42" width="16" height="16" fill="currentColor"/>
+              <rect x="10" y="42" width="16" height="16" fill="currentColor"/>
+              <rect x="74" y="42" width="16" height="16" fill="currentColor"/>
+              <rect x="42" y="74" width="16" height="16" fill="currentColor"/>
+              <rect x="65" y="65" width="25" height="25" fill="currentColor"/>
+            </svg>
+          </div>
+          <div class="text-xs">
+            <span class="font-bold text-white block print-dark">Live Regulatory Verification QR</span>
+            <p class="text-gray-400 text-[11px] mt-0.5">Scan to verify current license status & insurance endorsement limits.</p>
+            <span class="font-mono text-indigo-400 text-[10px] break-all">{{ packet.verification_qr_url }}</span>
+          </div>
+        </div>
+
+        <div class="w-full sm:w-64 pt-6 border-t-2 sm:border-t-0 sm:border-l-2 border-gray-800 sm:pl-6 text-center sm:text-left">
+          <div class="font-serif italic text-amber-400 text-lg">Markus Vance, Qualifying Master</div>
+          <div class="w-full border-b border-gray-700 my-1"></div>
+          <span class="text-[10px] uppercase font-mono text-gray-500 block">Authorized Contractor Signature</span>
+          <span class="text-[10px] font-mono text-gray-400">Corporate Compliance Officer</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>

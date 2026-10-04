@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>IRS Form W-9 Certification &bull; {{ crew_name }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .glass-card {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    canvas {
+      touch-action: none;
+    }
+  </style>
+</head>
+<body class="bg-gray-950 text-gray-100 font-sans min-h-screen antialiased selection:bg-emerald-500 selection:text-white pb-12">
+
+  <!-- Background Ambient Glow -->
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-48 bg-gradient-to-b from-emerald-600/10 via-teal-600/5 to-transparent blur-3xl pointer-events-none"></div>
+
+  <div class="max-w-2xl mx-auto px-4 py-8 sm:px-6 relative space-y-6">
+
+    <!-- Header & IRS Branding -->
+    <header class="text-center space-y-2 border-b border-gray-800 pb-6">
+      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-emerald-950 text-emerald-300 border border-emerald-800/60">
+        <span>🏛️</span>
+        <span>IRS Form W-9 Digital Certification</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Request for Taxpayer Identification Number</h1>
+      <p class="text-xs sm:text-sm text-gray-400">
+        Requested by <strong class="text-white">{{ tenant.name }}</strong> for Subcontractor Crew: <strong class="text-emerald-400 font-mono">{{ crew_name }}</strong>
+      </p>
+    </header>
+
+    {% if existing_entry and existing_entry.w9_status == "ON_FILE" and not submitted_success %}
+      <!-- Already Verified Card -->
+      <div class="glass-card rounded-3xl p-6 sm:p-8 border border-emerald-500/30 shadow-xl space-y-5 text-center">
+        <div class="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-3xl flex items-center justify-center mx-auto">
+          ✓
+        </div>
+        <div class="space-y-1">
+          <h2 class="text-xl font-bold text-white">Form W-9 Already On File & Verified</h2>
+          <p class="text-xs text-gray-400">Your electronic tax certification has been recorded in {{ tenant.name }}'s secure 1099 Tax Vault.</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 text-left max-w-md mx-auto p-4 rounded-2xl bg-gray-900 border border-gray-800 text-xs">
+          <div>
+            <span class="text-gray-500 font-mono uppercase tracking-wider block text-[10px]">Certification ID</span>
+            <span class="font-mono font-bold text-white">{{ existing_entry.w9_id }}</span>
+          </div>
+          <div>
+            <span class="text-gray-500 font-mono uppercase tracking-wider block text-[10px]">TIN on File</span>
+            <span class="font-mono font-bold text-emerald-400">{{ existing_entry.tin_masked }}</span>
+          </div>
+          <div>
+            <span class="text-gray-500 font-mono uppercase tracking-wider block text-[10px]">Entity Classification</span>
+            <span class="font-mono text-gray-300">{{ existing_entry.tax_classification }}</span>
+          </div>
+          <div>
+            <span class="text-gray-500 font-mono uppercase tracking-wider block text-[10px]">Date Signed</span>
+            <span class="font-mono text-gray-300">{{ existing_entry.signed_at }}</span>
+          </div>
+        </div>
+
+        <p class="text-[11px] text-gray-500">Need to update your tax details? Submit a revised Form W-9 below.</p>
+      </div>
+    {% endif %}
+
+    {% if submitted_success %}
+      <!-- Submission Success Alert -->
+      <div class="glass-card rounded-3xl p-6 sm:p-8 border border-emerald-500/40 shadow-2xl space-y-4 text-center">
+        <div class="w-14 h-14 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-3xl flex items-center justify-center mx-auto animate-bounce">
+          ✓
+        </div>
+        <div class="space-y-1">
+          <h2 class="text-xl font-extrabold text-white">Form W-9 Successfully Certified!</h2>
+          <p class="text-xs text-emerald-300">Your legal tax profile is now on file. 1099 disbursement holds have been cleared.</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-gray-900/90 border border-gray-800 text-xs space-y-1 font-mono text-gray-300 max-w-sm mx-auto text-left">
+          <div class="flex justify-between">
+            <span class="text-gray-500">Status:</span>
+            <span class="text-emerald-400 font-bold">VERIFIED_ON_FILE</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500">Masked TIN:</span>
+            <span class="text-white">{{ existing_entry.tin_masked }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500">Record ID:</span>
+            <span class="text-white">{{ existing_entry.w9_id }}</span>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- W-9 Input Form -->
+    <div class="glass-card rounded-3xl p-6 sm:p-8 border border-gray-800 shadow-xl">
+      <form id="w9-form" method="POST" action="/w9/{{ tenant.slug }}/{{ crew_name }}" class="space-y-6" onsubmit="return validateAndSubmit(event)">
+        <input type="hidden" name="crew_name" value="{{ crew_name }}">
+        <input type="hidden" name="signature_base64" id="signature_base64">
+
+        <!-- Business & Foreman Identifiers -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono border-b border-gray-800 pb-2 flex items-center space-x-2">
+            <span>1️⃣</span>
+            <span>Taxpayer Identity & Entity Name</span>
+          </h3>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Business Legal Name (as shown on your income tax return) *</label>
+            <input type="text" name="business_legal_name" required placeholder="e.g. Apex Roofing LLC or John Doe Construction" value="{{ (existing_entry.business_legal_name if existing_entry else '') or crew_name }}" class="w-full bg-gray-900 border border-gray-800 rounded-xl p-3 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500 transition">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-gray-300 mb-1">Authorized Foreman / Signer Name *</label>
+              <input type="text" name="foreman_name" required placeholder="e.g. Carlos Mendez" value="{{ existing_entry.foreman_name if existing_entry else '' }}" class="w-full bg-gray-900 border border-gray-800 rounded-xl p-3 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500 transition">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-300 mb-1">Subcontractor Crew Code</label>
+              <input type="text" readonly disabled value="{{ crew_name }}" class="w-full bg-gray-900/50 border border-gray-800/80 rounded-xl p-3 text-xs sm:text-sm font-mono text-gray-400 cursor-not-allowed">
+            </div>
+          </div>
+        </div>
+
+        <!-- Federal Tax Classification -->
+        <div class="space-y-3">
+          <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono border-b border-gray-800 pb-2 flex items-center space-x-2">
+            <span>2️⃣</span>
+            <span>Federal Tax Classification *</span>
+          </h3>
+
+          <div class="grid grid-cols-1 gap-2.5">
+            <label class="flex items-center space-x-3 p-3 rounded-xl bg-gray-900/60 border border-gray-800 hover:border-emerald-500/50 cursor-pointer transition">
+              <input type="radio" name="federal_tax_classification" value="INDIVIDUAL_SOLE_PROPRIETOR" required {% if not existing_entry or existing_entry.tax_classification == "INDIVIDUAL_SOLE_PROPRIETOR" %}checked{% endif %} class="text-emerald-500 focus:ring-emerald-500">
+              <div>
+                <span class="text-xs sm:text-sm font-semibold text-white">Individual / Sole Proprietor or Single-Member LLC</span>
+                <span class="block text-[11px] text-gray-400">Reports under owner SSN or individual business EIN</span>
+              </div>
+            </label>
+
+            <label class="flex items-center space-x-3 p-3 rounded-xl bg-gray-900/60 border border-gray-800 hover:border-emerald-500/50 cursor-pointer transition">
+              <input type="radio" name="federal_tax_classification" value="LLC" {% if existing_entry and existing_entry.tax_classification == "LLC" %}checked{% endif %} class="text-emerald-500 focus:ring-emerald-500">
+              <div>
+                <span class="text-xs sm:text-sm font-semibold text-white">Limited Liability Company (LLC)</span>
+                <span class="block text-[11px] text-gray-400">Multi-member or taxed as partnership/corporation</span>
+              </div>
+            </label>
+
+            <label class="flex items-center space-x-3 p-3 rounded-xl bg-gray-900/60 border border-gray-800 hover:border-emerald-500/50 cursor-pointer transition">
+              <input type="radio" name="federal_tax_classification" value="S_CORP" {% if existing_entry and existing_entry.tax_classification == "S_CORP" %}checked{% endif %} class="text-emerald-500 focus:ring-emerald-500">
+              <div>
+                <span class="text-xs sm:text-sm font-semibold text-white">S Corporation (S Corp)</span>
+              </div>
+            </label>
+
+            <label class="flex items-center space-x-3 p-3 rounded-xl bg-gray-900/60 border border-gray-800 hover:border-emerald-500/50 cursor-pointer transition">
+              <input type="radio" name="federal_tax_classification" value="C_CORP" {% if existing_entry and existing_entry.tax_classification == "C_CORP" %}checked{% endif %} class="text-emerald-500 focus:ring-emerald-500">
+              <div>
+                <span class="text-xs sm:text-sm font-semibold text-white">C Corporation (C Corp)</span>
+              </div>
+            </label>
+
+            <label class="flex items-center space-x-3 p-3 rounded-xl bg-gray-900/60 border border-gray-800 hover:border-emerald-500/50 cursor-pointer transition">
+              <input type="radio" name="federal_tax_classification" value="PARTNERSHIP" {% if existing_entry and existing_entry.tax_classification == "PARTNERSHIP" %}checked{% endif %} class="text-emerald-500 focus:ring-emerald-500">
+              <div>
+                <span class="text-xs sm:text-sm font-semibold text-white">Partnership</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Address & Taxpayer ID -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono border-b border-gray-800 pb-2 flex items-center space-x-2">
+            <span>3️⃣</span>
+            <span>Business Address & Taxpayer ID (TIN)</span>
+          </h3>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Mailing Address (number, street, suite, city, state, and ZIP) *</label>
+            <input type="text" name="address" required placeholder="e.g. 742 Evergreen Terrace, Suite 100, Springfield, IL 62704" value="{{ existing_entry.address if existing_entry else '' }}" class="w-full bg-gray-900 border border-gray-800 rounded-xl p-3 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500 transition">
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-semibold text-gray-300">Employer Identification Number (EIN) or Social Security Number (SSN) *</label>
+              <span class="text-[10px] font-mono text-emerald-400">🔒 Tokenized & Masked on Submit</span>
+            </div>
+            <input type="text" name="ein_or_ssn" id="ein_or_ssn" required placeholder="XX-XXXXXXX or XXX-XX-XXXX" class="w-full bg-gray-900 border border-gray-800 rounded-xl p-3 text-xs sm:text-sm font-mono text-white focus:outline-none focus:border-emerald-500 transition">
+            <p class="text-[11px] text-gray-500 mt-1">Accepts standard 9-digit EIN (e.g. 12-3456789) or SSN (e.g. 123-45-6789). Stored securely as masked digits only.</p>
+          </div>
+        </div>
+
+        <!-- Perjury Certification Statement -->
+        <div class="p-4 rounded-2xl bg-gray-900/80 border border-gray-800 text-xs text-gray-400 space-y-2">
+          <div class="flex items-center space-x-2 text-white font-semibold">
+            <span>⚖️</span>
+            <span>Part II &bull; Certification Under Penalties of Perjury</span>
+          </div>
+          <p class="text-[11px] leading-relaxed">
+            By signing below, I certify that: (1) The number shown on this form is my correct taxpayer identification number, (2) I am not subject to backup withholding, and (3) I am a U.S. citizen or other U.S. person.
+          </p>
+        </div>
+
+        <!-- E-Signature Canvas -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-bold text-white uppercase tracking-wider font-mono">Foreman / Authorized Digital Signature *</label>
+            <button type="button" onclick="clearSignature()" class="text-[11px] font-semibold text-rose-400 hover:text-rose-300 transition">
+              Clear Signature
+            </button>
+          </div>
+
+          <div class="border-2 border-dashed border-gray-700 rounded-2xl overflow-hidden bg-gray-900/90 relative">
+            <canvas id="sig-canvas" width="600" height="160" class="w-full h-40 cursor-crosshair"></canvas>
+            <div id="sig-placeholder" class="absolute inset-0 flex items-center justify-center pointer-events-none text-gray-600 text-xs font-mono">
+              Sign with touch or mouse here
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div>
+          <button type="submit" id="submit-btn" class="w-full py-3.5 px-6 rounded-2xl font-bold text-sm text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-xl shadow-emerald-600/20 border border-emerald-400/30 transition transform active:scale-[0.99]">
+            Certify & Submit Form W-9
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-gray-500 pt-4">
+      &copy; 2026 {{ tenant.name }} &bull; Dispatch Engine Subcontractor Tax Compliance Vault
+    </footer>
+
+  </div>
+
+  <script>
+    const canvas = document.getElementById('sig-canvas');
+    const ctx = canvas.getContext('2d');
+    const placeholder = document.getElementById('sig-placeholder');
+    let drawing = false;
+    let hasSigned = false;
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#34d399'; // Emerald-400
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    function startDraw(e) {
+      drawing = true;
+      hasSigned = true;
+      placeholder.style.display = 'none';
+      const pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+      e.preventDefault();
+    }
+
+    function draw(e) {
+      if (!drawing) return;
+      const pos = getPos(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      e.preventDefault();
+    }
+
+    function stopDraw() {
+      drawing = false;
+    }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', stopDraw);
+
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    window.addEventListener('touchend', stopDraw);
+
+    function clearSignature() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      hasSigned = false;
+      placeholder.style.display = 'flex';
+      document.getElementById('signature_base64').value = '';
+    }
+
+    function validateAndSubmit(e) {
+      if (!hasSigned) {
+        alert('Please sign your Form W-9 certification in the signature box before submitting.');
+        e.preventDefault();
+        return false;
+      }
+      const dataUrl = canvas.toDataURL('image/png');
+      document.getElementById('signature_base64').value = dataUrl;
+      return true;
+    }
+  </script>
+</body>
+</html>

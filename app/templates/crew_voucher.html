@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subcontractor 1099 Settlement Voucher | {{ voucher.voucher_number }} | {{ tenant.name }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+            },
+            surface: {
+              base: '#0B0F19',
+              card: '#111827',
+              border: '#1E293B',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0B0F19;
+      color: #F3F4F6;
+    }
+    @media print {
+      body {
+        background-color: #FFFFFF !important;
+        color: #111827 !important;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-border {
+        border-color: #D1D5DB !important;
+      }
+      .print-bg {
+        background-color: #F9FAFB !important;
+      }
+      .print-text-dark {
+        color: #111827 !important;
+      }
+      .print-text-muted {
+        color: #4B5563 !important;
+      }
+      .glass-card, .bg-surface-card {
+        background: #FFFFFF !important;
+        border: 1px solid #E5E7EB !important;
+        box-shadow: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans antialiased selection:bg-blue-600 selection:text-white">
+
+  <!-- ==================== TOP ACTION BAR (SCREEN ONLY) ==================== -->
+  <header class="no-print sticky top-0 z-40 bg-[#0B0F19]/90 backdrop-blur-md border-b border-surface-border">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="/portal/{{ tenant.slug }}" class="p-2 rounded-xl bg-surface-card border border-surface-border text-slate-300 hover:text-white hover:border-slate-600 transition-all flex items-center space-x-1.5 text-xs font-semibold">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          <span>Client Portal</span>
+        </a>
+        <span class="text-xs font-mono text-slate-400">Voucher: <strong class="text-white">{{ voucher.voucher_number }}</strong></span>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <button onclick="document.getElementById('reassign-modal').classList.remove('hidden')" class="px-3 py-1.5 rounded-xl bg-surface-card hover:bg-slate-800 text-slate-300 text-xs font-semibold border border-surface-border transition-all flex items-center space-x-1.5">
+          <span>👥</span>
+          <span>Update Crew / Payout</span>
+        </button>
+
+        <button onclick="window.print()" class="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg shadow-emerald-600/30 transition-all flex items-center space-x-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+          <span>Print / Export PDF</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== VOUCHER CONTAINER ==================== -->
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+
+    <!-- Official Contractor Header -->
+    <div class="bg-surface-card rounded-2xl p-6 sm:p-8 border border-surface-border print-border">
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-surface-border print-border pb-6">
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">👥</span>
+            <h1 class="text-xl sm:text-2xl font-extrabold text-white print-text-dark tracking-tight">{{ tenant.name }}</h1>
+          </div>
+          <p class="text-xs font-mono text-slate-400 print-text-muted mt-1">
+            {{ tenant.settings.get('license_number') or "Master Trade Operations & General Contracting" }}
+          </p>
+          <p class="text-xs font-mono text-slate-400 print-text-muted">
+            Dispatch Office: {{ tenant.settings.get('phone') or '(202) 555-0199' }} | Email: {{ tenant.settings.get('contact_email') or 'payroll@contractor.com' }}
+          </p>
+        </div>
+
+        <div class="text-left sm:text-right space-y-1">
+          <span class="inline-block px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 print-text-dark text-xs font-mono font-bold">
+            1099 SUBCONTRACTOR SETTLEMENT VOUCHER
+          </span>
+          <p class="text-xs font-mono text-slate-300 print-text-dark">Voucher #: <strong class="text-white print-text-dark">{{ voucher.voucher_number }}</strong></p>
+          <p class="text-xs font-mono text-slate-400 print-text-muted">Status: <strong class="text-emerald-400 print-text-dark">{{ voucher.status }}</strong></p>
+          <p class="text-xs font-mono text-slate-500 print-text-muted">Generated: {{ voucher.created_at[:10] }}</p>
+        </div>
+      </div>
+
+      <!-- Job Site & Subcontractor Metadata Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 text-xs font-mono">
+        <div class="bg-[#0B0F19] print-bg p-3.5 rounded-xl border border-surface-border print-border">
+          <span class="text-slate-500 print-text-muted uppercase text-[10px] block mb-1">Job Site Location</span>
+          <strong class="text-white print-text-dark text-sm block">{{ voucher.customer_name }}</strong>
+          <span class="text-slate-400 print-text-muted mt-0.5 block">{{ voucher.job_address }}</span>
+        </div>
+
+        <div class="bg-[#0B0F19] print-bg p-3.5 rounded-xl border border-surface-border print-border">
+          <span class="text-slate-500 print-text-muted uppercase text-[10px] block mb-1">Assigned Subcontractor Crew</span>
+          <strong class="text-emerald-400 print-text-dark text-sm block">{{ voucher.crew_assignment.crew_name }}</strong>
+          <span class="text-slate-300 print-text-dark mt-0.5 block">Foreman: {{ voucher.crew_assignment.foreman_name }}</span>
+          <span class="text-slate-400 print-text-muted text-[11px] block">{{ voucher.crew_assignment.foreman_phone }}</span>
+        </div>
+
+        <div class="bg-[#0B0F19] print-bg p-3.5 rounded-xl border border-surface-border print-border">
+          <span class="text-slate-500 print-text-muted uppercase text-[10px] block mb-1">Crew Labor Settlement</span>
+          <strong class="text-white print-text-dark text-lg block">${{ "{:,.2f}".format(voucher.crew_assignment.total_crew_payout) }} USD</strong>
+          <span class="text-slate-400 print-text-muted mt-0.5 block">Terms: {{ voucher.crew_assignment.payout_type }} @ {{ voucher.crew_assignment.rate_amount }}{% if voucher.crew_assignment.payout_type == 'PERCENTAGE' %}%{% else %} Flat/Unit{% endif %}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scope of Work & Verification Checklist -->
+    <div class="bg-surface-card rounded-2xl p-6 sm:p-8 border border-surface-border print-border space-y-4">
+      <h2 class="text-base font-bold text-white print-text-dark flex items-center space-x-2">
+        <span>📋</span>
+        <span>Executed Scope of Work &amp; Punch List</span>
+      </h2>
+      <div class="bg-[#0B0F19] print-bg p-4 rounded-xl border border-surface-border print-border text-xs text-slate-300 print-text-dark leading-relaxed font-mono">
+        <p>{{ voucher.scope_summary }}</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs font-mono">
+        <div class="flex items-center space-x-2 text-slate-300 print-text-dark">
+          <span class="text-emerald-400">✓</span>
+          <span>Materials staged &amp; checked against wholesale PO</span>
+        </div>
+        <div class="flex items-center space-x-2 text-slate-300 print-text-dark">
+          <span class="text-emerald-400">✓</span>
+          <span>Site cleanup &amp; magnetic sweep completed</span>
+        </div>
+        <div class="flex items-center space-x-2 text-slate-300 print-text-dark">
+          <span class="text-emerald-400">✓</span>
+          <span>Code compliance &amp; safety inspection verified</span>
+        </div>
+        <div class="flex items-center space-x-2 text-slate-300 print-text-dark">
+          <span class="text-emerald-400">✓</span>
+          <span>Customer completion walkthrough signed off</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Financial Ledger & Profitability Math -->
+    <div class="bg-surface-card rounded-2xl p-6 sm:p-8 border border-surface-border print-border space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base font-bold text-white print-text-dark flex items-center space-x-2">
+          <span>📊</span>
+          <span>Subcontractor Settlement &amp; Net Profit Ledger</span>
+        </h2>
+        <span class="text-xs font-mono px-2.5 py-1 rounded bg-slate-800 print-border border border-slate-700 text-slate-300 print-text-dark">
+          Margin: <strong class="text-emerald-400 print-text-dark">{{ voucher.margin_percentage }}%</strong>
+        </span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs font-mono">
+          <thead>
+            <tr class="border-b border-surface-border print-border text-slate-400 print-text-muted uppercase text-[10px]">
+              <th class="py-2.5 px-3">Ledger Line Item</th>
+              <th class="py-2.5 px-3">Description &amp; Formula</th>
+              <th class="py-2.5 px-3 text-right">Amount</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-surface-border print-border">
+            <tr>
+              <td class="py-2.5 px-3 font-bold text-white print-text-dark">Gross Contract Revenue</td>
+              <td class="py-2.5 px-3 text-slate-400 print-text-muted">Total customer contract price billed</td>
+              <td class="py-2.5 px-3 text-right font-bold text-white print-text-dark">${{ "{:,.2f}".format(voucher.contract_revenue) }}</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3 font-bold text-rose-400 print-text-dark">Wholesale Material Deductions</td>
+              <td class="py-2.5 px-3 text-slate-400 print-text-muted">Supply house will-call PO parts &amp; wholesale materials</td>
+              <td class="py-2.5 px-3 text-right text-rose-400 print-text-dark">-${{ "{:,.2f}".format(voucher.material_cost) }}</td>
+            </tr>
+            <tr class="bg-blue-950/20 print-bg">
+              <td class="py-2.5 px-3 font-bold text-blue-400 print-text-dark">Subcontractor Labor Payout</td>
+              <td class="py-2.5 px-3 text-slate-300 print-text-dark">
+                {{ voucher.crew_assignment.crew_name }} ({{ voucher.crew_assignment.payout_type }} @ {{ voucher.crew_assignment.rate_amount }}{% if voucher.crew_assignment.payout_type == 'PERCENTAGE' %}%{% else %} Flat/Unit{% endif %})
+              </td>
+              <td class="py-2.5 px-3 text-right font-bold text-blue-400 print-text-dark">-${{ "{:,.2f}".format(voucher.crew_assignment.total_crew_payout) }}</td>
+            </tr>
+            <tr class="bg-emerald-950/20 print-bg border-t-2 border-surface-border print-border font-bold">
+              <td colspan="2" class="py-3 px-3 text-right uppercase tracking-wider text-slate-300 print-text-dark">Contractor True Net Gross Profit:</td>
+              <td class="py-3 px-3 text-right text-emerald-400 print-text-dark text-sm">${{ "{:,.2f}".format(voucher.net_contractor_profit) }} USD</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Dual Signature Authorization Section -->
+    <div class="bg-surface-card rounded-2xl p-6 sm:p-8 border border-surface-border print-border space-y-4">
+      <h2 class="text-base font-bold text-white print-text-dark flex items-center space-x-2">
+        <span>✍️</span>
+        <span>Labor Settlement Authorization &amp; Lien Waiver</span>
+      </h2>
+      <p class="text-xs text-slate-400 print-text-muted">
+        By signing below, the subcontractor foreman certifies that all scope items were installed to code, all crew members have been paid in full, and no mechanics liens shall be filed against the property.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 text-xs font-mono">
+        <div class="border border-surface-border print-border rounded-xl p-4 space-y-6">
+          <span class="text-slate-400 print-text-muted block font-bold">SUBCONTRACTOR FOREMAN:</span>
+          <div class="border-b border-dashed border-slate-600 print-border pt-8"></div>
+          <div class="flex justify-between text-[11px] text-slate-400 print-text-muted">
+            <span>Foreman: {{ voucher.crew_assignment.foreman_name }}</span>
+            <span>Date: {{ voucher.created_at[:10] }}</span>
+          </div>
+        </div>
+
+        <div class="border border-surface-border print-border rounded-xl p-4 space-y-6">
+          <span class="text-slate-400 print-text-muted block font-bold">GENERAL CONTRACTOR SETTLEMENT SIGN-OFF:</span>
+          <div class="border-b border-dashed border-slate-600 print-border pt-8"></div>
+          <div class="flex justify-between text-[11px] text-slate-400 print-text-muted">
+            <span>Operations Manager Sign-Off</span>
+            <span>Date: ____________</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Re-assign Crew Modal -->
+  <div id="reassign-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 no-print">
+    <div class="bg-surface-card max-w-lg w-full rounded-2xl p-6 border border-surface-border shadow-2xl relative">
+      <button onclick="document.getElementById('reassign-modal').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold">&times;</button>
+      <div class="flex items-center space-x-2.5 mb-4">
+        <div class="h-8 w-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">👥</div>
+        <div>
+          <h3 class="text-sm font-bold text-white tracking-tight">Assign / Update Subcontractor Crew</h3>
+          <span class="text-[10px] text-gray-400 font-mono">Compute 1099 labor settlement and net contractor profit</span>
+        </div>
+      </div>
+
+      <form method="POST" action="/api/v1/crews/assign/{{ action_id }}" class="space-y-3.5 text-xs font-mono">
+        <div>
+          <label class="block text-slate-400 uppercase text-[10px] mb-1">Crew Name</label>
+          <input type="text" name="crew_name" value="{{ voucher.crew_assignment.crew_name }}" class="w-full bg-[#0B0F19] border border-surface-border rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500" required>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 uppercase text-[10px] mb-1">Foreman Name</label>
+            <input type="text" name="foreman_name" value="{{ voucher.crew_assignment.foreman_name }}" class="w-full bg-[#0B0F19] border border-surface-border rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500" required>
+          </div>
+          <div>
+            <label class="block text-slate-400 uppercase text-[10px] mb-1">Foreman Phone</label>
+            <input type="text" name="foreman_phone" value="{{ voucher.crew_assignment.foreman_phone }}" class="w-full bg-[#0B0F19] border border-surface-border rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500" required>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 uppercase text-[10px] mb-1">Payout Type</label>
+            <select name="payout_type" class="w-full bg-[#0B0F19] border border-surface-border rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+              <option value="PERCENTAGE" {% if voucher.crew_assignment.payout_type == 'PERCENTAGE' %}selected{% endif %}>Percentage of Revenue (%)</option>
+              <option value="FLAT" {% if voucher.crew_assignment.payout_type == 'FLAT' %}selected{% endif %}>Flat Rate (USD)</option>
+              <option value="PIECE_RATE" {% if voucher.crew_assignment.payout_type == 'PIECE_RATE' %}selected{% endif %}>Piece Rate (Unit Price)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-400 uppercase text-[10px] mb-1">Rate Amount</label>
+            <input type="number" step="0.1" name="rate_amount" value="{{ voucher.crew_assignment.rate_amount }}" class="w-full bg-[#0B0F19] border border-surface-border rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500" required>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 uppercase text-[10px] mb-1">Scope of Work</label>
+          <textarea name="scope_summary" rows="2" class="w-full bg-[#0B0F19] border border-surface-border rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500">{{ voucher.scope_summary }}</textarea>
+        </div>
+
+        <div class="flex items-center justify-end space-x-3 pt-2">
+          <button type="button" onclick="document.getElementById('reassign-modal').classList.add('hidden')" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white">Cancel</button>
+          <button type="submit" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold">Update &amp; Recalculate</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statutory Mechanic's Lien Waiver | {{ waiver.waiver_number }} | {{ tenant.name }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            surface: {
+              base: '#0B0F19',
+              card: '#111827',
+              border: '#1E293B',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            serif: ['"Cinzel"', 'Georgia', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0B0F19;
+      color: #E2E8F0;
+    }
+    @media print {
+      body {
+        background-color: #FFFFFF !important;
+        color: #111827 !important;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .legal-paper {
+        background: #FFFFFF !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        color: #111827 !important;
+      }
+      .print-border {
+        border-color: #000000 !important;
+      }
+      .print-text-dark {
+        color: #000000 !important;
+      }
+      .print-text-muted {
+        color: #374151 !important;
+      }
+      .print-bg-subtle {
+        background-color: #F3F4F6 !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans antialiased selection:bg-blue-600 selection:text-white">
+
+  <!-- ==================== TOP ACTION BAR (SCREEN ONLY) ==================== -->
+  <header class="no-print border-b border-surface-border bg-surface-card/90 backdrop-blur sticky top-0 z-40 px-4 py-3 sm:px-6">
+    <div class="max-w-4xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 text-xl font-bold">📜</span>
+        <div>
+          <h1 class="text-sm sm:text-base font-bold text-white tracking-tight flex items-center gap-2">
+            Statutory Mechanic's Lien Waiver
+            <span class="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 font-mono">{{ waiver.waiver_number }}</span>
+          </h1>
+          <p class="text-xs text-slate-400 font-mono">{{ tenant.name }} • {{ waiver.statutory_jurisdiction }} Code Compliant</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button onclick="window.print()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-500 shadow-md transition flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+          Print / PDF Legal Waiver
+        </button>
+        <a href="/dashboard" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-white transition">
+          Dashboard
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN LEGAL DOCUMENT CONTAINER ==================== -->
+  <main class="max-w-4xl mx-auto px-4 py-8 sm:px-6">
+    <div class="legal-paper bg-surface-card border border-surface-border rounded-2xl p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+
+      <!-- Official Embossed Seal Watermark Background -->
+      <div class="absolute right-10 top-16 pointer-events-none opacity-5 no-print select-none">
+        <div class="w-72 h-72 rounded-full border-8 border-white flex items-center justify-center text-center font-serif text-2xl font-bold uppercase tracking-widest">
+          STATUTORY<br>LIEN WAIVER<br>SEAL
+        </div>
+      </div>
+
+      <!-- Legal Letterhead Header -->
+      <div class="border-b-2 border-slate-700 print-border pb-6 flex flex-col sm:flex-row justify-between items-start gap-4">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold text-white print-text-dark uppercase tracking-wide">{{ tenant.name }}</h2>
+          <p class="text-xs text-slate-400 print-text-muted mt-1">Licensed General & Specialty Trade Contractor</p>
+          <p class="text-xs text-slate-300 print-text-dark font-mono mt-0.5">License #: <strong class="text-white print-text-dark">{{ waiver.contractor_license_number }}</strong></p>
+        </div>
+        <div class="text-left sm:text-right">
+          <span class="inline-block px-3 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 text-xs font-mono font-bold print-border print-bg-subtle print-text-dark">
+            {{ waiver.waiver_number }}
+          </span>
+          <p class="text-xs text-slate-400 print-text-muted mt-1.5">Executed: <span class="font-mono text-slate-200 print-text-dark">{{ waiver.created_at[:10] if waiver.created_at else '2026-10-04' }}</span></p>
+        </div>
+      </div>
+
+      <!-- Document Title & Statutory Code Citation -->
+      <div class="text-center my-8">
+        <h3 class="text-lg sm:text-xl font-serif font-bold text-white print-text-dark tracking-wider uppercase underline underline-offset-4">
+          {% if waiver.waiver_type == 'FINAL_UNCONDITIONAL_RELEASE' %}
+            Unconditional Waiver and Release Upon Final Payment
+          {% else %}
+            Waiver and Release of Lien Upon Progress Payment
+          {% endif %}
+        </h3>
+        <p class="text-xs font-mono text-blue-400 print-text-dark mt-2 font-semibold tracking-wide">
+          Statutory Form Pursuant to {{ waiver.legal_code_citation }}
+        </p>
+        <p class="text-[11px] text-slate-400 print-text-muted mt-0.5">
+          Jurisdiction: {{ waiver.statutory_jurisdiction }} • Binding Legal Document
+        </p>
+      </div>
+
+      <!-- Formal Statement of Notice -->
+      <div class="p-4 rounded-xl bg-slate-900/60 print-bg-subtle border border-slate-700 print-border text-xs leading-relaxed text-slate-300 print-text-dark mb-6">
+        <strong class="font-bold text-white print-text-dark">NOTICE TO PROPERTY OWNER:</strong> THIS DOCUMENT WAIVES AND RELEASES CERTAIN RIGHTS UNCONDITIONALLY AND STATES THAT YOU HAVE BEEN PAID FOR GIVING UP THOSE RIGHTS. THIS DOCUMENT IS ENFORCEABLE AGAINST YOU ACCORDING TO ITS TERMS. DO NOT SIGN THIS DOCUMENT UNLESS YOU HAVE RECEIVED WRITTEN CONFIRMATION OF PAYMENT IN FULL.
+      </div>
+
+      <!-- Property & Job Details Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs mb-8 border border-slate-700 print-border rounded-xl p-4 bg-slate-900/30 print-bg-subtle">
+        <div>
+          <span class="text-slate-400 print-text-muted block text-[11px] uppercase tracking-wider">Property Owner / Customer:</span>
+          <span class="font-bold text-white print-text-dark text-sm">{{ waiver.customer_name }}</span>
+        </div>
+        <div>
+          <span class="text-slate-400 print-text-muted block text-[11px] uppercase tracking-wider">Consideration / Amount Waived:</span>
+          <span class="font-mono font-bold text-emerald-400 print-text-dark text-sm">
+            ${{ "%.2f"|format(waiver.amount_waived) }} USD
+          </span>
+        </div>
+        <div class="sm:col-span-2">
+          <span class="text-slate-400 print-text-muted block text-[11px] uppercase tracking-wider">Real Property Jobsite Location:</span>
+          <span class="font-semibold text-slate-200 print-text-dark">{{ waiver.property_address }}</span>
+        </div>
+      </div>
+
+      <!-- Legal Body & Release Clauses -->
+      <div class="space-y-4 text-xs leading-relaxed text-slate-300 print-text-dark text-justify">
+        <p>
+          The undersigned Contractor and Claimant, <strong class="text-white print-text-dark">{{ tenant.name }}</strong> (License #{{ waiver.contractor_license_number }}), in consideration of the total sum of <strong class="text-white print-text-dark">${{ "%.2f"|format(waiver.amount_waived) }}</strong>, receipt and sufficiency of which are hereby acknowledged, does hereby waive, release, remise, and quitclaim unto <strong class="text-white print-text-dark">{{ waiver.customer_name }}</strong>, and their heirs, successors, and assigns, any and all mechanic's liens, stop work notices, equitable liens, rights to file liens, or claims under the statutory mechanic's lien laws of <strong class="text-white print-text-dark">{{ waiver.statutory_jurisdiction }}</strong> (including specifically {{ waiver.legal_code_citation }}).
+        </p>
+        <p>
+          This waiver and release applies to all labor, professional services, materials, machinery, fixtures, tools, or equipment furnished by Claimant to or on account of said real property described as <strong class="text-white print-text-dark">{{ waiver.property_address }}</strong> through the date hereof.
+        </p>
+        <p>
+          Claimant warrants and represents that all subcontractors, laborers, materialmen, and equipment suppliers engaged by Claimant on the referenced improvement have been paid in full or will be paid in full from the proceeds received, and that no third-party claims or liens exist against the owner or the premises as a consequence of Claimant's scope of work.
+        </p>
+      </div>
+
+      <!-- Signature Blocks -->
+      <div class="mt-10 pt-6 border-t border-slate-700 print-border grid grid-cols-1 sm:grid-cols-2 gap-8">
+        <div>
+          <p class="text-[11px] uppercase tracking-wider text-slate-400 print-text-muted mb-6">Claimant / Authorized Contractor Representative:</p>
+          <div class="border-b border-slate-500 print-border h-12 flex items-end pb-1">
+            <span class="font-serif italic text-sm text-slate-300 print-text-dark">{{ tenant.name }} Officer</span>
+          </div>
+          <p class="text-xs text-slate-400 print-text-muted mt-1">Authorized Officer / Managing Member</p>
+          <p class="text-xs text-slate-400 print-text-muted mt-0.5">Date: <span class="font-mono text-slate-200 print-text-dark">{{ waiver.created_at[:10] if waiver.created_at else '2026-10-04' }}</span></p>
+        </div>
+
+        <div>
+          <p class="text-[11px] uppercase tracking-wider text-slate-400 print-text-muted mb-6">Contractor License Verification:</p>
+          <div class="p-3 rounded-lg border border-slate-700 print-border bg-slate-900/40 print-bg-subtle text-xs space-y-1">
+            <div><span class="text-slate-400 print-text-muted">Entity:</span> <strong class="text-white print-text-dark">{{ tenant.name }}</strong></div>
+            <div><span class="text-slate-400 print-text-muted">License:</span> <strong class="text-white print-text-dark font-mono">{{ waiver.contractor_license_number }}</strong></div>
+            <div><span class="text-slate-400 print-text-muted">Jurisdiction:</span> <strong class="text-white print-text-dark">{{ waiver.statutory_jurisdiction }}</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formal Notary Public Block -->
+      <div class="mt-10 pt-6 border-t-2 border-dashed border-slate-700 print-border">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 print-text-dark mb-3">
+          Notary Public Acknowledgment (State of {{ waiver.statutory_jurisdiction if waiver.statutory_jurisdiction in ['DC', 'VA', 'MD'] else 'Maryland' }})
+        </h4>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs text-slate-400 print-text-muted">
+          <div class="sm:col-span-2 space-y-3 leading-relaxed">
+            <p>
+              State of <span class="text-slate-200 print-text-dark font-medium underline underline-offset-2">{{ 'District of Columbia' if waiver.statutory_jurisdiction == 'DC' else 'Virginia' if waiver.statutory_jurisdiction == 'VA' else 'Maryland' }}</span>, County / City of <span class="text-slate-200 print-text-dark font-medium underline underline-offset-2">{{ 'Washington' if waiver.statutory_jurisdiction == 'DC' else 'Fairfax' if waiver.statutory_jurisdiction == 'VA' else 'Montgomery' }}</span>, to wit:
+            </p>
+            <p>
+              On this <span class="text-slate-200 print-text-dark underline underline-offset-2">04</span> day of <span class="text-slate-200 print-text-dark underline underline-offset-2">October</span>, 2026, before me, the undersigned notary public, personally appeared the authorized representative of <strong class="text-white print-text-dark">{{ tenant.name }}</strong>, known to me (or satisfactorily proven) to be the person whose name is subscribed to the within instrument, and acknowledged that they executed the same for the purposes therein contained.
+            </p>
+            <div class="pt-4 flex items-center gap-4">
+              <div>
+                <div class="border-b border-slate-500 print-border w-48 h-8"></div>
+                <span class="text-[10px] text-slate-500 print-text-muted">Notary Public Signature</span>
+              </div>
+              <div>
+                <div class="border-b border-slate-500 print-border w-36 h-8"></div>
+                <span class="text-[10px] text-slate-500 print-text-muted">Commission Exp. Date</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Official Stamp Box -->
+          <div class="border-2 border-dashed border-slate-600 print-border rounded-xl p-4 flex flex-col items-center justify-center text-center">
+            <span class="text-2xl mb-1 opacity-50">🏛️</span>
+            <span class="text-[10px] font-mono uppercase tracking-wider text-slate-400 print-text-dark">[ NOTARY SEAL / STAMP ]</span>
+            <span class="text-[9px] text-slate-500 print-text-muted mt-2">Affix official state seal or stamp here</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+</body>
+</html>

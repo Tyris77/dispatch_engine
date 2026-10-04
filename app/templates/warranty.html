@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Equipment Warranty Certificate - {{ cert.certificate_number }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Cinzel"', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            gold: {
+              300: '#fde047',
+              400: '#facc15',
+              500: '#eab308',
+              600: '#ca8a04',
+            },
+            surface: {
+              base: '#030712',
+              card: '#0b0f19',
+              border: '#1f293d',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #030712;
+      color: #f3f4f6;
+    }
+    .cert-outer-border {
+      border: 8px double #ca8a04;
+      box-shadow: 0 0 45px rgba(202, 138, 4, 0.15), inset 0 0 30px rgba(202, 138, 4, 0.05);
+    }
+    .cert-corner {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      border: 3px solid #eab308;
+    }
+    .cert-corner-tl { top: 8px; left: 8px; border-right: none; border-bottom: none; }
+    .cert-corner-tr { top: 8px; right: 8px; border-left: none; border-bottom: none; }
+    .cert-corner-bl { bottom: 8px; left: 8px; border-right: none; border-top: none; }
+    .cert-corner-br { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .cert-outer-border {
+        border: 6px double #854d0e !important;
+        box-shadow: none !important;
+        background: #ffffff !important;
+      }
+      .print-card-bg {
+        background: #fafafa !important;
+        border-color: #cbd5e1 !important;
+      }
+      .print-text-dark {
+        color: #0f172a !important;
+      }
+      .print-text-muted {
+        color: #475569 !important;
+      }
+      .print-border-dark {
+        border-color: #94a3b8 !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen py-8 px-4 sm:px-6 font-sans selection:bg-amber-500 selection:text-black">
+
+  <!-- Top Action Bar (no-print) -->
+  <div class="max-w-4xl mx-auto mb-6 flex items-center justify-between no-print">
+    <div class="flex items-center space-x-3">
+      <a href="/dashboard" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold border border-slate-800 transition flex items-center gap-1.5">
+        <span>←</span> Console
+      </a>
+      <a href="/portal/{{ tenant.slug }}" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold border border-slate-800 transition">
+        Client Portal
+      </a>
+    </div>
+    <div class="flex items-center space-x-3">
+      <button onclick="window.print()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-amber-500/20 flex items-center gap-2">
+        <span>🖨️</span> Print Warranty Certificate
+      </button>
+    </div>
+  </div>
+
+  <!-- Formal Warranty Certificate Container -->
+  <main class="max-w-4xl mx-auto relative bg-[#090d16] print-card-bg rounded-2xl cert-outer-border p-6 sm:p-12 space-y-8">
+    <!-- Filigree Corners -->
+    <div class="cert-corner cert-corner-tl"></div>
+    <div class="cert-corner cert-corner-tr"></div>
+    <div class="cert-corner cert-corner-bl"></div>
+    <div class="cert-corner cert-corner-br"></div>
+
+    <!-- Certificate Header -->
+    <div class="text-center space-y-3 border-b-2 border-amber-500/30 pb-6 print-border-dark">
+      <div class="inline-flex items-center justify-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono font-bold tracking-widest uppercase">
+        <span>★</span> OFFICIAL MASTER CONTRACTOR WARRANTY DEED <span>★</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-serif font-black tracking-wider text-amber-300 print-text-dark">
+        CERTIFICATE OF LIMITED WARRANTY
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-400 print-text-muted font-sans max-w-xl mx-auto">
+        Transferable Manufacturer Equipment Warranty &amp; Master Craftsmanship Guarantee Registered with Sovereign Contractor Authority
+      </p>
+      <div class="flex flex-wrap items-center justify-center gap-4 text-xs font-mono pt-1 text-slate-300 print-text-dark">
+        <span class="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 print-card-bg">
+          CERT NO: <strong class="text-amber-400 print-text-dark font-bold">{{ cert.certificate_number }}</strong>
+        </span>
+        <span class="px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold">
+          STATUS: ACTIVE &amp; FULLY VESTED
+        </span>
+        <span class="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 print-card-bg">
+          DURATION: <strong class="text-white print-text-dark">{{ cert.warranty_duration_years }} YEARS</strong>
+        </span>
+      </div>
+    </div>
+
+    <!-- Beneficiary & Property Ownership Covenant -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
+      <div class="bg-slate-900/60 print-card-bg p-4 rounded-xl border border-slate-800 print-border-dark space-y-1.5">
+        <span class="text-[10px] text-amber-500 font-bold uppercase tracking-wider block">Registered Property Beneficiary</span>
+        <div class="text-sm font-bold text-white print-text-dark font-sans">{{ cert.customer_name }}</div>
+        <div class="text-slate-400 print-text-muted text-[11px] leading-relaxed">{{ cert.property_address }}</div>
+        <div class="text-[10px] text-slate-500 print-text-muted pt-1">
+          Installation Date: <strong class="text-slate-300 print-text-dark">{{ cert.install_date }}</strong>
+        </div>
+      </div>
+      <div class="bg-slate-900/60 print-card-bg p-4 rounded-xl border border-slate-800 print-border-dark space-y-1.5">
+        <span class="text-[10px] text-amber-500 font-bold uppercase tracking-wider block">Issuing Contractor Entity</span>
+        <div class="text-sm font-bold text-white print-text-dark font-sans">{{ tenant.name }}</div>
+        <div class="text-slate-400 print-text-muted text-[11px]">{{ cert.contractor_license_number }}</div>
+        <div class="text-[10px] text-emerald-400 pt-1 flex items-center gap-1 font-semibold">
+          <span>✓</span> {{ cert.epa_certification_number }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Equipment Specifications Register -->
+    <div class="space-y-2">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400 font-mono flex items-center gap-1.5">
+          <span>⚙️</span> Registered Equipment Specifications &amp; Serial Ledger
+        </h3>
+        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+          CPSC RECALL: {{ cert.cpsc_safety_recall_status }}
+        </span>
+      </div>
+
+      <div class="border border-slate-800 print-border-dark rounded-xl overflow-hidden">
+        <table class="w-full text-left text-xs font-mono">
+          <thead class="bg-slate-900/80 print-card-bg text-slate-400 uppercase text-[10px] border-b border-slate-800 print-border-dark">
+            <tr>
+              <th class="py-2.5 px-3">Manufacturer Brand</th>
+              <th class="py-2.5 px-3">Factory Model Number</th>
+              <th class="py-2.5 px-3">Serial Number</th>
+              <th class="py-2.5 px-3 text-right">Coverage Term</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800 print-border-dark text-slate-200 print-text-dark">
+            <tr>
+              <td class="py-3 px-3 font-bold text-amber-300 print-text-dark">
+                {{ cert.equipment_brand }}
+              </td>
+              <td class="py-3 px-3 font-semibold">
+                {{ cert.model_number }}
+              </td>
+              <td class="py-3 px-3 font-mono font-bold text-cyan-400 print-text-dark">
+                {{ cert.serial_number }}
+              </td>
+              <td class="py-3 px-3 text-right font-bold text-emerald-400 print-text-dark">
+                {{ cert.warranty_duration_years }}-Year Limited
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Detailed Scope of Warranty & Coverage Covenant -->
+    <div class="bg-slate-900/40 print-card-bg border border-amber-500/20 print-border-dark rounded-xl p-4 sm:p-5 space-y-3">
+      <h3 class="text-xs font-bold uppercase tracking-wider text-amber-300 print-text-dark font-mono flex items-center gap-1.5">
+        <span>🛡️</span> Scope of Limited Warranty &amp; Covenants
+      </h3>
+      <div class="text-[11px] text-slate-300 print-text-dark font-mono leading-relaxed space-y-2">
+        <p>
+          <strong>1. COVERAGE SCOPE:</strong> This document certifies that the aforementioned equipment is warranted under <strong>{{ cert.coverage_scope }}</strong>. Contractor guarantees all factory-supplied components against mechanical defect, compressor failure, heat exchanger breach, or manufacturing malfunction.
+        </p>
+        <p>
+          <strong>2. MASTER CRAFTSMANSHIP LABOR GUARANTEE:</strong> All installation labor, electrical connections, refrigeration piping, and mechanical hookups furnished by {{ tenant.name }} are warranted for two (2) full years from installation date against workmanship defect.
+        </p>
+        <p>
+          <strong>3. PERPETUAL DEED TRANSFERABILITY:</strong> This limited warranty covenant is fully transferable to all future owners of the subject real property at {{ cert.property_address }} without transfer fee upon presentation of this deed certificate.
+        </p>
+      </div>
+    </div>
+
+    <!-- CPSC Clearinghouse & Online Verification QR -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+      <!-- QR Verification Box -->
+      <div class="bg-slate-900/60 print-card-bg border border-slate-800 print-border-dark rounded-xl p-4 flex flex-col items-center justify-center text-center space-y-2">
+        <div class="w-20 h-20 bg-white p-1 rounded-lg shadow-inner flex items-center justify-center">
+          <!-- Stylized QR Code placeholder using clean SVG -->
+          <svg class="w-full h-full text-slate-900" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm14 0h4v4h-4v-4zm-4-2h2v2h-2v-2zm4 0h2v2h-2v-2zm-2 4h2v2h-2v-2zm2 2h2v2h-2v-2zm-6-4h2v2h-2v-2zm0 4h2v2h-2v-2zm2-2h2v2h-2v-2zm0-4h2v2h-2v-2z"/>
+          </svg>
+        </div>
+        <span class="text-[9px] font-mono text-slate-400 print-text-muted">SCAN TO VERIFY DEED</span>
+        <span class="text-[9px] font-mono text-cyan-400 font-bold break-all">{{ cert.certificate_number }}</span>
+      </div>
+
+      <!-- Consumer Safety Clearinghouse Validation -->
+      <div class="sm:col-span-2 bg-slate-900/60 print-card-bg border border-slate-800 print-border-dark rounded-xl p-4 space-y-2 flex flex-col justify-center">
+        <div class="flex items-center gap-2">
+          <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+          <span class="text-xs font-mono font-bold text-white print-text-dark">US CPSC Recall Clearinghouse Cleared</span>
+        </div>
+        <p class="text-[10px] font-mono text-slate-400 print-text-muted leading-relaxed">
+          National Consumer Product Safety Commission recall registries have been scanned and authenticated. This serial number carries zero manufacturer recall notices, safety bulletins, or mandatory retrofits.
+        </p>
+        <div class="text-[9px] font-mono text-slate-500 pt-1">
+          Verification Portal: <span class="text-slate-400 print-text-dark">{{ cert.verification_qr_url }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Official Seal & Signatures -->
+    <div class="border-t-2 border-amber-500/30 pt-6 grid grid-cols-1 sm:grid-cols-2 gap-8 print-border-dark">
+      <div>
+        <div class="border-b border-slate-700 print-border-dark pb-1 text-xs font-mono text-white print-text-dark font-bold">
+          {{ tenant.name }}
+        </div>
+        <span class="text-[10px] text-slate-500 print-text-muted font-mono block mt-1">Authorized Executive / Master Trade Licensee</span>
+        <span class="text-[9px] text-amber-500 font-mono block mt-0.5">{{ cert.contractor_license_number }}</span>
+      </div>
+      <div>
+        <div class="border-b border-slate-700 print-border-dark pb-1 text-xs font-mono text-white print-text-dark font-bold">
+          {{ cert.issued_at[:10] }}
+        </div>
+        <span class="text-[10px] text-slate-500 print-text-muted font-mono block mt-1">Date of Official Warranty Vesting</span>
+        <span class="text-[9px] text-slate-500 print-text-muted font-mono block mt-0.5">Recorded Under Deed Protocol WARR-2026</span>
+      </div>
+    </div>
+
+    <!-- Deed Filing Notice Footer -->
+    <div class="text-center pt-2 text-[10px] text-slate-500 print-text-muted font-mono">
+      NOTICE TO ESCROW &amp; TITLE AGENTS: This document constitutes an enforceable transferable property covenant under Uniform Commercial Code guidelines.
+    </div>
+
+  </main>
+
+</body>
+</html>

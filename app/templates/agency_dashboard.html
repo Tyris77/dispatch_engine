@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agency White-Label & Multi-Tenant Console | {{ overview.agency_profile.agency_name }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            surface: {
+              base: '#0B0F19',
+              card: '#111827',
+              border: '#1E293B',
+            },
+            agency: {
+              primary: '{{ overview.agency_profile.brand_color or "#6366F1" }}',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0B0F19;
+      color: #F3F4F6;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="border-b border-surface-border bg-surface-card/90 backdrop-blur sticky top-0 z-40 px-4 py-3 sm:px-6">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3.5">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 p-[1px] shadow-lg shadow-indigo-500/20">
+          <div class="w-full h-full bg-slate-950 rounded-xl flex items-center justify-center font-black text-indigo-400 text-sm">
+            🏢
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-sm sm:text-base font-bold text-white tracking-tight">{{ overview.agency_profile.agency_name }}</h1>
+            <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+              ENTERPRISE AGENCY HQ
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 font-mono flex items-center space-x-2 mt-0.5">
+            <span>Domain: <strong class="text-slate-300">{{ overview.agency_profile.custom_domain or 'Custom Domain Pending' }}</strong></span>
+            <span>•</span>
+            <span class="text-emerald-400 flex items-center space-x-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>Multi-Tenant Network Active</span>
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <a href="/dashboard" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-white transition">
+          Operations Console
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 space-y-6">
+
+    {% if message %}
+    <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-200 text-xs flex items-center gap-2 shadow-lg">
+      <span class="text-emerald-400 font-bold">✓</span>
+      <span>{{ message }}</span>
+    </div>
+    {% endif %}
+
+    <!-- 4 Aggregate KPI Stat Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <!-- Total Managed Tenants -->
+      <div class="bg-surface-card border border-surface-border rounded-2xl p-5 shadow-lg relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono uppercase tracking-wider text-slate-400">Contractors</span>
+          <span class="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 text-sm">👥</span>
+        </div>
+        <p class="text-3xl font-black font-mono text-white mt-3">{{ overview.total_managed_tenants }}</p>
+        <span class="text-[11px] text-slate-400 mt-1 block font-mono">Managed trade businesses</span>
+      </div>
+
+      <!-- Inbound Calls & Leads -->
+      <div class="bg-surface-card border border-surface-border rounded-2xl p-5 shadow-lg relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono uppercase tracking-wider text-slate-400">Calls Ingested</span>
+          <span class="p-2 rounded-xl bg-blue-500/10 text-blue-400 text-sm">📞</span>
+        </div>
+        <p class="text-3xl font-black font-mono text-white mt-3">{{ overview.total_calls_ingested }}</p>
+        <span class="text-[11px] text-slate-400 mt-1 block font-mono">Inbound phone & webhook leads</span>
+      </div>
+
+      <!-- Emergencies Bridged -->
+      <div class="bg-surface-card border border-surface-border rounded-2xl p-5 shadow-lg relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono uppercase tracking-wider text-slate-400">Emergencies Bridged</span>
+          <span class="p-2 rounded-xl bg-rose-500/10 text-rose-400 text-sm">⚡</span>
+        </div>
+        <p class="text-3xl font-black font-mono text-rose-400 mt-3">{{ overview.total_emergencies_bridged }}</p>
+        <span class="text-[11px] text-slate-400 mt-1 block font-mono">Transferred directly to on-call techs</span>
+      </div>
+
+      <!-- Aggregate MRR -->
+      <div class="bg-surface-card border border-surface-border rounded-2xl p-5 shadow-lg relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono uppercase tracking-wider text-slate-400">Aggregate MRR</span>
+          <span class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 text-sm">💰</span>
+        </div>
+        <p class="text-3xl font-black font-mono text-emerald-400 mt-3">${{ "{:,.0f}".format(overview.aggregate_mrr) }}</p>
+        <span class="text-[11px] text-slate-400 mt-1 block font-mono">Monthly Recurring Revenue</span>
+      </div>
+
+    </div>
+
+    <!-- Managed Contractor Directory Table -->
+    <div class="bg-surface-card border border-surface-border rounded-2xl p-6 shadow-xl space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <span>📋</span> Contractor Client Directory
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">Active field trade accounts under {{ overview.agency_profile.agency_name }} management.</p>
+        </div>
+        <span class="text-xs font-mono text-indigo-400 font-semibold">{{ overview.active_tenants|length }} Accounts</span>
+      </div>
+
+      <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left text-xs">
+          <thead class="border-b border-slate-800 text-slate-400 uppercase font-mono text-[10px]">
+            <tr>
+              <th class="py-3 px-3">Contractor Company</th>
+              <th class="py-3 px-3">Trade</th>
+              <th class="py-3 px-3">Monthly Retainer</th>
+              <th class="py-3 px-3">Inbound Calls</th>
+              <th class="py-3 px-3">Emergency Rate</th>
+              <th class="py-3 px-3">COI Status</th>
+              <th class="py-3 px-3 text-right">Quick Links</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800 text-slate-300">
+            {% for t in overview.active_tenants %}
+            <tr class="hover:bg-slate-900/60 transition">
+              <td class="py-3.5 px-3">
+                <div class="font-bold text-white">{{ t.tenant_name }}</div>
+                <div class="text-[11px] font-mono text-slate-400">{{ t.tenant_slug }}</div>
+              </td>
+              <td class="py-3.5 px-3 font-mono">
+                <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">
+                  {{ t.trade_category }}
+                </span>
+              </td>
+              <td class="py-3.5 px-3 font-mono font-bold text-emerald-400">
+                ${{ "{:,.0f}".format(t.monthly_retainer) }}/mo
+              </td>
+              <td class="py-3.5 px-3 font-mono">{{ t.total_calls_ingested }}</td>
+              <td class="py-3.5 px-3 font-mono">
+                <span class="{% if t.emergency_rate_pct > 20 %}text-rose-400 font-bold{% else %}text-slate-300{% endif %}">
+                  {{ t.emergency_rate_pct }}%
+                </span>
+              </td>
+              <td class="py-3.5 px-3">
+                <span class="px-2 py-0.5 rounded font-mono text-[10px] font-bold
+                  {% if t.coi_status == 'ACTIVE_COMPLIANT' %}
+                    bg-emerald-500/20 text-emerald-300 border border-emerald-500/30
+                  {% elif t.coi_status == 'EXPIRED' %}
+                    bg-rose-500/20 text-rose-300 border border-rose-500/30
+                  {% else %}
+                    bg-amber-500/20 text-amber-300 border border-amber-500/30
+                  {% endif %}">
+                  {{ t.coi_status }}
+                </span>
+              </td>
+              <td class="py-3.5 px-3 text-right space-x-1.5 font-mono">
+                <a href="/portal/{{ t.tenant_slug }}" class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:bg-slate-700 transition text-[11px]">
+                  Portal
+                </a>
+                <a href="/coi/{{ t.tenant_slug }}" class="px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-300 hover:bg-emerald-900 border border-emerald-800 transition text-[11px]">
+                  COI Guard
+                </a>
+                <a href="/tools/{{ t.tenant_slug }}" class="px-2.5 py-1 rounded-lg bg-amber-950 text-amber-300 hover:bg-amber-900 border border-amber-800 transition text-[11px]">
+                  Van Assets
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bottom Row: 1-Click Onboard Tenant & White-Label Branding Controls -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      <!-- 1-Click New Contractor Onboarding Form -->
+      <div class="bg-surface-card border border-surface-border rounded-2xl p-6 shadow-xl space-y-4">
+        <div>
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <span>🚀</span> 1-Click Contractor Onboarding
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">Provision an isolated multi-tenant dispatch instance with dedicated API key and webhook secret.</p>
+        </div>
+
+        <form action="/agency/onboard" method="POST" class="space-y-3.5">
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Company Legal Name</label>
+            <input type="text" name="name" required placeholder="e.g. Paramount Mechanical Pros" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs font-semibold text-slate-300 block mb-1">Tenant Slug (URL Safe)</label>
+              <input type="text" name="slug" required placeholder="paramount-mechanical" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-slate-300 block mb-1">Primary Trade</label>
+              <select name="trade_category" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                <option value="HVAC">HVAC & Heat Pumps</option>
+                <option value="Plumbing">Plumbing & Drains</option>
+                <option value="Roofing">Commercial & Residential Roofing</option>
+                <option value="Electrical">Electrical & Lighting</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs font-semibold text-slate-300 block mb-1">Owner Contact Email</label>
+              <input type="email" name="contact_email" required placeholder="ops@contractor.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-slate-300 block mb-1">Monthly Retainer ($)</label>
+              <input type="number" step="0.01" name="monthly_retainer" value="799.00" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-indigo-500">
+            </div>
+          </div>
+
+          <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-xs uppercase tracking-wider hover:from-indigo-500 hover:to-purple-500 transition shadow-lg shadow-indigo-600/20">
+            ⚡ Provision New Contractor Account
+          </button>
+        </form>
+      </div>
+
+      <!-- White-Label Branding Controls -->
+      <div class="bg-surface-card border border-surface-border rounded-2xl p-6 shadow-xl space-y-4">
+        <div>
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <span>🎨</span> Agency White-Label Branding
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">Customize client-facing portal headers, custom CNAME domain, and brand color palette.</p>
+        </div>
+
+        <form action="/agency/branding" method="POST" class="space-y-3.5">
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Agency / Franchise Brand Name</label>
+            <input type="text" name="agency_name" value="{{ overview.agency_profile.agency_name }}" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs font-semibold text-slate-300 block mb-1">Brand Hex Color</label>
+              <div class="flex items-center gap-2">
+                <input type="color" name="brand_color" value="{{ overview.agency_profile.brand_color }}" class="w-8 h-8 rounded-lg border-0 bg-transparent cursor-pointer">
+                <input type="text" name="brand_color_text" value="{{ overview.agency_profile.brand_color }}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs font-mono text-white">
+              </div>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-slate-300 block mb-1">Custom CNAME Domain</label>
+              <input type="text" name="custom_domain" value="{{ overview.agency_profile.custom_domain or '' }}" placeholder="dispatch.yourbrand.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+            </div>
+          </div>
+
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Agency Support Email</label>
+            <input type="email" name="contact_email" value="{{ overview.agency_profile.contact_email }}" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+          </div>
+
+          <button type="submit" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider border border-slate-700 transition">
+            💾 Save White-Label Settings
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+  </main>
+
+</body>
+</html>

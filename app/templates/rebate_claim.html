@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Utility Rebate & Federal IRA Claim Form — {{ dossier.claim_id }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0B0F19;
+      color: #f3f4f6;
+    }
+    .glass-card {
+      background: #111827;
+      border: 1px solid rgba(55, 65, 81, 0.7);
+    }
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #111827 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-border {
+        border: 1px solid #d1d5db !important;
+        background: #ffffff !important;
+        color: #111827 !important;
+      }
+      .print-text-dark {
+        color: #111827 !important;
+      }
+      .print-text-muted {
+        color: #4b5563 !important;
+      }
+      .print-bg-light {
+        background: #f9fafb !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4 sm:p-6 md:p-8 font-sans antialiased selection:bg-emerald-500 selection:text-white">
+
+  <div class="max-w-4xl mx-auto space-y-6">
+
+    <!-- Top Navigation & Action Controls -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-gray-800 no-print">
+      <div class="flex items-center space-x-3">
+        <a href="/portal/{{ dossier.tenant_slug }}" class="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+        </a>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">🌱 Official Utility Rebate &amp; IRA Tax Claim</h1>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono">
+              {{ dossier.status }}
+            </span>
+          </div>
+          <p class="text-xs text-gray-400">Pre-filled certification dossier ready for utility submission &amp; IRS Form 5695 filing</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center space-x-3 w-full sm:w-auto">
+        <a
+          href="?format=json"
+          target="_blank"
+          class="px-3.5 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white rounded-xl text-xs font-bold font-mono transition border border-gray-700"
+        >
+          { JSON Data }
+        </a>
+        <button
+          onclick="window.print()"
+          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-lg shadow-emerald-900/40"
+        >
+          <span>🖨️</span>
+          <span>Print / Save PDF</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Official Claim Document Card -->
+    <div class="glass-card print-border rounded-2xl p-6 sm:p-8 space-y-6">
+
+      <!-- Header & Verification Badges -->
+      <div class="flex flex-col sm:flex-row justify-between items-start gap-4 border-b border-gray-800 pb-6">
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="text-2xl">⚡</span>
+            <span class="text-lg font-black tracking-tight text-white print-text-dark">RESIDENTIAL CLEAN ENERGY INCENTIVE CERTIFICATE</span>
+          </div>
+          <p class="text-xs text-emerald-400 font-mono mt-1 font-semibold">
+            AHRI CERTIFIED REFERENCE: {{ dossier.ahri_certificate_number }}
+          </p>
+        </div>
+        <div class="text-left sm:text-right font-mono text-xs">
+          <p class="text-gray-400 print-text-muted">Claim Reference #:</p>
+          <p class="text-white print-text-dark font-bold text-sm">{{ dossier.claim_id }}</p>
+          <p class="text-gray-500 text-[11px] mt-0.5">Commission Date: {{ dossier.installation_date }}</p>
+        </div>
+      </div>
+
+      <!-- Two-Column Participant & Property Information -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+
+        <!-- Property Owner / Claimant -->
+        <div class="p-4 rounded-xl bg-gray-900/60 print-bg-light border border-gray-800 space-y-2">
+          <div class="flex items-center justify-between pb-2 border-b border-gray-800">
+            <span class="font-bold text-gray-200 print-text-dark uppercase tracking-wider text-[11px]">Property Owner / Claimant</span>
+            <span class="px-2 py-0.5 rounded bg-emerald-900/50 text-emerald-300 text-[10px] font-mono">Eligible</span>
+          </div>
+          <div class="space-y-1 pt-1">
+            <p><strong class="text-gray-400 print-text-muted">Homeowner:</strong> <span class="text-white print-text-dark font-medium">{{ dossier.customer_name }}</span></p>
+            <p><strong class="text-gray-400 print-text-muted">Phone:</strong> <span class="text-white print-text-dark font-mono">{{ dossier.customer_phone }}</span></p>
+            <p><strong class="text-gray-400 print-text-muted">Service Address:</strong> <span class="text-white print-text-dark">{{ dossier.service_address }}</span></p>
+            <p><strong class="text-gray-400 print-text-muted">Electric / Gas Utility:</strong> <span class="text-emerald-400 font-semibold">{{ dossier.utility_provider }}</span></p>
+          </div>
+        </div>
+
+        <!-- Licensed Mechanical Contractor -->
+        <div class="p-4 rounded-xl bg-gray-900/60 print-bg-light border border-gray-800 space-y-2">
+          <div class="flex items-center justify-between pb-2 border-b border-gray-800">
+            <span class="font-bold text-gray-200 print-text-dark uppercase tracking-wider text-[11px]">Authorized Participating Contractor</span>
+            <span class="px-2 py-0.5 rounded bg-blue-900/50 text-blue-300 text-[10px] font-mono">Certified</span>
+          </div>
+          <div class="space-y-1 pt-1">
+            <p><strong class="text-gray-400 print-text-muted">Contractor Firm:</strong> <span class="text-white print-text-dark font-medium">{{ dossier.tenant_name }}</span></p>
+            <p><strong class="text-gray-400 print-text-muted">Master License #:</strong> <span class="text-white print-text-dark font-mono font-semibold">{{ dossier.contractor_license }}</span></p>
+            <p><strong class="text-gray-400 print-text-muted">Business Phone:</strong> <span class="text-white print-text-dark font-mono">{{ dossier.contractor_phone }}</span></p>
+            <p><strong class="text-gray-400 print-text-muted">HQ Address:</strong> <span class="text-white print-text-dark">{{ dossier.contractor_address }}</span></p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Equipment Details & AHRI Certification -->
+      <div class="p-4 rounded-xl bg-gray-900/80 print-bg-light border border-gray-800 space-y-3">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-300 print-text-dark flex items-center space-x-1.5">
+          <span>🔧</span>
+          <span>Verified Energy Star Equipment Installed</span>
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
+          <div>
+            <p class="text-gray-500 print-text-muted text-[10px]">Equipment Type</p>
+            <p class="text-white print-text-dark font-semibold">{{ dossier.installed_equipment_type }}</p>
+          </div>
+          <div>
+            <p class="text-gray-500 print-text-muted text-[10px]">Brand / Series</p>
+            <p class="text-white print-text-dark font-semibold">{{ dossier.installed_equipment_brand }}</p>
+          </div>
+          <div>
+            <p class="text-gray-500 print-text-muted text-[10px]">Model Number</p>
+            <p class="text-emerald-400 font-bold">{{ dossier.installed_equipment_model }}</p>
+          </div>
+          <div>
+            <p class="text-gray-500 print-text-muted text-[10px]">Serial Number</p>
+            <p class="text-white print-text-dark font-semibold">{{ dossier.installed_equipment_serial }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Itemized Qualifying Rebate Programs Table -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-300 print-text-dark flex items-center space-x-1.5">
+            <span>💰</span>
+            <span>Itemized Incentive Programs &amp; Tax Credits</span>
+          </h3>
+          <span class="text-xs text-gray-400 print-text-muted font-mono">{{ dossier.programs | length }} Qualified Program(s)</span>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-gray-800">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-gray-900/90 print-bg-light text-gray-400 print-text-muted uppercase text-[10px] font-mono border-b border-gray-800">
+              <tr>
+                <th class="py-3 px-4">Program &amp; Authority</th>
+                <th class="py-3 px-4">Utility / Agency</th>
+                <th class="py-3 px-4">Efficiency Qualification Standard</th>
+                <th class="py-3 px-4 text-right">Rebate / Credit</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800/60 font-sans">
+              {% for prog in dossier.programs %}
+              <tr class="hover:bg-gray-900/40">
+                <td class="py-3 px-4 font-semibold text-white print-text-dark">{{ prog.program_name }}</td>
+                <td class="py-3 px-4 font-mono text-gray-300 print-text-dark">{{ prog.utility_provider }}</td>
+                <td class="py-3 px-4 text-gray-400 print-text-muted text-[11px]">{{ prog.efficiency_criteria }}</td>
+                <td class="py-3 px-4 text-right font-mono font-bold text-emerald-400 text-sm">
+                  ${{ "{:,.2f}".format(prog.rebate_amount) }}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot class="bg-gray-900/80 print-bg-light border-t-2 border-emerald-600/40 font-mono">
+              <tr>
+                <td colspan="3" class="py-3.5 px-4 font-bold text-gray-200 print-text-dark text-right text-xs uppercase">
+                  Total Eligible Clean Energy Rebates &amp; Tax Credits:
+                </td>
+                <td class="py-3.5 px-4 text-right font-black text-emerald-400 text-base">
+                  ${{ "{:,.2f}".format(dossier.total_rebate_amount) }}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- Legal Affidavit & Certification -->
+      <div class="p-4 rounded-xl bg-gray-900/40 print-bg-light border border-gray-800 text-[11px] text-gray-400 print-text-muted space-y-2">
+        <p class="font-bold text-gray-300 print-text-dark uppercase tracking-wider text-[10px]">
+          Contractor &amp; Customer Filing Affidavit
+        </p>
+        <p class="leading-relaxed">
+          The contractor certifies under penalty of perjury that the equipment detailed above has been installed in full compliance with all local building codes, manufacturer specifications, and applicable AHRI energy standards. The property owner certifies that this residential installation meets all federal IRA Section 25C and local utility incentive guidelines.
+        </p>
+      </div>
+
+      <!-- Dual Signature Block -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-4 border-t border-gray-800 text-xs">
+        <div>
+          <div class="h-14 border-b-2 border-gray-700 flex items-end pb-1 font-mono text-gray-400 print-text-dark italic">
+            Certified Master Mechanical Contractor
+          </div>
+          <div class="flex justify-between text-[11px] text-gray-500 mt-1">
+            <span>Authorized Contractor Signature</span>
+            <span>Date: {{ dossier.installation_date }}</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="h-14 border-b-2 border-gray-700 flex items-end pb-1 font-mono text-gray-400 print-text-dark italic">
+            {{ dossier.customer_name }}
+          </div>
+          <div class="flex justify-between text-[11px] text-gray-500 mt-1">
+            <span>Homeowner / Applicant Signature</span>
+            <span>Date: {{ dossier.installation_date }}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Print Footer Notice -->
+    <div class="text-center text-xs text-gray-500 font-mono no-print">
+      Attach contractor paid invoice receipt and AHRI certification sheet when mailing physical utility rebate vouchers.
+    </div>
+
+  </div>
+
+</body>
+</html>

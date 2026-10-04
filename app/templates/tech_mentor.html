@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ tenant.name }} — Field Tech AI Diagnostic Mentor &amp; Fault Copilot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0B0F19;
+      color: #f3f4f6;
+    }
+    .glass-card {
+      background: #111827;
+      border: 1px solid rgba(55, 65, 81, 0.7);
+    }
+    .pulse-mic {
+      animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen p-3 sm:p-6 font-sans antialiased selection:bg-cyan-500 selection:text-black">
+
+  <div class="max-w-3xl mx-auto space-y-5">
+
+    <!-- Top Header Bar -->
+    <header class="flex items-center justify-between pb-3 border-b border-gray-800">
+      <div class="flex items-center space-x-3">
+        <a href="/dashboard?tenant={{ tenant.slug }}" class="p-2 rounded-xl bg-gray-900 hover:bg-gray-800 border border-gray-800 text-gray-400 hover:text-white transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+        </a>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">💡</span>
+            <h1 class="text-lg sm:text-xl font-extrabold text-white tracking-tight">Field Tech AI Mentor</h1>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-950 text-cyan-400 border border-cyan-800 font-mono">
+              v2.5 FLASH
+            </span>
+          </div>
+          <p class="text-xs text-gray-400">{{ tenant.name }} — On-Site Diagnostics &amp; Multimeter Pinouts</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2 font-mono text-xs">
+        <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] font-bold">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+          <span>COPILOT READY</span>
+        </span>
+      </div>
+    </header>
+
+    <!-- Query Input & Voice Dictation Card -->
+    <div class="glass-card rounded-2xl p-4 sm:p-6 space-y-4 shadow-xl shadow-black/40">
+      
+      <div class="space-y-1">
+        <label class="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center justify-between">
+          <span>Equipment Brand &amp; Fault Code / Symptoms</span>
+          <span class="text-[10px] text-gray-500 font-normal">Speech-to-text enabled</span>
+        </label>
+      </div>
+
+      <form id="troubleshootForm" onsubmit="handleFormSubmit(event)" class="space-y-3">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="text-[11px] text-gray-400 block mb-1 font-mono">Manufacturer / Brand</label>
+            <input
+              type="text"
+              id="equipmentBrand"
+              name="equipment_brand"
+              value="Carrier"
+              placeholder="e.g. Carrier, Trane, Lennox, Navien"
+              required
+              class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-cyan-500 font-mono"
+            >
+          </div>
+          <div>
+            <label class="text-[11px] text-gray-400 block mb-1 font-mono">Equipment Category</label>
+            <select
+              id="equipmentType"
+              name="equipment_type"
+              class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-cyan-500 font-mono"
+            >
+              <option value="Gas Furnace">Gas Furnace (80% / 90%+ Condensing)</option>
+              <option value="Heat Pump">Inverter Heat Pump / Mini-Split</option>
+              <option value="Tankless Water Heater">Tankless Gas Water Heater</option>
+              <option value="Central Air Conditioner">Central Air Conditioner</option>
+              <option value="Electrical Panel / AFCI">Electrical Panel / AFCI Breaker</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[11px] text-gray-400 block mb-1 font-mono">Fault Code / Physical Symptoms</label>
+          <div class="relative flex items-center">
+            <input
+              type="text"
+              id="faultCode"
+              name="fault_code_or_symptom"
+              value="Code 31 Pressure Switch Open"
+              placeholder="e.g. Code 31, 3 Flashes, Flame drops after 4 seconds"
+              required
+              class="w-full pl-3 pr-12 py-2.5 bg-gray-900 border border-gray-700 rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-cyan-500 font-mono"
+            >
+            <button
+              type="button"
+              id="voiceMicBtn"
+              onclick="toggleSpeechRecognition()"
+              class="absolute right-2 p-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white transition"
+              title="Dictate symptoms hands-free"
+            >
+              <span id="micIcon" class="text-sm">🎙️</span>
+            </button>
+          </div>
+          <p id="dictationStatus" class="hidden text-[10px] text-rose-400 font-mono mt-1">Listening... Speak equipment symptoms now.</p>
+        </div>
+
+        <div class="flex items-center space-x-2 pt-1">
+          <button
+            type="submit"
+            id="troubleshootBtn"
+            class="flex-1 py-2.5 px-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-xl text-xs transition flex items-center justify-center space-x-1.5 shadow-lg shadow-cyan-900/30"
+          >
+            <span>⚡</span>
+            <span>Get Diagnostic Guide &amp; Test Pinouts</span>
+          </button>
+        </div>
+
+      </form>
+
+      <!-- Quick Preset Chips -->
+      <div class="space-y-1.5 pt-2 border-t border-gray-800/80">
+        <span class="text-[10px] text-gray-500 font-mono uppercase tracking-wider block">Common Field Diagnostic Presets:</span>
+        <div class="flex flex-wrap gap-1.5">
+          <button type="button" onclick="applyPreset('Carrier', 'Gas Furnace', 'Code 31 Pressure Switch Open')" class="px-2 py-1 rounded-lg bg-gray-900 hover:bg-gray-800 border border-gray-800 text-[11px] font-mono text-cyan-400 hover:text-cyan-300 transition">
+            Carrier Code 31
+          </button>
+          <button type="button" onclick="applyPreset('Carrier', 'Gas Furnace', 'Code 33 Limit Circuit Lockout')" class="px-2 py-1 rounded-lg bg-gray-900 hover:bg-gray-800 border border-gray-800 text-[11px] font-mono text-cyan-400 hover:text-cyan-300 transition">
+            Carrier Code 33
+          </button>
+          <button type="button" onclick="applyPreset('Carrier', 'Gas Furnace', 'Code 13/14 Flame Rectification Loss')" class="px-2 py-1 rounded-lg bg-gray-900 hover:bg-gray-800 border border-gray-800 text-[11px] font-mono text-cyan-400 hover:text-cyan-300 transition">
+            Flame Microamps
+          </button>
+          <button type="button" onclick="applyPreset('Trane', 'Gas Furnace', '3 Flashes High Limit Open')" class="px-2 py-1 rounded-lg bg-gray-900 hover:bg-gray-800 border border-gray-800 text-[11px] font-mono text-cyan-400 hover:text-cyan-300 transition">
+            Trane 3 Flashes
+          </button>
+          <button type="button" onclick="applyPreset('Navien', 'Tankless Water Heater', 'Error E003 Ignition Failure')" class="px-2 py-1 rounded-lg bg-gray-900 hover:bg-gray-800 border border-gray-800 text-[11px] font-mono text-cyan-400 hover:text-cyan-300 transition">
+            Navien E003
+          </button>
+          <button type="button" onclick="applyPreset('Daikin', 'Heat Pump', 'Error E1 High Pressure Protection')" class="px-2 py-1 rounded-lg bg-gray-900 hover:bg-gray-800 border border-gray-800 text-[11px] font-mono text-cyan-400 hover:text-cyan-300 transition">
+            Heat Pump E1
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Live Guide Results Container -->
+    <div id="resultsCard" class="glass-card rounded-2xl p-4 sm:p-6 space-y-5">
+      
+      <!-- Context Header -->
+      <div class="flex items-start justify-between gap-3 border-b border-gray-800 pb-4">
+        <div>
+          <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">
+            DIAGNOSTIC PROTOCOL
+          </span>
+          <h2 id="guideContext" class="text-base sm:text-lg font-bold text-white mt-1.5 tracking-tight">
+            Carrier / Bryant Inducing Draft Gas Furnace (Code 31 - High Limit / Pressure Switch Open)
+          </h2>
+        </div>
+      </div>
+
+      <!-- Probable Causes -->
+      <div class="space-y-2">
+        <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center space-x-1.5 font-mono">
+          <span>🔍</span>
+          <span>Ranked Root Causes</span>
+        </h3>
+        <ul id="probableCausesList" class="space-y-1.5 text-xs text-gray-300">
+          <li class="p-2.5 rounded-xl bg-gray-900/60 border border-gray-800/80 flex items-start space-x-2">
+            <span class="text-amber-400 font-bold">•</span>
+            <span>Restricted or blocked condensate P-trap / drain line causing water backup into inducer housing</span>
+          </li>
+          <li class="p-2.5 rounded-xl bg-gray-900/60 border border-gray-800/80 flex items-start space-x-2">
+            <span class="text-amber-400 font-bold">•</span>
+            <span>Obstruction or bird nest in PVC intake/exhaust vent termination</span>
+          </li>
+          <li class="p-2.5 rounded-xl bg-gray-900/60 border border-gray-800/80 flex items-start space-x-2">
+            <span class="text-amber-400 font-bold">•</span>
+            <span>Inducer draft motor failing or weak run capacitor (< 3.0 µF)</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Expected Multimeter Readings Grid -->
+      <div class="space-y-2">
+        <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center space-x-1.5 font-mono">
+          <span>📟</span>
+          <span>Target Multimeter Test Readings</span>
+        </h3>
+        <div id="readingsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+          <div class="p-2.5 rounded-xl bg-gray-900 border border-gray-800 flex justify-between items-center">
+            <span class="text-gray-400 text-[11px]">Draft Manometer Target:</span>
+            <span class="text-cyan-400 font-bold">&gt;= -0.65 in. W.C.</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-gray-900 border border-gray-800 flex justify-between items-center">
+            <span class="text-gray-400 text-[11px]">Across Closed Switch:</span>
+            <span class="text-emerald-400 font-bold">0.0 VAC</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-gray-900 border border-gray-800 flex justify-between items-center">
+            <span class="text-gray-400 text-[11px]">Across Open Switch:</span>
+            <span class="text-rose-400 font-bold">24.0 VAC (Tripped)</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-gray-900 border border-gray-800 flex justify-between items-center">
+            <span class="text-gray-400 text-[11px]">Inducer Running Amps:</span>
+            <span class="text-cyan-400 font-bold">0.85A - 1.45A FLA</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step-by-Step Test Procedure -->
+      <div class="space-y-2">
+        <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center space-x-1.5 font-mono">
+          <span>📋</span>
+          <span>Step-by-Step Isolation Sequence</span>
+        </h3>
+        <div id="stepsList" class="space-y-2 text-xs">
+          <div class="p-3 rounded-xl bg-gray-900/90 border border-gray-800 leading-relaxed text-gray-200">
+            <strong>Step 1:</strong> Disconnect power and verify condensate collector box and drain trap are completely drained and unblocked.
+          </div>
+          <div class="p-3 rounded-xl bg-gray-900/90 border border-gray-800 leading-relaxed text-gray-200">
+            <strong>Step 2:</strong> Inspect 2-inch or 3-inch PVC flue terminations outside the building for snow, ice, or debris blockages.
+          </div>
+          <div class="p-3 rounded-xl bg-gray-900/90 border border-gray-800 leading-relaxed text-gray-200">
+            <strong>Step 3:</strong> Connect digital dual-port manometer in series with pressure switch; turn on furnace and read draft (must exceed -0.65 in. W.C.).
+          </div>
+          <div class="p-3 rounded-xl bg-gray-900/90 border border-gray-800 leading-relaxed text-gray-200">
+            <strong>Step 4:</strong> Measure voltage across pressure switch terminals: 24VAC indicates switch is open (fault condition); 0VAC indicates closed (normal).
+          </div>
+        </div>
+      </div>
+
+      <!-- Common Replacement Parts -->
+      <div class="space-y-2">
+        <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center space-x-1.5 font-mono">
+          <span>📦</span>
+          <span>Common Truck Inventory Replacement Parts</span>
+        </h3>
+        <div id="partsList" class="flex flex-wrap gap-1.5">
+          <span class="px-2.5 py-1 rounded-lg bg-gray-900 border border-gray-800 text-xs font-mono text-gray-300">Carrier Dual Pressure Switch (HK06WC024)</span>
+          <span class="px-2.5 py-1 rounded-lg bg-gray-900 border border-gray-800 text-xs font-mono text-gray-300">Fasco Draft Inducer Motor (326625-761)</span>
+          <span class="px-2.5 py-1 rounded-lg bg-gray-900 border border-gray-800 text-xs font-mono text-gray-300">Silicone Draft Tubing (1/8-in ID)</span>
+        </div>
+      </div>
+
+      <!-- Safety Warnings -->
+      <div class="p-4 rounded-xl bg-rose-950/40 border border-rose-800/60 text-rose-200 text-xs space-y-1.5">
+        <div class="font-bold flex items-center space-x-1.5 uppercase font-mono text-[11px] text-rose-300">
+          <span>⚠️</span>
+          <span>Field Safety Warning</span>
+        </div>
+        <div id="safetyWarningsList" class="space-y-1 leading-relaxed">
+          <p>• DANGER: 120V shock hazard. Disconnect service switch before servicing wiring harness.</p>
+          <p>• Inspect heat exchanger for flame rollout or cracks if pressure switch trips intermittently during burner operation.</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    function applyPreset(brand, type, fault) {
+      document.getElementById('equipmentBrand').value = brand;
+      document.getElementById('equipmentType').value = type;
+      document.getElementById('faultCode').value = fault;
+      document.getElementById('troubleshootForm').dispatchEvent(new Event('submit'));
+    }
+
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('troubleshootBtn');
+      const brand = document.getElementById('equipmentBrand').value;
+      const type = document.getElementById('equipmentType').value;
+      const fault = document.getElementById('faultCode').value;
+
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span><span>Analyzing Fault Codes...</span>';
+
+      try {
+        const resp = await fetch('/api/v1/tech-mentor/troubleshoot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            equipment_brand: brand,
+            equipment_type: type,
+            fault_code_or_symptom: fault,
+          }),
+        });
+
+        if (resp.ok) {
+          const guide = await resp.json();
+          renderGuide(guide);
+        } else {
+          alert('Could not retrieve troubleshooting guide. Check input.');
+        }
+      } catch (err) {
+        alert('Network error connecting to diagnostic copilot: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>⚡</span><span>Get Diagnostic Guide &amp; Test Pinouts</span>';
+      }
+    }
+
+    function renderGuide(guide) {
+      document.getElementById('guideContext').innerText = guide.equipment_context || 'Field Diagnostic Procedure';
+
+      // Probable causes
+      const causesEl = document.getElementById('probableCausesList');
+      causesEl.innerHTML = (guide.probable_root_causes || []).map(c => `
+        <li class="p-2.5 rounded-xl bg-gray-900/60 border border-gray-800/80 flex items-start space-x-2">
+          <span class="text-amber-400 font-bold">•</span>
+          <span>${c}</span>
+        </li>
+      `).join('');
+
+      // Readings
+      const readingsEl = document.getElementById('readingsGrid');
+      const readings = guide.multimeter_readings_expected || {};
+      readingsEl.innerHTML = Object.entries(readings).map(([k, v]) => `
+        <div class="p-2.5 rounded-xl bg-gray-900 border border-gray-800 flex justify-between items-center">
+          <span class="text-gray-400 text-[11px]">${k}:</span>
+          <span class="text-cyan-400 font-bold">${v}</span>
+        </div>
+      `).join('');
+
+      // Steps
+      const stepsEl = document.getElementById('stepsList');
+      stepsEl.innerHTML = (guide.step_by_step_test_procedure || []).map(s => `
+        <div class="p-3 rounded-xl bg-gray-900/90 border border-gray-800 leading-relaxed text-gray-200">
+          ${s}
+        </div>
+      `).join('');
+
+      // Parts
+      const partsEl = document.getElementById('partsList');
+      partsEl.innerHTML = (guide.common_replacement_parts || []).map(p => `
+        <span class="px-2.5 py-1 rounded-lg bg-gray-900 border border-gray-800 text-xs font-mono text-gray-300">${p}</span>
+      `).join('');
+
+      // Safety
+      const safetyEl = document.getElementById('safetyWarningsList');
+      safetyEl.innerHTML = (guide.safety_warnings || []).map(w => `<p>• ${w}</p>`).join('');
+
+      // Smooth scroll into results
+      document.getElementById('resultsCard').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Hands-Free Speech Dictation
+    let recognition = null;
+    let isRecording = false;
+
+    function toggleSpeechRecognition() {
+      const micBtn = document.getElementById('voiceMicBtn');
+      const statusEl = document.getElementById('dictationStatus');
+
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('Web Speech API is not supported in this browser. Please type symptoms manually.');
+        return;
+      }
+
+      if (isRecording) {
+        recognition && recognition.stop();
+        isRecording = false;
+        micBtn.classList.remove('pulse-mic', 'bg-rose-600', 'text-white');
+        statusEl.classList.add('hidden');
+        return;
+      }
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = () => {
+        isRecording = true;
+        micBtn.classList.add('pulse-mic', 'bg-rose-600', 'text-white');
+        statusEl.classList.remove('hidden');
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('faultCode').value = transcript;
+        isRecording = false;
+        micBtn.classList.remove('pulse-mic', 'bg-rose-600', 'text-white');
+        statusEl.classList.add('hidden');
+        // Automatically submit for instant answer
+        document.getElementById('troubleshootForm').dispatchEvent(new Event('submit'));
+      };
+
+      recognition.onerror = () => {
+        isRecording = false;
+        micBtn.classList.remove('pulse-mic', 'bg-rose-600', 'text-white');
+        statusEl.classList.add('hidden');
+      };
+
+      recognition.onend = () => {
+        isRecording = false;
+        micBtn.classList.remove('pulse-mic', 'bg-rose-600', 'text-white');
+        statusEl.classList.add('hidden');
+      };
+
+      recognition.start();
+    }
+  </script>
+
+</body>
+</html>

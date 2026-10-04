@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ report.tenant_name or report.tenant_slug }} - 1099-NEC Subcontractor Tax Vault ({{ report.tax_year }})</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfeff',
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0B0F19;
+      color: #f3f4f6;
+    }
+    .glass-card {
+      background: #111827;
+      border: 1px solid rgba(55, 65, 81, 0.7);
+    }
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .glass-card {
+        background: transparent !important;
+        border: 1px solid #cccccc !important;
+        color: #000000 !important;
+        box-shadow: none !important;
+      }
+      table, th, td {
+        border-color: #dddddd !important;
+        color: #000000 !important;
+      }
+      .print-black {
+        color: #000000 !important;
+      }
+      .badge-print {
+        border: 1px solid #333333 !important;
+        background: none !important;
+        color: #000000 !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4 sm:p-6 md:p-8 font-sans antialiased selection:bg-cyan-500 selection:text-white">
+
+  <div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- Top Navigation & Action Controls -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-gray-800 no-print">
+      <div class="flex items-center space-x-3">
+        <a href="/dashboard?tenant={{ report.tenant_slug }}" class="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+        </a>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">📑 1099-NEC Subcontractor Tax Vault</h1>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-950 text-cyan-300 border border-cyan-800">
+              Tax Year {{ report.tax_year }}
+            </span>
+          </div>
+          <p class="text-xs text-gray-400">IRS Form 1099-NEC Nonemployee Compensation Ledger & W-9 Vault for {{ report.tenant_name or report.tenant_slug }}</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center space-x-3 w-full sm:w-auto">
+        <!-- Tax Year Selector -->
+        <select
+          onchange="location.href='?tax_year=' + this.value"
+          class="px-3 py-2 bg-gray-900 border border-gray-700 text-gray-300 rounded-xl text-xs font-semibold focus:outline-none focus:border-cyan-500"
+        >
+          <option value="2026" {% if report.tax_year == 2026 %}selected{% endif %}>TY 2026</option>
+          <option value="2025" {% if report.tax_year == 2025 %}selected{% endif %}>TY 2025</option>
+          <option value="2024" {% if report.tax_year == 2024 %}selected{% endif %}>TY 2024</option>
+        </select>
+
+        <!-- CSV Export Button -->
+        <a
+          href="/api/v1/tax-vault/{{ report.tenant_slug }}/export.csv?tax_year={{ report.tax_year }}"
+          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-lg shadow-emerald-900/30"
+        >
+          <span>📥</span>
+          <span>Export CPA CSV</span>
+        </a>
+
+        <!-- Print Ledger Button -->
+        <button
+          onclick="window.print()"
+          class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 hover:text-white rounded-xl text-xs font-bold transition flex items-center space-x-1.5 border border-gray-700"
+        >
+          <span>🖨️</span>
+          <span>Print Ledger</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Printable Header Banner -->
+    <div class="hidden print:block mb-4 pb-2 border-b border-black">
+      <h1 class="text-xl font-bold print-black">{{ report.tenant_name or report.tenant_slug }} - Form 1099-NEC Nonemployee Compensation Audit</h1>
+      <p class="text-xs print-black">Tax Year: {{ report.tax_year }} &bull; Generated: {{ report.generated_at[:10] }} &bull; Threshold: $600.00</p>
+    </div>
+
+    <!-- Executive Metrics Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="glass-card rounded-2xl p-4 sm:p-5">
+        <p class="text-xs uppercase font-mono text-gray-400 font-semibold tracking-wider">Total Subcontractors</p>
+        <p class="text-2xl sm:text-3xl font-extrabold text-white mt-1">{{ report.total_subcontractors }}</p>
+        <span class="text-xs text-gray-400 mt-1 block">Trade entities on file</span>
+      </div>
+
+      <div class="glass-card rounded-2xl p-4 sm:p-5">
+        <p class="text-xs uppercase font-mono text-gray-400 font-semibold tracking-wider">Total 1099 Payouts</p>
+        <p class="text-2xl sm:text-3xl font-extrabold text-emerald-400 mt-1">${{ "{:,.2f}".format(report.total_1099_payouts) }}</p>
+        <span class="text-xs text-gray-400 mt-1 block">Box 1 Nonemployee Comp</span>
+      </div>
+
+      <div class="glass-card rounded-2xl p-4 sm:p-5">
+        <p class="text-xs uppercase font-mono text-gray-400 font-semibold tracking-wider">Reportable Entities</p>
+        {% set reportable_count = report.records | selectattr('is_reportable') | list | length %}
+        <p class="text-2xl sm:text-3xl font-extrabold text-cyan-400 mt-1">{{ reportable_count }}</p>
+        <span class="text-xs text-gray-400 mt-1 block">&ge; $600.00 IRS threshold</span>
+      </div>
+
+      <div class="glass-card rounded-2xl p-4 sm:p-5">
+        <p class="text-xs uppercase font-mono text-gray-400 font-semibold tracking-wider">W-9 Compliance Rate</p>
+        {% set on_file_count = report.records | selectattr('w9_status', 'equalto', 'ON_FILE') | list | length %}
+        {% set comp_pct = (on_file_count / (report.total_subcontractors or 1) * 100) | round(0) | int %}
+        <p class="text-2xl sm:text-3xl font-extrabold {% if comp_pct >= 90 %}text-emerald-400{% else %}text-amber-400{% endif %} mt-1">{{ comp_pct }}%</p>
+        <span class="text-xs text-gray-400 mt-1 block">{{ on_file_count }} of {{ report.total_subcontractors }} W-9s verified</span>
+      </div>
+    </div>
+
+    <!-- Ledger Table Card -->
+    <div class="glass-card rounded-2xl overflow-hidden border border-gray-800">
+      <div class="p-4 sm:p-5 border-b border-gray-800 flex items-center justify-between no-print">
+        <h2 class="text-base font-bold text-white flex items-center space-x-2">
+          <span>🏛️</span>
+          <span>IRS Form 1099-NEC Subcontractor Ledger</span>
+        </h2>
+        <span class="text-xs text-gray-400 font-mono">Filing Threshold: $600.00 / Tax Year</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs sm:text-sm">
+          <thead>
+            <tr class="bg-gray-900/80 border-b border-gray-800 text-gray-400 font-semibold uppercase tracking-wider text-[11px]">
+              <th class="py-3 px-4">Subcontractor Business / Crew</th>
+              <th class="py-3 px-4">Foreman / Contact</th>
+              <th class="py-3 px-4">Contact Phone</th>
+              <th class="py-3 px-4">Masked TIN / EIN</th>
+              <th class="py-3 px-4 text-center">Settled Vouchers</th>
+              <th class="py-3 px-4 text-right">Box 1 Compensation</th>
+              <th class="py-3 px-4 text-center">W-9 Status</th>
+              <th class="py-3 px-4 text-center">Filing Requirement</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-800/60">
+            {% if report.records %}
+              {% for rec in report.records %}
+                <tr class="hover:bg-gray-800/40 transition">
+                  <td class="py-3.5 px-4 font-bold text-white flex items-center space-x-2">
+                    <span class="w-2 h-2 rounded-full {% if rec.is_reportable %}bg-cyan-400{% else %}bg-gray-500{% endif %}"></span>
+                    <span>{{ rec.crew_name }}</span>
+                  </td>
+                  <td class="py-3.5 px-4 text-gray-300">{{ rec.foreman_name }}</td>
+                  <td class="py-3.5 px-4 font-mono text-gray-400">{{ rec.phone }}</td>
+                  <td class="py-3.5 px-4 font-mono text-gray-300">{{ rec.ein_or_ssn_masked }}</td>
+                  <td class="py-3.5 px-4 text-center font-mono text-gray-300">{{ rec.total_vouchers_count }}</td>
+                  <td class="py-3.5 px-4 text-right font-mono font-bold text-emerald-400">
+                    ${{ "{:,.2f}".format(rec.box1_nonemployee_compensation) }}
+                  </td>
+                  <td class="py-3.5 px-4 text-center">
+                    {% if rec.w9_status == "ON_FILE" %}
+                      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-950 text-emerald-300 border border-emerald-800/60 badge-print">
+                        ✓ ON FILE
+                      </span>
+                    {% else %}
+                      <div class="flex flex-col items-center gap-1.5">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-950 text-amber-300 border border-amber-800/60 badge-print">
+                          ⚠ PENDING
+                        </span>
+                        <button onclick="requestW9SMS('{{ rec.crew_name }}', '{{ rec.phone }}')" class="no-print inline-flex items-center space-x-1 px-2 py-0.5 rounded-lg text-[10px] font-bold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition shadow-sm" title="Send SMS with digital W-9 e-sign link">
+                          <span>📲 Request W-9 via SMS</span>
+                        </button>
+                      </div>
+                    {% endif %}
+                  </td>
+                  <td class="py-3.5 px-4 text-center">
+                    {% if rec.is_reportable %}
+                      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-cyan-950 text-cyan-300 border border-cyan-800/60 badge-print">
+                        REQUIRED (&ge; $600)
+                      </span>
+                    {% else %}
+                      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-900 text-gray-400 border border-gray-800 badge-print">
+                        EXEMPT (< $600)
+                      </span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="8" class="py-12 text-center text-gray-500">
+                  <div class="space-y-2">
+                    <p class="text-3xl">📭</p>
+                    <p class="text-sm font-semibold text-gray-400">No completed subcontractor settlements found for TY {{ report.tax_year }}</p>
+                    <p class="text-xs text-gray-600">Settled crew vouchers will automatically compile into this 1099 ledger upon job completion.</p>
+                  </div>
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+          {% if report.records %}
+            <tfoot>
+              <tr class="bg-gray-900 font-bold border-t-2 border-gray-700 text-white">
+                <td class="py-3.5 px-4" colspan="4">Ledger Total ({{ report.total_subcontractors }} Subcontractors)</td>
+                <td class="py-3.5 px-4 text-center font-mono">{{ report.records | sum(attribute='total_vouchers_count') }}</td>
+                <td class="py-3.5 px-4 text-right font-mono text-emerald-400 text-base">
+                  ${{ "{:,.2f}".format(report.total_1099_payouts) }}
+                </td>
+                <td class="py-3.5 px-4 text-center" colspan="2">
+                  <span class="text-xs text-gray-400 font-normal">Audit-Ready for CPA Export</span>
+                </td>
+              </tr>
+            </tfoot>
+          {% endif %}
+        </table>
+      </div>
+    </div>
+
+    <!-- Statutory Filing & CPA Note -->
+    <div class="glass-card rounded-2xl p-5 border border-gray-800 text-xs text-gray-400 space-y-2 no-print">
+      <div class="flex items-center space-x-2 text-gray-300 font-semibold">
+        <span>⚖️</span>
+        <span>IRS Form 1099-NEC Statutory Guidelines</span>
+      </div>
+      <p>Under IRC Section 6041 and 6041A, businesses must file Form 1099-NEC for each person or unincorporated entity paid at least $600 for services performed in the course of trade or business.</p>
+      <p>Click <strong class="text-emerald-400">"Export CPA CSV"</strong> to download a formatted spreadsheet compatible with QuickBooks, Xero, and IRS FIRE / IRIS e-filing systems.</p>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center text-xs text-gray-500 pt-2 pb-6 no-print">
+      &copy; 2026 {{ report.tenant_name or report.tenant_slug }} &bull; Dispatch Engine 1099 Tax Vault
+    </div>
+
+  </div>
+
+  <script>
+    async function requestW9SMS(crewName, phone) {
+      if (!phone || phone === 'None') {
+        phone = prompt("Enter mobile phone number for " + crewName + ":");
+        if (!phone) return;
+      }
+      try {
+        const res = await fetch('/api/v1/tax-vault/request-w9', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tenant_slug: '{{ report.tenant_slug }}',
+            crew_name: crewName,
+            foreman_phone: phone
+          })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert("✓ W-9 Request SMS dispatched to " + crewName + " (" + phone + ")!\nLink: " + data.link);
+        } else {
+          alert("Error sending W-9 request: " + (data.detail || JSON.stringify(data)));
+        }
+      } catch (err) {
+        alert("Failed to send W-9 request: " + err);
+      }
+    }
+  </script>
+</body>
+</html>

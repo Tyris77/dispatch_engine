@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Property IoT Sensor Console — {{ tenant.name }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0B0F19;
+      color: #f3f4f6;
+    }
+    .glass-card {
+      background: #111827;
+      border: 1px solid rgba(55, 65, 81, 0.7);
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans antialiased text-gray-200 p-4 md:p-8">
+  <div class="max-w-7xl mx-auto space-y-8">
+
+    <!-- Top Navigation & Branding -->
+    <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-gray-800">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-600 to-blue-500 flex items-center justify-center shadow-lg shadow-cyan-500/20 text-white font-bold text-xl">
+          📡
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-2xl font-extrabold tracking-tight text-white">{{ tenant.name }}</h1>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+              Live Telemetry Ingestion
+            </span>
+          </div>
+          <p class="text-xs text-gray-400 font-medium">Smart Property Environmental Monitoring & Automated Emergency Dispatch</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <a href="/dashboard" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-gray-900 hover:bg-gray-800 border border-gray-700 text-gray-300 transition-all">
+          <span>📊</span> Internal Dispatch
+        </a>
+        <a href="/commercial/{{ tenant.slug }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-gray-900 hover:bg-gray-800 border border-gray-700 text-indigo-400 transition-all">
+          <span>🏢</span> Commercial Portals
+        </a>
+        <a href="/portal/{{ tenant.slug }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-gray-900 hover:bg-gray-800 border border-gray-700 text-gray-300 transition-all">
+          <span>⚙️</span> Client Portal
+        </a>
+      </div>
+    </header>
+
+    {% if message %}
+    <div class="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-sm flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-base">🚨</span>
+        <span>{{ message }}</span>
+      </div>
+      <button onclick="this.parentElement.remove()" class="text-xs opacity-75 hover:opacity-100">✕</button>
+    </div>
+    {% endif %}
+
+    <!-- KPI Summary Bar -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="glass-card p-5 rounded-2xl">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-gray-400">Connected Smart Hardware</span>
+          <span class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 text-sm">📡</span>
+        </div>
+        <div class="mt-3 flex items-baseline gap-2">
+          <span class="text-3xl font-bold font-mono text-white">{{ devices|length }}</span>
+          <span class="text-xs text-emerald-400">100% Online</span>
+        </div>
+      </div>
+
+      <div class="glass-card p-5 rounded-2xl">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-gray-400">Emergency Trigger Latency</span>
+          <span class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 text-sm">⚡</span>
+        </div>
+        <div class="mt-3 flex items-baseline gap-2">
+          <span class="text-3xl font-bold font-mono text-emerald-400">1.8s</span>
+          <span class="text-xs text-gray-500">Autonomous Dispatch</span>
+        </div>
+      </div>
+
+      <div class="glass-card p-5 rounded-2xl">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-gray-400">On-Call Emergency Master</span>
+          <span class="p-2 rounded-lg bg-indigo-500/10 text-indigo-400 text-sm">🛠️</span>
+        </div>
+        <div class="mt-3">
+          <span class="text-sm font-bold text-white block truncate">{{ on_call_tech }}</span>
+          <span class="text-xs text-indigo-400 font-mono">Priority Cascade Active</span>
+        </div>
+      </div>
+
+      <div class="glass-card p-5 rounded-2xl">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-gray-400">Automated Homeowner IVR</span>
+          <span class="p-2 rounded-lg bg-amber-500/10 text-amber-400 text-sm">📞</span>
+        </div>
+        <div class="mt-3 flex items-baseline gap-2">
+          <span class="text-3xl font-bold font-mono text-amber-400">24/7</span>
+          <span class="text-xs text-gray-500">Instant Outbound Call</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Simulated Emergency Trigger Controls -->
+    <section class="glass-card p-6 rounded-2xl border border-rose-500/30 bg-gradient-to-r from-rose-950/20 via-gray-900 to-gray-900">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-gray-800 gap-3">
+        <div>
+          <span class="text-[10px] font-mono tracking-wider uppercase text-rose-400 font-bold">EMERGENCY TELEMETRY SIMULATOR</span>
+          <h2 class="text-lg font-bold text-white mt-0.5 flex items-center gap-2">
+            <span>🚨</span> Test Instant IoT Dispatch Cascades
+          </h2>
+          <p class="text-xs text-gray-400">Click a test trigger below to simulate incoming webhook telemetry from a smart water shutoff or freeze detector.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
+        <!-- Trigger 1: Pipe Burst -->
+        <form method="POST" action="/api/v1/sensors/alert" class="space-y-3 p-4 rounded-xl bg-gray-950/60 border border-gray-800 hover:border-rose-500/40 transition-colors">
+          <input type="hidden" name="sensor_id" value="FL-MOEN-9912A">
+          <input type="hidden" name="sensor_type" value="FLOW_BURST_ALARM">
+          <input type="hidden" name="property_address" value="1401 S Joyce St, Unit 814, Arlington, VA 22202">
+          <input type="hidden" name="customer_name" value="Elena Rostova">
+          <input type="hidden" name="customer_phone" value="+17035550182">
+          <input type="hidden" name="reading_value" value="8.4 GPM Continuous Pipe Burst">
+          <input type="hidden" name="severity" value="CRITICAL_EMERGENCY">
+          <input type="hidden" name="tenant_slug" value="{{ tenant.slug }}">
+
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-white">Main Line Pipe Burst</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-500/20 text-rose-400">8.4 GPM</span>
+          </div>
+          <p class="text-xs text-gray-400">Simulates high-velocity water flow past main shutoff, triggering automatic tech roll.</p>
+          <button type="submit" class="w-full py-2 px-3 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 transition-all flex items-center justify-center gap-1.5">
+            <span>🌊</span> Fire Pipe Burst Alarm
+          </button>
+        </form>
+
+        <!-- Trigger 2: Freeze Warning -->
+        <form method="POST" action="/api/v1/sensors/alert" class="space-y-3 p-4 rounded-xl bg-gray-950/60 border border-gray-800 hover:border-cyan-500/40 transition-colors">
+          <input type="hidden" name="sensor_id" value="HW-FRZ-4411C">
+          <input type="hidden" name="sensor_type" value="FREEZE_TEMP_SENSOR">
+          <input type="hidden" name="property_address" value="7315 Wisconsin Ave, Suite 300, Bethesda, MD 20814">
+          <input type="hidden" name="customer_name" value="Sarah Jenkins">
+          <input type="hidden" name="customer_phone" value="+13015550199">
+          <input type="hidden" name="reading_value" value="26.4°F Ambient Pipe Freeze Risk">
+          <input type="hidden" name="severity" value="CRITICAL_EMERGENCY">
+          <input type="hidden" name="tenant_slug" value="{{ tenant.slug }}">
+
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-white">Sub-Freezing Chamber</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-400">26.4°F</span>
+          </div>
+          <p class="text-xs text-gray-400">Simulates severe sub-freezing attic / mechanical room temperature with immediate freeze-burst hazard.</p>
+          <button type="submit" class="w-full py-2 px-3 rounded-lg text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg shadow-cyan-600/30 transition-all flex items-center justify-center gap-1.5">
+            <span>❄️</span> Fire Freeze Warning
+          </button>
+        </form>
+
+        <!-- Trigger 3: Basal Water Leak -->
+        <form method="POST" action="/api/v1/sensors/alert" class="space-y-3 p-4 rounded-xl bg-gray-950/60 border border-gray-800 hover:border-amber-500/40 transition-colors">
+          <input type="hidden" name="sensor_id" value="FLM-88210B">
+          <input type="hidden" name="sensor_type" value="WATER_LEAK_DETECTOR">
+          <input type="hidden" name="property_address" value="1620 19th St NW, Apt 2B, Washington, DC 20009">
+          <input type="hidden" name="customer_name" value="Marcus Vance">
+          <input type="hidden" name="customer_phone" value="+12025550144">
+          <input type="hidden" name="reading_value" value="Continuous 0.8 GPM Toilet Flapper / Sump Leak">
+          <input type="hidden" name="severity" value="WARNING">
+          <input type="hidden" name="tenant_slug" value="{{ tenant.slug }}">
+
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-white">Sump Basin Overfill</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-400">0.8 GPM</span>
+          </div>
+          <p class="text-xs text-gray-400">Simulates continuous basement leak probe trigger requiring technician priority inspection.</p>
+          <button type="submit" class="w-full py-2 px-3 rounded-lg text-xs font-bold bg-amber-600 hover:bg-amber-500 text-white shadow-lg shadow-amber-600/30 transition-all flex items-center justify-center gap-1.5">
+            <span>💧</span> Fire Water Leak Alert
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Connected Device Fleet Grid -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+          <span>📡</span> Connected Property Sensor Fleet
+        </h2>
+        <span class="text-xs text-gray-400 font-mono">MQTT / Webhook Telemetry Active</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% for dev in devices %}
+        <div class="glass-card p-5 rounded-2xl relative overflow-hidden transition-all hover:border-cyan-500/40">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="text-[10px] font-mono tracking-wider uppercase text-cyan-400 font-bold">{{ dev.sensor_type }}</span>
+              <h3 class="text-base font-bold text-white mt-0.5">{{ dev.brand_model }}</h3>
+              <p class="text-xs text-gray-400 mt-0.5">{{ dev.property_name }}</p>
+              <p class="text-[11px] text-gray-500 font-mono mt-0.5">{{ dev.property_address }}</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              {{ dev.status }}
+            </span>
+          </div>
+
+          <div class="mt-4 pt-4 border-t border-gray-800/80 grid grid-cols-3 gap-2 text-xs">
+            <div>
+              <span class="text-gray-500 block text-[10px] uppercase font-mono">Live Reading</span>
+              <span class="font-mono font-bold text-white text-[11px] truncate block">{{ dev.current_reading }}</span>
+            </div>
+            <div>
+              <span class="text-gray-500 block text-[10px] uppercase font-mono">Battery</span>
+              <span class="font-mono font-bold text-emerald-400">{{ dev.battery_level }}%</span>
+            </div>
+            <div class="text-right">
+              <span class="text-gray-500 block text-[10px] uppercase font-mono">Device Serial</span>
+              <span class="font-mono text-gray-400 text-[10px]">{{ dev.sensor_id }}</span>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>

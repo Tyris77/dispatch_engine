@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>{{ tenant.name }} - Equipment Diagnostic Scanner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfeff',
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #030712;
+      color: #f3f4f6;
+    }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(55, 65, 81, 0.6);
+    }
+    .glass-glow-cyan {
+      box-shadow: 0 0 35px -8px rgba(6, 182, 212, 0.25);
+    }
+    .glass-glow-emerald {
+      box-shadow: 0 0 35px -8px rgba(16, 185, 129, 0.25);
+    }
+    .scanner-laser {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #22d3ee, #06b6d4, transparent);
+      box-shadow: 0 0 15px #06b6d4;
+      animation: scanAnimation 2s ease-in-out infinite alternate;
+    }
+    @keyframes scanAnimation {
+      0% { top: 4%; }
+      100% { top: 96%; }
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans selection:bg-cyan-500 selection:text-black antialiased flex flex-col justify-between">
+
+  <!-- Mobile Top Navigation Header -->
+  <header class="border-b border-gray-800/80 bg-gray-950/90 sticky top-0 z-50 backdrop-blur-md">
+    <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-2.5">
+        <div class="h-8 w-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center shadow-md shadow-cyan-500/20">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-sm font-bold text-white tracking-tight leading-none">{{ tenant.name }}</h1>
+          <span class="text-[10px] text-cyan-400 font-mono">Multimodal AI Vision Triage</span>
+        </div>
+      </div>
+      
+      <div class="flex items-center space-x-1.5">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+        <span class="text-[11px] font-mono text-emerald-400 font-medium">Technician Ready</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-xl mx-auto px-4 py-6 w-full flex-1">
+
+    <!-- Action Reference Banner -->
+    <div class="mb-5 p-3 rounded-xl bg-gray-900/60 border border-gray-800 flex items-center justify-between text-xs">
+      <div>
+        <span class="text-gray-400">Inquiry ID:</span>
+        <span class="font-mono text-cyan-300 ml-1 font-semibold">{{ lead_action.lead_external_id or lead_action.id|string|truncate(12, True, '') }}</span>
+      </div>
+      <div class="text-right">
+        <span class="text-gray-400">On-Call Phone:</span>
+        <span class="font-mono text-gray-200 ml-1">{{ tenant.settings.get('alert_phone_number') or tenant.settings.get('phone') or '24/7 Dispatch' }}</span>
+      </div>
+    </div>
+
+    {% if success_message %}
+    <div class="mb-5 p-4 rounded-2xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-200 text-xs flex items-start space-x-3">
+      <svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <div>
+        <p class="font-semibold text-emerald-300">Diagnostic Scanner Dispatched</p>
+        <p class="text-emerald-400/90 mt-0.5">{{ success_message }}</p>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- If diagnostic data already exists, show the report -->
+    {% if report %}
+    <div class="glass-card glass-glow-emerald rounded-2xl p-5 border border-emerald-500/30 mb-6">
+      <div class="flex items-center justify-between pb-3 border-b border-gray-800">
+        <div class="flex items-center space-x-2">
+          <span class="px-2.5 py-1 text-xs font-bold rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono">
+            {{ report.equipment_type }}
+          </span>
+          {% if report.brand_manufacturer %}
+          <span class="text-xs font-semibold text-gray-200">
+            {{ report.brand_manufacturer }}
+          </span>
+          {% endif %}
+        </div>
+        <div class="text-right">
+          <span class="text-[10px] text-gray-400 font-mono">AI Confidence</span>
+          <span class="text-xs font-mono font-bold text-emerald-400 block">{{ "%.0f"|format(report.confidence_score * 100) }}%</span>
+        </div>
+      </div>
+
+      <!-- Equipment Specs Grid -->
+      <div class="grid grid-cols-2 gap-3 my-4 text-xs font-mono">
+        <div class="bg-gray-900/80 p-2.5 rounded-xl border border-gray-800">
+          <span class="text-[10px] text-gray-500 block uppercase">Model Number</span>
+          <span class="text-white font-semibold">{{ report.model_number or 'Auto-Detecting' }}</span>
+        </div>
+        <div class="bg-gray-900/80 p-2.5 rounded-xl border border-gray-800">
+          <span class="text-[10px] text-gray-500 block uppercase">Serial Number</span>
+          <span class="text-white font-semibold">{{ report.serial_number or 'Plate Partial' }}</span>
+        </div>
+      </div>
+
+      <!-- Damage Assessment -->
+      <div class="my-4 p-3 rounded-xl bg-rose-950/30 border border-rose-500/30">
+        <div class="flex items-center space-x-2 text-rose-300 text-xs font-semibold uppercase tracking-wider mb-1">
+          <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          <span>Visual Damage Assessment</span>
+        </div>
+        <p class="text-xs text-gray-200 leading-relaxed">{{ report.damage_assessment }}</p>
+      </div>
+
+      <!-- Detected Materials -->
+      {% if report.detected_materials %}
+      <div class="my-4">
+        <span class="text-[10px] uppercase font-mono text-gray-400 block mb-1.5">Detected Materials</span>
+        <div class="flex flex-wrap gap-1.5">
+          {% for mat in report.detected_materials %}
+          <span class="px-2 py-0.5 text-[11px] rounded-md bg-gray-800/80 text-cyan-300 border border-cyan-800/40 font-mono">
+            {{ mat }}
+          </span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Recommended Truck Stock Parts & Tools -->
+      {% if report.recommended_parts_tools %}
+      <div class="my-4 pt-3 border-t border-gray-800">
+        <span class="text-[10px] uppercase font-mono text-emerald-400 font-semibold block mb-2">Technician Truck Stock Checklist</span>
+        <ul class="space-y-1.5">
+          {% for part in report.recommended_parts_tools %}
+          <li class="flex items-center space-x-2 text-xs text-gray-300">
+            <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span>{{ part }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <div class="mt-5 pt-3 border-t border-gray-800/80 flex items-center justify-between text-[11px] text-gray-400 font-mono">
+        <span class="flex items-center space-x-1.5 text-emerald-400">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+          </svg>
+          <span>Alert Sent to Field Tech</span>
+        </span>
+        <button onclick="document.getElementById('upload-section').classList.toggle('hidden')" class="text-cyan-400 hover:underline">
+          Upload Another Photo &rarr;
+        </button>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Photo Upload Section -->
+    <div id="upload-section" class="glass-card rounded-2xl p-5 border border-gray-800 {% if report %}hidden{% endif %}">
+      <div class="text-center mb-5">
+        <h2 class="text-base font-bold text-white tracking-tight">Capture Equipment or Data Plate</h2>
+        <p class="text-xs text-gray-400 mt-1 max-w-sm mx-auto">
+          Snap a clear photo of the equipment sticker, model plate, leaking pipe, or damaged fixture. Our AI vision scanner identifies exact parts for technician truck inventory.
+        </p>
+      </div>
+
+      <form id="intake-form" action="/intake/{{ lead_action.id }}" method="POST" enctype="multipart/form-data">
+        
+        <!-- File Input Hidden -->
+        <input 
+          type="file" 
+          id="photo-input" 
+          name="photo" 
+          accept="image/*" 
+          capture="environment" 
+          required 
+          class="hidden"
+          onchange="handleFileSelect(this)"
+        >
+
+        <!-- Tap-To-Camera Trigger Box -->
+        <div 
+          id="dropzone" 
+          onclick="document.getElementById('photo-input').click()"
+          class="border-2 border-dashed border-gray-700 hover:border-cyan-500/80 rounded-2xl p-6 text-center cursor-pointer transition-all bg-gray-900/40 hover:bg-gray-900/80 relative overflow-hidden group"
+        >
+          <!-- Live Preview Container (Initially Hidden) -->
+          <div id="preview-container" class="hidden relative">
+            <div class="scanner-laser" id="laser"></div>
+            <img id="image-preview" src="#" alt="Equipment Preview" class="w-full max-h-64 object-contain rounded-xl mx-auto shadow-lg">
+            <div class="mt-3 flex items-center justify-center space-x-2 text-xs">
+              <span id="file-name" class="font-mono text-cyan-300 truncate max-w-xs"></span>
+              <button 
+                type="button" 
+                onclick="event.stopPropagation(); resetFile();" 
+                class="px-2 py-0.5 rounded bg-gray-800 text-rose-400 border border-gray-700 hover:bg-gray-700"
+              >
+                Retake
+              </button>
+            </div>
+          </div>
+
+          <!-- Empty State Graphic & Button -->
+          <div id="empty-state" class="py-4">
+            <div class="h-14 w-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mx-auto text-cyan-400 mb-3 group-hover:scale-105 transition-transform">
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </div>
+            <p class="text-sm font-semibold text-white">Tap to Take Photo or Browse</p>
+            <p class="text-xs text-gray-500 mt-1 font-mono">JPG, PNG, WEBP, HEIC (Max 15MB)</p>
+          </div>
+        </div>
+
+        <!-- Optional Notes -->
+        <div class="mt-4">
+          <label for="notes" class="block text-xs font-medium text-gray-300 mb-1">
+            Optional Symptoms or Sounds Heard:
+          </label>
+          <textarea 
+            id="notes" 
+            name="notes" 
+            rows="2" 
+            placeholder="e.g., Loud humming from unit, pooling water near heater, breaker tripped twice..."
+            class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-gray-200 placeholder-gray-600 focus:outline-none focus:border-cyan-500"
+          ></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="mt-5">
+          <button 
+            type="submit" 
+            id="submit-btn" 
+            class="w-full py-3 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white shadow-lg shadow-cyan-500/20 flex items-center justify-center space-x-2 transition-all active:scale-[0.99]"
+          >
+            <svg id="submit-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <span id="submit-text">Scan & Alert On-Call Technician</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Security & Privacy Footer Note -->
+    <div class="mt-8 text-center text-[11px] text-gray-600 font-mono">
+      <span>Protected by 256-bit Tenant Encryption</span>
+      <span class="mx-1.5">&bull;</span>
+      <span>Powered by Google Gemini Vision</span>
+    </div>
+
+  </main>
+
+  <script>
+    function handleFileSelect(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+          document.getElementById('image-preview').src = e.target.result;
+          document.getElementById('file-name').textContent = file.name;
+          document.getElementById('empty-state').classList.add('hidden');
+          document.getElementById('preview-container').classList.remove('hidden');
+        };
+
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function resetFile() {
+      const input = document.getElementById('photo-input');
+      input.value = '';
+      document.getElementById('image-preview').src = '#';
+      document.getElementById('empty-state').classList.remove('hidden');
+      document.getElementById('preview-container').classList.add('hidden');
+    }
+
+    document.getElementById('intake-form').addEventListener('submit', function(e) {
+      const btn = document.getElementById('submit-btn');
+      const text = document.getElementById('submit-text');
+      const icon = document.getElementById('submit-icon');
+
+      btn.disabled = true;
+      btn.classList.add('opacity-75', 'cursor-not-allowed');
+      text.textContent = 'Analyzing Photo with Gemini AI...';
+      icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" class="animate-spin"/>';
+    });
+  </script>
+</body>
+</html>

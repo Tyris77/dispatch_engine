@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statutory Preliminary Notice & Intent to Lien | {{ notice.notice_number }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            surface: {
+              base: '#0B0F19',
+              card: '#111827',
+              border: '#1E293B',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0B0F19;
+      color: #F3F4F6;
+    }
+    @media print {
+      body {
+        background-color: #FFFFFF !important;
+        color: #111827 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-border {
+        border-color: #94A3B8 !important;
+      }
+      .print-text-dark {
+        color: #0F172A !important;
+      }
+      .print-bg-light {
+        background-color: #F8FAFC !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans antialiased selection:bg-rose-500 selection:text-white py-6 px-4 sm:px-6">
+
+  <!-- ==================== TOP ACTION CONTROLS ==================== -->
+  <div class="no-print max-w-4xl mx-auto mb-6 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <span class="p-2 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xl font-bold">⚠️</span>
+      <div>
+        <h1 class="text-sm sm:text-base font-bold text-white tracking-tight flex items-center gap-2">
+          Statutory Preliminary Notice & Intent to Lien
+          <span class="text-xs px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-mono">{{ notice.jurisdiction }} Code</span>
+        </h1>
+        <p class="text-xs text-slate-400 font-mono">Notice Ref: {{ notice.notice_number }} • {{ notice.claimant_name }}</p>
+      </div>
+    </div>
+    <div class="flex items-center space-x-2">
+      <button onclick="window.print()" class="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-rose-600/20 flex items-center gap-1.5">
+        <span>🖨️</span> Print Certified Notice
+      </button>
+      <a href="/dashboard" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-white transition">
+        Dashboard
+      </a>
+    </div>
+  </div>
+
+  <!-- ==================== LEGAL DOCUMENT PAGE ==================== -->
+  <main class="max-w-4xl mx-auto bg-surface-card border border-surface-border rounded-2xl p-6 sm:p-10 shadow-2xl space-y-6 print-border print-bg-light print-text-dark">
+
+    <!-- USPS Certified Mail Barcode Header -->
+    <div class="border-b-2 border-slate-800 pb-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 print-border">
+      <div class="font-mono">
+        <div class="flex items-center gap-2 text-xs font-bold text-rose-400 uppercase tracking-widest">
+          <span>📬</span> USPS CERTIFIED MAIL® RECEIPT REQUIRED
+        </div>
+        <div class="text-sm sm:text-base font-bold text-white tracking-wider mt-1 print-text-dark">
+          TRACKING NO: <span class="text-amber-300 print-text-dark">{{ notice.certified_mail_tracking }}</span>
+        </div>
+      </div>
+      <div class="text-right font-mono text-xs text-slate-400">
+        <div>Notice No: <strong class="text-white print-text-dark">{{ notice.notice_number }}</strong></div>
+        <div>Date of Service: <strong class="text-white print-text-dark">{{ notice.issued_at[:10] }}</strong></div>
+      </div>
+    </div>
+
+    <!-- Formal Legal Heading -->
+    <div class="text-center space-y-1.5 py-2">
+      <h2 class="text-xl sm:text-2xl font-black uppercase tracking-tight text-white print-text-dark">
+        {{ notice.notice_type.replace('_', ' ') }}
+      </h2>
+      <p class="text-xs font-mono text-amber-400 font-semibold print-text-dark">
+        STATUTORY NOTICE PURSUANT TO {{ notice.statutory_citation }}
+      </p>
+    </div>
+
+    <!-- Parties & Property Information Block -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono border border-slate-800 rounded-xl p-4 bg-slate-900/50 print-border print-bg-light">
+      <div class="space-y-1">
+        <span class="text-[10px] uppercase tracking-wider text-slate-500 block">TO PROPERTY OWNER(S) OF RECORD:</span>
+        <div class="text-sm font-bold text-white font-sans print-text-dark">{{ notice.customer_name }}</div>
+        <div class="text-slate-300 print-text-dark">{{ notice.property_address }}</div>
+      </div>
+      <div class="space-y-1 sm:text-right">
+        <span class="text-[10px] uppercase tracking-wider text-slate-500 block">FROM CLAIMANT / CONTRACTOR:</span>
+        <div class="text-sm font-bold text-white font-sans print-text-dark">{{ notice.claimant_name }}</div>
+        <div class="text-slate-300 print-text-dark">Authorized Licensed Commercial Trade Contractor</div>
+      </div>
+    </div>
+
+    <!-- Statutory Warning Banner -->
+    <div class="p-4 rounded-xl bg-rose-500/10 border-2 border-rose-500/40 text-rose-200 text-xs space-y-1.5 print-border">
+      <div class="flex items-center gap-2 font-mono font-bold text-rose-400 uppercase tracking-wider text-[11px]">
+        <span>⚖️</span> MANDATORY STATUTORY WARNING & FORECLOSURE NOTICE
+      </div>
+      <p class="text-[11px] leading-relaxed text-slate-200 font-mono print-text-dark">
+        {{ notice.statutory_warning_text }}
+      </p>
+      <div class="pt-2 flex items-center justify-between text-[11px] font-mono font-bold text-amber-300 border-t border-rose-500/20 mt-2 print-text-dark">
+        <span>STATUTORY ENFORCEMENT DEADLINE:</span>
+        <span class="text-rose-400 uppercase print-text-dark">{{ notice.statutory_deadline_date }} ({{ notice.days_overdue }} DAYS DELINQUENT)</span>
+      </div>
+    </div>
+
+    <!-- Itemized Delinquency Statement -->
+    <div class="space-y-2">
+      <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">Statement of Unpaid Account Balance</h3>
+      <div class="border border-slate-800 rounded-xl overflow-hidden print-border">
+        <table class="w-full text-left text-xs font-mono">
+          <thead class="bg-slate-900/80 text-slate-400 uppercase text-[10px] border-b border-slate-800 print-border">
+            <tr>
+              <th class="py-2.5 px-3">Description of Improvement / Furnished Trade</th>
+              <th class="py-2.5 px-3 text-right">Delinquency Period</th>
+              <th class="py-2.5 px-3 text-right">Principal Balance Due</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800 text-slate-200 print-border">
+            <tr>
+              <td class="py-3 px-3 font-sans">
+                Professional trade labor, materials, equipment, and permanent improvements installed at subject real property.
+              </td>
+              <td class="py-3 px-3 text-right font-mono text-rose-400 font-bold">
+                {{ notice.days_overdue }} Days Past Due
+              </td>
+              <td class="py-3 px-3 text-right font-bold text-white text-base print-text-dark">
+                ${{ "{:,.2f}".format(notice.overdue_balance) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Formal Legal Demands & Statutory Text -->
+    <div class="text-xs text-slate-300 font-mono leading-relaxed space-y-3 pt-2 print-text-dark">
+      <p>
+        <strong>DEMAND FOR IMMEDIATE PAYMENT:</strong> Claimant hereby demands full satisfaction and payment of the delinquent sum of <strong>${{ "{:,.2f}".format(notice.overdue_balance) }}</strong> within statutory notice days following receipt of this notice.
+      </p>
+      <p>
+        Payment must be tendered in certified funds directly to claimant: <strong>{{ notice.claimant_name }}</strong>. If payment is not received prior to <strong>{{ notice.statutory_deadline_date }}</strong>, claimant will immediately proceed with formal recordation of its Mechanic's Lien Memorandum and petition for judicial foreclosure, statutory pre-judgment interest, and allowable legal attorney fees pursuant to {{ notice.statutory_citation }}.
+      </p>
+    </div>
+
+    <!-- Proof of Service Certificate / Affidavit -->
+    <div class="border-t-2 border-slate-800 pt-5 space-y-4 print-border">
+      <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">Affidavit & Proof of Statutory Service</h4>
+      <p class="text-[11px] text-slate-400 font-mono leading-relaxed print-text-dark">
+        I hereby certify that on the date indicated below, a true copy of this {{ notice.notice_type.replace('_', ' ') }} was deposited in the United States Mail, postage prepaid, Certified Mail Return Receipt Requested, addressed to the property owner of record at the subject property address indicated above.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-4">
+        <div>
+          <div class="border-b border-slate-700 pb-1 text-xs font-mono text-white print-text-dark">{{ notice.claimant_name }}</div>
+          <span class="text-[10px] text-slate-500 font-mono block mt-1">Authorized Claimant / Designated Managing Agent</span>
+        </div>
+        <div>
+          <div class="border-b border-slate-700 pb-1 text-xs font-mono text-white print-text-dark">{{ notice.issued_at[:10] }}</div>
+          <span class="text-[10px] text-slate-500 font-mono block mt-1">Date of Affidavit Execution</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+</body>
+</html>

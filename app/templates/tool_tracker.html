@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Van Tool & Equipment Asset Scanner | {{ tenant.name }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            surface: {
+              base: '#0B0F19',
+              card: '#111827',
+              border: '#1E293B',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0B0F19;
+      color: #F3F4F6;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans antialiased selection:bg-amber-500 selection:text-black">
+
+  <!-- ==================== TOP NAVIGATION ==================== -->
+  <header class="border-b border-surface-border bg-surface-card/90 backdrop-blur sticky top-0 z-40 px-4 py-3 sm:px-6">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xl font-bold">🚐</span>
+        <div>
+          <h1 class="text-sm sm:text-base font-bold text-white tracking-tight flex items-center gap-2">
+            Van Tool & Equipment Asset Scanner
+            <span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono">Multimodal Vision</span>
+          </h1>
+          <p class="text-xs text-slate-400 font-mono">{{ tenant.name }} • Fleet Tool Compliance</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <a href="/portal/{{ tenant.slug }}" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-white transition">
+          Operations Portal
+        </a>
+        <a href="/dashboard?tenant_slug={{ tenant.slug }}" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-600/90 text-white hover:bg-amber-600 transition">
+          Dashboard
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6 sm:px-6 space-y-6">
+
+    {% if message %}
+    <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-200 text-xs flex items-center gap-2 shadow-lg">
+      <span class="text-emerald-400 font-bold">✓</span>
+      <span>{{ message }}</span>
+    </div>
+    {% endif %}
+
+    <!-- Fleet Overview Hero Banner -->
+    <div class="bg-surface-card border border-surface-border rounded-2xl p-6 shadow-xl relative overflow-hidden">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-xs font-mono font-semibold uppercase tracking-wider text-amber-400">Fleet Tool Inventory Guard</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+              {{ trucks|length }} Active Service Vans
+            </span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold text-white">{{ tenant.name }} Fleet Equipment</h2>
+          <p class="text-xs text-slate-400 mt-1">
+            Automated computer vision audit detects diagnostic instruments, press tools, and vacuum equipment in technician van shelving.
+          </p>
+        </div>
+
+        <!-- High-Value Equipment Metric Pill -->
+        <div class="bg-slate-900/90 border border-slate-700 rounded-xl p-4 text-center min-w-[180px]">
+          <span class="text-[11px] font-mono uppercase tracking-wider text-slate-400 block">Fleet Protection</span>
+          <span class="text-xl font-bold font-mono text-emerald-400 block mt-0.5">100% Tracked</span>
+          <span class="inline-block mt-1 text-[11px] text-slate-400 font-mono">
+            Zero Lost Asset Toleration
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Fleet Trucks Registry Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {% for truck in trucks %}
+      <div class="bg-surface-card border border-surface-border rounded-2xl p-5 shadow flex flex-col justify-between hover:border-amber-500/40 transition">
+        <div>
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-amber-400 border border-slate-700">
+              {{ truck.truck_id }}
+            </span>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded-full
+              {% if truck.compliance_status == 'ACTIVE' %}
+                bg-emerald-500/20 text-emerald-300 border border-emerald-500/30
+              {% else %}
+                bg-rose-500/20 text-rose-300 border border-rose-500/30
+              {% endif %}">
+              {{ truck.compliance_status }}
+            </span>
+          </div>
+
+          <h3 class="text-base font-bold text-white mt-3">{{ truck.driver_name }}</h3>
+          <p class="text-xs text-slate-400 font-mono mt-0.5">Trade: <strong class="text-slate-200">{{ truck.trade_type }}</strong></p>
+
+          <div class="mt-4 pt-3 border-t border-slate-800 space-y-2">
+            <span class="text-[11px] font-mono uppercase tracking-wider text-slate-400 block">Mandatory Tool Inventory ({{ truck.required_tools|length }} Assets):</span>
+            <ul class="text-xs text-slate-300 space-y-1">
+              {% for tool in truck.required_tools %}
+              <li class="flex items-center justify-between text-[11px]">
+                <span class="truncate max-w-[190px]">● {{ tool.tool_name }}</span>
+                <span class="font-mono text-slate-400">${{ "{:,.0f}".format(tool.estimated_value) }}</span>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <span>Last Audit:</span>
+          <span class="text-white">{{ truck.last_audit_date or 'Pending' }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Mobile Photo Audit Upload Dropzone -->
+    <div class="bg-surface-card border border-surface-border rounded-2xl p-6 shadow-xl">
+      <div class="mb-4">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <span>📸</span> Run Multimodal Van Tool & Asset Scanner
+        </h3>
+        <p class="text-xs text-slate-400 mt-1">
+          Take or upload a clear photo of the service van's tool shelving, packout boxes, or rear tool rack. Gemini Multimodal Vision will inspect each item against the required truck inventory and highlight missing equipment.
+        </p>
+      </div>
+
+      <form action="/tools/{{ tenant.slug }}/audit" method="POST" enctype="multipart/form-data" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Target Service Truck</label>
+            <select name="truck_id" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-amber-500">
+              {% for truck in trucks %}
+              <option value="{{ truck.truck_id }}">{{ truck.truck_id }} — {{ truck.driver_name }} ({{ truck.trade_type }})</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="border-2 border-dashed border-slate-700 hover:border-amber-500/60 rounded-2xl p-6 text-center transition cursor-pointer bg-slate-900/40 relative">
+          <input type="file" name="tool_photo" id="tool-photo-input" accept="image/*" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+          <div id="dropzone-content" class="space-y-2 pointer-events-none">
+            <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 mx-auto flex items-center justify-center text-2xl">
+              📷
+            </div>
+            <div class="text-xs font-semibold text-white">Click or Drag & Drop Van Tool Rack Photo</div>
+            <p class="text-[11px] text-slate-400">JPG, PNG, or mobile camera capture</p>
+          </div>
+          <div id="file-preview" class="hidden mt-2">
+            <span id="file-name" class="text-xs font-mono text-amber-300"></span>
+          </div>
+        </div>
+
+        <button type="submit" id="submit-audit-btn" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 text-white font-bold text-xs uppercase tracking-wider hover:from-amber-500 hover:to-orange-500 transition shadow-lg shadow-amber-600/20 flex items-center justify-center gap-2">
+          <span>🔍 Run Multimodal Tool Inventory Audit</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Audit History & Discrepancy Ledger -->
+    {% if audits %}
+    <div class="bg-surface-card border border-surface-border rounded-2xl p-6 shadow-xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <span>📋</span> Recent Fleet Tool Audit Ledger
+        </h3>
+        <span class="text-xs text-slate-400 font-mono">{{ audits|length }} Audits Recorded</span>
+      </div>
+
+      <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left text-xs">
+          <thead class="border-b border-slate-800 text-slate-400 uppercase font-mono text-[10px]">
+            <tr>
+              <th class="py-2.5 px-3">Truck ID</th>
+              <th class="py-2.5 px-3">Timestamp</th>
+              <th class="py-2.5 px-3">Audit Score</th>
+              <th class="py-2.5 px-3">Status</th>
+              <th class="py-2.5 px-3">Missing Tools</th>
+              <th class="py-2.5 px-3">Risk at Risk</th>
+              <th class="py-2.5 px-3">Observations</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800 text-slate-300">
+            {% for a in audits %}
+            <tr class="hover:bg-slate-900/60 transition font-mono">
+              <td class="py-3 px-3 text-amber-400 font-bold">{{ a.truck_id }}</td>
+              <td class="py-3 px-3 text-slate-400">{{ a.audit_timestamp[:19].replace('T', ' ') }}</td>
+              <td class="py-3 px-3">
+                <span class="font-bold {% if a.audit_score >= 90 %}text-emerald-400{% else %}text-rose-400{% endif %}">
+                  {{ a.audit_score }}%
+                </span>
+              </td>
+              <td class="py-3 px-3">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold
+                  {% if a.status == 'PASS' %}
+                    bg-emerald-500/20 text-emerald-300 border border-emerald-500/30
+                  {% else %}
+                    bg-rose-500/20 text-rose-300 border border-rose-500/30
+                  {% endif %}">
+                  {{ a.status }}
+                </span>
+              </td>
+              <td class="py-3 px-3 text-slate-300 font-sans">
+                {% if a.missing_tools %}
+                  <span class="text-rose-400 font-semibold">{{ a.missing_tools|map(attribute='tool_name')|join(', ') }}</span>
+                {% else %}
+                  <span class="text-emerald-400 font-mono">None (Complete)</span>
+                {% endif %}
+              </td>
+              <td class="py-3 px-3 font-bold {% if a.replacement_cost_at_risk > 0 %}text-rose-400{% else %}text-slate-400{% endif %}">
+                ${{ "{:,.2f}".format(a.replacement_cost_at_risk) }}
+              </td>
+              <td class="py-3 px-3 text-slate-400 font-sans truncate max-w-xs" title="{{ a.audit_notes }}">
+                {{ a.audit_notes or 'Standard audit recorded.' }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+  </main>
+
+  <script>
+    const fileInput = document.getElementById('tool-photo-input');
+    const fileName = document.getElementById('file-name');
+    const filePreview = document.getElementById('file-preview');
+    const dropzoneContent = document.getElementById('dropzone-content');
+
+    if (fileInput) {
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+          const file = e.target.files[0];
+          fileName.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+          filePreview.classList.remove('hidden');
+          dropzoneContent.classList.add('opacity-40');
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Where's My Tech? Live Arrival Tracker - {{ tenant.name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0B0F19;
+            color: #F8FAFC;
+        }
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 0.3; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .pulse-active {
+            animation: pulse-ring 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-[#0B0F19] text-slate-100 flex flex-col justify-between py-6 px-4 sm:px-6">
+
+    <div class="max-w-xl w-full mx-auto space-y-6">
+
+        <!-- Top Header / Tenant Badge -->
+        <header class="flex items-center justify-between bg-[#111827] border border-slate-800 rounded-2xl p-4 shadow-xl">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center font-extrabold text-white text-base shadow-lg shadow-sky-500/20">
+                    {{ tenant.name[:2].upper() }}
+                </div>
+                <div>
+                    <h1 class="text-sm font-extrabold text-white leading-tight">{{ tenant.name }}</h1>
+                    <p class="text-xs text-emerald-400 font-semibold flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Active Emergency Dispatch
+                    </p>
+                </div>
+            </div>
+            <div class="text-right">
+                <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Ticket #</span>
+                <span class="font-mono text-xs font-bold text-slate-300">{{ (lead_action.id|string)[:8]|upper }}</span>
+            </div>
+        </header>
+
+        {% if note_added %}
+        <div class="bg-emerald-500/10 border border-emerald-500/40 text-emerald-300 text-xs sm:text-sm font-semibold p-4 rounded-xl flex items-center gap-3 animate-fade-in">
+            <span class="text-lg">✓</span>
+            <span>Gate code and access instructions forwarded directly to technician's mobile phone.</span>
+        </div>
+        {% endif %}
+
+        <!-- ETA Countdown Hero Card -->
+        <section class="bg-gradient-to-br from-[#111827] via-[#0F172A] to-[#111827] border border-slate-800 rounded-3xl p-6 sm:p-8 text-center shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-12 -right-12 w-36 h-36 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-12 -left-12 w-36 h-36 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-bold uppercase tracking-wider mb-3">
+                <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+                <span>Live GPS ETA Window</span>
+            </div>
+
+            <div class="my-3">
+                <div id="eta-countdown-display" class="font-mono text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+                    <span id="eta-minutes">{{ eta_minutes }}</span>m <span id="eta-seconds">00</span>s
+                </div>
+                <p class="text-xs sm:text-sm text-slate-400 font-medium mt-2">
+                    Estimated Arrival: <strong class="text-slate-200" id="eta-time-window">Calculating...</strong>
+                </p>
+            </div>
+
+            <!-- Dynamic Stepper -->
+            <div class="mt-8 pt-6 border-t border-slate-800/80">
+                <div class="grid grid-cols-4 gap-2 text-center">
+                    
+                    <!-- Step 1: Dispatched -->
+                    <div class="flex flex-col items-center">
+                        <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all {% if step_idx >= 1 %}bg-emerald-500 text-slate-950 font-extrabold shadow-lg shadow-emerald-500/25{% else %}bg-slate-800 text-slate-400{% endif %}">
+                            {% if step_idx > 1 %}✓{% else %}1{% endif %}
+                        </div>
+                        <span class="text-[11px] font-bold mt-2 {% if step_idx == 1 %}text-sky-400{% elif step_idx > 1 %}text-emerald-400{% else %}text-slate-500{% endif %}">Dispatched</span>
+                    </div>
+
+                    <!-- Step 2: En Route -->
+                    <div class="flex flex-col items-center relative">
+                        <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all {% if step_idx == 2 %}bg-sky-500 text-slate-950 font-extrabold shadow-lg shadow-sky-500/30 pulse-active{% elif step_idx > 2 %}bg-emerald-500 text-slate-950 font-extrabold shadow-lg shadow-emerald-500/25{% else %}bg-slate-800 text-slate-400{% endif %}">
+                            {% if step_idx > 2 %}✓{% else %}2{% endif %}
+                        </div>
+                        <span class="text-[11px] font-bold mt-2 {% if step_idx == 2 %}text-sky-400{% elif step_idx > 2 %}text-emerald-400{% else %}text-slate-500{% endif %}">En Route</span>
+                    </div>
+
+                    <!-- Step 3: On Site -->
+                    <div class="flex flex-col items-center">
+                        <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all {% if step_idx == 3 %}bg-sky-500 text-slate-950 font-extrabold shadow-lg shadow-sky-500/30 pulse-active{% elif step_idx > 3 %}bg-emerald-500 text-slate-950 font-extrabold shadow-lg shadow-emerald-500/25{% else %}bg-slate-800 text-slate-400{% endif %}">
+                            {% if step_idx > 3 %}✓{% else %}3{% endif %}
+                        </div>
+                        <span class="text-[11px] font-bold mt-2 {% if step_idx == 3 %}text-sky-400{% elif step_idx > 3 %}text-emerald-400{% else %}text-slate-500{% endif %}">On Site</span>
+                    </div>
+
+                    <!-- Step 4: Completed -->
+                    <div class="flex flex-col items-center">
+                        <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all {% if step_idx == 4 %}bg-emerald-500 text-slate-950 font-extrabold shadow-lg shadow-emerald-500/30{% else %}bg-slate-800 text-slate-400{% endif %}">
+                            {% if step_idx == 4 %}✓{% else %}4{% endif %}
+                        </div>
+                        <span class="text-[11px] font-bold mt-2 {% if step_idx == 4 %}text-emerald-400{% else %}text-slate-500{% endif %}">Completed</span>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Technician Profile Badge Card -->
+        <section class="bg-[#111827] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-5">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Assigned Lead Technician</span>
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    On Duty
+                </span>
+            </div>
+
+            <div class="flex items-start gap-4">
+                <div class="relative">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-slate-700 to-slate-600 flex items-center justify-center text-2xl font-extrabold text-white border-2 border-sky-500/40 shadow-md">
+                        👨‍🔧
+                    </div>
+                    <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-[#111827] rounded-full"></span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-lg font-extrabold text-white truncate">{{ technician.name }}</h2>
+                        <span class="text-amber-400 text-xs font-bold flex items-center gap-0.5">★ {{ technician.rating }}</span>
+                    </div>
+                    <p class="text-xs text-sky-400 font-semibold">{{ technician.role }}</p>
+                    <p class="text-xs text-slate-400 font-mono mt-0.5">{{ technician.truck_number }}</p>
+                </div>
+            </div>
+
+            <!-- Certifications Badges -->
+            <div>
+                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Verified Credentials &amp; Licenses</p>
+                <div class="flex flex-wrap gap-1.5">
+                    {% for cert in technician.certifications %}
+                    <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 text-xs font-medium">
+                        🛡️ {{ cert }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Direct Contact Button -->
+            {% if technician.phone %}
+            <div class="pt-2 border-t border-slate-800/80">
+                <a href="tel:{{ technician.phone }}" class="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 px-4 rounded-xl border border-slate-700 transition text-sm">
+                    <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                    <span>Direct Call / SMS Technician</span>
+                </a>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- Equipment Verification & Truck Stock Card -->
+        <section class="bg-[#111827] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+                    <span>🛠️</span>
+                    <span>Equipment &amp; Truck Stock Verification</span>
+                </h3>
+                <span class="text-xs text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                    Parts Ready
+                </span>
+            </div>
+
+            {% if diagnostic %}
+            <div class="p-4 rounded-2xl bg-[#0B0F19] border border-slate-800 space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-slate-400">Identified Unit:</span>
+                    <strong class="text-white">{{ diagnostic.brand_manufacturer or "Verified" }} {{ diagnostic.equipment_type }}</strong>
+                </div>
+                {% if diagnostic.model_number %}
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-slate-400">Model #:</span>
+                    <strong class="text-slate-300 font-mono">{{ diagnostic.model_number }}</strong>
+                </div>
+                {% endif %}
+                <div class="text-xs pt-1 border-t border-slate-800/80">
+                    <span class="text-slate-400">Reported Issue: </span>
+                    <span class="text-slate-200">{{ diagnostic.damage_assessment }}</span>
+                </div>
+            </div>
+
+            <div>
+                <p class="text-xs font-bold text-slate-400 mb-2">Truck Stock Checklist Loaded:</p>
+                <div class="space-y-1.5">
+                    {% for part in diagnostic.recommended_parts_tools %}
+                    <div class="flex items-center gap-2 text-xs text-slate-300">
+                        <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[10px]">✓</span>
+                        <span>{{ part }} (Packed on {{ technician.truck_number }})</span>
+                    </div>
+                    {% else %}
+                    <div class="flex items-center gap-2 text-xs text-slate-300">
+                        <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[10px]">✓</span>
+                        <span>OEM Universal Replacement Parts (Packed on {{ technician.truck_number }})</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <!-- Option to snap photo while waiting -->
+            <div class="p-4 rounded-2xl bg-[#0B0F19] border border-slate-800 text-center space-y-3">
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    Have equipment details or serial photos? Upload them now so the technician confirms exact replacement parts before pulling up.
+                </p>
+                <a href="/intake/{{ lead_action.id }}" class="inline-flex items-center gap-2 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-sky-400 font-bold px-4 py-2 rounded-xl text-xs transition">
+                    <span>📸 Snap Photo for AI Equipment Scanner</span>
+                </a>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- Gate Code / Entry Instructions Card -->
+        <section class="bg-[#111827] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+            <div>
+                <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+                    <span>📍</span>
+                    <span>Gate Code &amp; Entry Instructions</span>
+                </h3>
+                <p class="text-xs text-slate-400 mt-1">
+                    Provide gate code, parking spot, or pet alerts. This instantly texts your technician so they can enter without delay.
+                </p>
+            </div>
+
+            <form method="POST" action="/track/{{ lead_action.id }}/notes" class="space-y-3">
+                <div>
+                    <textarea 
+                        name="notes" 
+                        required 
+                        rows="2" 
+                        placeholder="e.g., Gate code is #4921. Park in driveway. Please mind the friendly dog."
+                        class="w-full bg-[#0B0F19] border border-slate-700 rounded-xl p-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition resize-none"></textarea>
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                    <input 
+                        type="text" 
+                        name="sender_name" 
+                        placeholder="Your name (optional)" 
+                        class="bg-[#0B0F19] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition flex-1">
+                    <button 
+                        type="submit" 
+                        class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
+                        <span>Send to Tech</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </button>
+                </div>
+            </form>
+
+            {% if notes and notes|length > 0 %}
+            <div class="mt-4 pt-4 border-t border-slate-800/80">
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Logged Instructions</span>
+                <div class="space-y-2">
+                    {% for n in notes %}
+                    <div class="bg-[#0B0F19] border border-slate-800 rounded-xl p-3 text-xs text-slate-300 flex items-start gap-2">
+                        <span class="text-sky-400 font-bold">↳</span>
+                        <span>{{ n }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        <!-- Technician Hands-Free Voice-to-Job Notes Card -->
+        <section id="voice-notes" class="bg-[#111827] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+                        <span>🎙️</span>
+                        <span>Hands-Free Voice-to-Job Notes</span>
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">
+                        Dictate work performed, technical readings (subcooling, amps, pressures), and parts installed. Gemini formats it into a warranty-proof invoice narrative.
+                    </p>
+                </div>
+            </div>
+
+            {% if lead_action.voice_notes_data %}
+            {% set vn = lead_action.voice_notes_data %}
+            <div class="p-4 rounded-2xl bg-[#0B0F19] border border-slate-800 space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-mono font-bold text-slate-400 uppercase">Status:</span>
+                    <span class="px-2 py-0.5 rounded text-[11px] font-mono font-bold
+                        {% if vn.system_condition == 'OPERATIONAL' %}bg-emerald-500/20 text-emerald-300 border border-emerald-500/40
+                        {% elif vn.system_condition == 'NEEDS_MONITORING' %}bg-amber-500/20 text-amber-300 border border-amber-500/40
+                        {% else %}bg-rose-500/20 text-rose-300 border border-rose-500/40{% endif %}">
+                        {{ vn.system_condition }}
+                    </span>
+                </div>
+
+                <!-- Invoice Narrative -->
+                <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 leading-relaxed font-sans italic">
+                    "{{ vn.formatted_invoice_narrative }}"
+                </div>
+
+                <!-- Technical Readings -->
+                {% if vn.technical_readings %}
+                <div>
+                    <span class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Recorded Diagnostic Readings:</span>
+                    <div class="flex flex-wrap gap-1.5">
+                        {% for k, v in vn.technical_readings.items() %}
+                        <span class="px-2 py-1 rounded bg-slate-800 text-cyan-300 border border-slate-700 text-xs font-mono">
+                            {{ k|replace('_', ' ')|title }}: <strong class="text-white">{{ v }}</strong>
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Parts Installed -->
+                {% if vn.parts_installed %}
+                <div>
+                    <span class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Parts &amp; Materials Installed:</span>
+                    <div class="flex flex-wrap gap-1.5">
+                        {% for part in vn.parts_installed %}
+                        <span class="px-2 py-1 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 text-xs">
+                            ✓ {{ part }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Dictation Form -->
+            <form method="POST" action="/track/{{ lead_action.id }}/voice-notes" class="space-y-3 pt-2">
+                <input type="hidden" name="trade_category" value="{{ lead_action.category or 'General' }}">
+                <div class="relative">
+                    <textarea 
+                        name="notes_text" 
+                        id="dictation-textarea"
+                        required 
+                        rows="3" 
+                        placeholder="Tap the microphone and speak: 'Replaced 45/5 dual run capacitor, checked subcooling at 10.5 degrees, compressor drawing 13.8 amps, system operational...'"
+                        class="w-full bg-[#0B0F19] border border-slate-700 rounded-xl p-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition resize-none"></textarea>
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                    <button 
+                        type="button" 
+                        id="mic-record-btn"
+                        onclick="toggleSpeechRecognition()"
+                        class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition flex items-center gap-1.5">
+                        <span id="mic-icon" class="text-base">🎙️</span>
+                        <span id="mic-label">Record Voice</span>
+                    </button>
+                    <button 
+                        type="submit" 
+                        class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
+                        <span>⚡ Parse &amp; Save Notes</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-slate-600 mt-8">
+        <p>&copy; 2026 {{ tenant.name }} • Autonomous 24/7 Operations Powered by DispatchEngine</p>
+    </footer>
+
+    <!-- Interactive ETA Countdown Script -->
+    <script>
+        (function() {
+            var totalMinutes = parseInt("{{ eta_minutes }}", 10) || 18;
+            var secondsRemaining = totalMinutes * 60;
+            var minEl = document.getElementById("eta-minutes");
+            var secEl = document.getElementById("eta-seconds");
+            var timeWindowEl = document.getElementById("eta-time-window");
+
+            // Calculate arrival time window (e.g., 11:45 AM - 11:55 AM)
+            var now = new Date();
+            var arrivalDate = new Date(now.getTime() + (totalMinutes * 60 * 1000));
+            var arrivalWindowEnd = new Date(arrivalDate.getTime() + (10 * 60 * 1000));
+            
+            function formatTime(d) {
+                return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+
+            if (timeWindowEl) {
+                timeWindowEl.textContent = formatTime(arrivalDate) + " - " + formatTime(arrivalWindowEnd);
+            }
+
+            var timer = setInterval(function() {
+                if (secondsRemaining <= 0) {
+                    clearInterval(timer);
+                    if (minEl) minEl.textContent = "0";
+                    if (secEl) secEl.textContent = "00";
+                    return;
+                }
+                secondsRemaining--;
+                var mins = Math.floor(secondsRemaining / 60);
+                var secs = secondsRemaining % 60;
+                if (minEl) minEl.textContent = mins;
+                if (secEl) secEl.textContent = (secs < 10 ? "0" : "") + secs;
+            }, 1000);
+        })();
+
+        // Web Speech API Voice Dictation Helper
+        var recognition = null;
+        var isRecording = false;
+
+        function toggleSpeechRecognition() {
+            var btn = document.getElementById("mic-record-btn");
+            var label = document.getElementById("mic-label");
+            var icon = document.getElementById("mic-icon");
+            var textarea = document.getElementById("dictation-textarea");
+
+            var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRec) {
+                alert("Speech recognition is not supported in this browser. Please type notes directly into the text box.");
+                return;
+            }
+
+            if (!recognition) {
+                recognition = new SpeechRec();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = "en-US";
+
+                recognition.onresult = function(event) {
+                    var transcript = "";
+                    for (var i = 0; i < event.results.length; i++) {
+                        transcript += event.results[i][0].transcript + " ";
+                    }
+                    textarea.value = transcript.trim();
+                };
+
+                recognition.onerror = function(event) {
+                    console.warn("Speech recognition error:", event.error);
+                    stopRecording();
+                };
+
+                recognition.onend = function() {
+                    stopRecording();
+                };
+            }
+
+            if (isRecording) {
+                recognition.stop();
+                stopRecording();
+            } else {
+                try {
+                    recognition.start();
+                    isRecording = true;
+                    btn.classList.add("bg-rose-600", "text-white", "animate-pulse");
+                    label.textContent = "Listening...";
+                    icon.textContent = "🔴";
+                } catch (e) {
+                    console.error("Failed to start speech recognition:", e);
+                }
+            }
+
+            function stopRecording() {
+                isRecording = false;
+                btn.classList.remove("bg-rose-600", "text-white", "animate-pulse");
+                label.textContent = "Record Voice";
+                icon.textContent = "🎙️";
+            }
+        }
+    </script>
+</body>
+</html>

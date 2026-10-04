@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIA G702/G703 Application for Payment &bull; {{ pay_app.project_name }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .glass-card {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+        font-size: 10pt;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-card {
+        background: white !important;
+        border: 1px solid #111 !important;
+        color: black !important;
+        box-shadow: none !important;
+      }
+      .print-table th, .print-table td {
+        border: 1px solid #333 !important;
+        color: black !important;
+      }
+      .print-black {
+        color: black !important;
+      }
+      .badge-print {
+        border: 1px solid #333 !important;
+        color: black !important;
+        background: #eee !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-950 text-gray-100 font-sans min-h-screen antialiased selection:bg-cyan-500 selection:text-white pb-16">
+
+  <!-- Ambient Backdrop -->
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-48 bg-gradient-to-b from-blue-600/10 via-cyan-600/5 to-transparent blur-3xl pointer-events-none no-print"></div>
+
+  <div class="max-w-6xl mx-auto px-4 py-8 sm:px-6 relative space-y-6">
+
+    <!-- Top Toolbar -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-800 pb-4 no-print">
+      <div class="flex items-center space-x-3">
+        <a href="/portal/{{ tenant.slug }}" class="p-2 rounded-xl bg-gray-900 hover:bg-gray-800 text-gray-400 hover:text-white border border-gray-800 transition">
+          &larr; Portal
+        </a>
+        <div>
+          <span class="text-xs font-mono text-cyan-400 font-semibold uppercase tracking-wider block">Commercial Progress Billing</span>
+          <h1 class="text-xl sm:text-2xl font-bold text-white">AIA Document G702 / G703 Application</h1>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <!-- Recalculate Modal Toggle -->
+        <button onclick="document.getElementById('recalc-drawer').classList.toggle('hidden')" class="px-3.5 py-2 rounded-xl text-xs font-bold text-gray-200 bg-gray-800 hover:bg-gray-700 border border-gray-700 transition flex items-center space-x-1.5">
+          <span>⚙️</span>
+          <span>Adjust Draw / Retainage</span>
+        </button>
+
+        <!-- Print Pay App Button -->
+        <button onclick="window.print()" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 border border-blue-500/30 shadow-lg shadow-blue-500/20 transition flex items-center space-x-1.5">
+          <span>🖨️</span>
+          <span>Print AIA G702/G703</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Recalculate Form (Hidden by default, interactive) -->
+    <div id="recalc-drawer" class="hidden glass-card rounded-2xl p-5 border border-cyan-500/30 no-print space-y-4">
+      <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+        <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+          <span>⚙️</span>
+          <span>Adjust Progress Billing Parameters</span>
+        </h3>
+        <button onclick="document.getElementById('recalc-drawer').classList.add('hidden')" class="text-gray-400 hover:text-white text-xs">✕ Close</button>
+      </div>
+
+      <form action="/pay-app/{{ lead.id }}/generate" method="POST" class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
+        <div>
+          <label class="block text-gray-400 font-mono uppercase mb-1">Target Progress %</label>
+          <input type="number" step="0.1" min="0" max="100" name="progress_pct" value="{{ "{:.1f}".format((pay_app.total_completed_stored / (pay_app.contract_sum_to_date or 1) * 100)) }}" class="w-full bg-gray-900 border border-gray-800 rounded-xl p-2.5 text-white font-mono focus:border-cyan-500">
+        </div>
+        <div>
+          <label class="block text-gray-400 font-mono uppercase mb-1">Retainage Rate %</label>
+          <input type="number" step="0.5" min="0" max="25" name="retainage_pct" value="10.0" class="w-full bg-gray-900 border border-gray-800 rounded-xl p-2.5 text-white font-mono focus:border-cyan-500">
+        </div>
+        <div>
+          <label class="block text-gray-400 font-mono uppercase mb-1">Application No.</label>
+          <input type="number" min="1" name="application_number" value="{{ pay_app.application_number }}" class="w-full bg-gray-900 border border-gray-800 rounded-xl p-2.5 text-white font-mono focus:border-cyan-500">
+        </div>
+        <div class="flex items-end">
+          <button type="submit" class="w-full py-2.5 px-4 rounded-xl font-bold text-white bg-cyan-600 hover:bg-cyan-500 transition">
+            Recalculate Draw
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ==================== AIA DOCUMENT G702 ==================== -->
+    <div class="glass-card print-card rounded-3xl p-6 sm:p-8 border border-gray-800 space-y-6">
+
+      <!-- G702 Header Grid -->
+      <div class="border-b-2 border-gray-700 pb-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-black uppercase tracking-tight text-white print-black">AIA Document G702™ &ndash; 1992</h2>
+            <p class="text-xs uppercase font-mono tracking-widest text-gray-400 print-black">Application and Certificate for Payment</p>
+          </div>
+          <div class="text-right font-mono text-xs">
+            <span class="inline-block px-3 py-1 rounded-full bg-blue-950 text-blue-300 border border-blue-800 print-black badge-print font-bold">
+              Application No. {{ pay_app.application_number }} &bull; Period To: {{ pay_app.period_to }}
+            </span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-3 text-xs">
+          <div class="space-y-0.5">
+            <span class="text-gray-400 uppercase font-mono text-[10px] block">To Owner:</span>
+            <strong class="text-white print-black block">{{ lead.qualification_summary.split(' - ')[0] if lead.qualification_summary else 'Commercial Property Owner' }}</strong>
+            <span class="text-gray-400 print-black">{{ lead.extracted_address or 'Project Site' }}</span>
+          </div>
+          <div class="space-y-0.5">
+            <span class="text-gray-400 uppercase font-mono text-[10px] block">From Contractor:</span>
+            <strong class="text-white print-black block">{{ tenant.name }}</strong>
+            <span class="text-gray-400 print-black">Slug: {{ tenant.slug }}</span>
+          </div>
+          <div class="space-y-0.5">
+            <span class="text-gray-400 uppercase font-mono text-[10px] block">Project:</span>
+            <strong class="text-white print-black block">{{ pay_app.project_name }}</strong>
+            <span class="text-gray-400 print-black font-mono">Job ID: {{ lead.id }}</span>
+          </div>
+          <div class="space-y-0.5">
+            <span class="text-gray-400 uppercase font-mono text-[10px] block">Via Architect / Engineer:</span>
+            <strong class="text-white print-black block">{{ pay_app.architect_name }}</strong>
+            <span class="text-gray-400 print-black">Commercial Contract</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTRACTOR'S APPLICATION FOR PAYMENT (9 STATUTORY LINES) -->
+      <div class="space-y-3">
+        <h3 class="text-xs uppercase tracking-wider font-mono font-bold text-gray-400 print-black border-b border-gray-800 pb-1">
+          Contractor's Application for Payment
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs sm:text-sm">
+          <div class="space-y-2.5 font-mono">
+            <div class="flex justify-between py-1 border-b border-gray-800/80">
+              <span class="text-gray-300 print-black">1. ORIGINAL CONTRACT SUM</span>
+              <strong class="text-white print-black">${{ "{:,.2f}".format(pay_app.original_contract_sum) }}</strong>
+            </div>
+            <div class="flex justify-between py-1 border-b border-gray-800/80">
+              <span class="text-gray-300 print-black">2. Net change by Change Orders</span>
+              <span class="text-gray-400 print-black">${{ "{:,.2f}".format(pay_app.net_change_orders) }}</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-gray-800/80 font-bold bg-gray-900/50 print-card px-2 rounded">
+              <span class="text-cyan-400 print-black">3. CONTRACT SUM TO DATE (Line 1 &plusmn; 2)</span>
+              <strong class="text-cyan-300 print-black">${{ "{:,.2f}".format(pay_app.contract_sum_to_date) }}</strong>
+            </div>
+            <div class="flex justify-between py-1 border-b border-gray-800/80">
+              <span class="text-gray-300 print-black">4. TOTAL COMPLETED &amp; STORED TO DATE (Col. G)</span>
+              <strong class="text-white print-black">${{ "{:,.2f}".format(pay_app.total_completed_stored) }}</strong>
+            </div>
+            <div class="flex justify-between py-1 border-b border-gray-800/80 text-amber-400 print-black">
+              <span>5. RETAINAGE (10% Escrow Withholding)</span>
+              <strong>-${{ "{:,.2f}".format(pay_app.total_retainage) }}</strong>
+            </div>
+          </div>
+
+          <div class="space-y-2.5 font-mono">
+            <div class="flex justify-between py-1 border-b border-gray-800/80">
+              <span class="text-gray-300 print-black">6. TOTAL EARNED LESS RETAINAGE (Line 4 less Line 5)</span>
+              <strong class="text-white print-black">${{ "{:,.2f}".format(pay_app.total_completed_stored - pay_app.total_retainage) }}</strong>
+            </div>
+            <div class="flex justify-between py-1 border-b border-gray-800/80 text-gray-400 print-black">
+              <span>7. LESS PREVIOUS CERTIFICATES FOR PAYMENT</span>
+              <span>-${{ "{:,.2f}".format(pay_app.less_previous_certificates) }}</span>
+            </div>
+            <div class="flex justify-between py-2 border-2 border-emerald-500/50 bg-emerald-950/40 print-card px-3 rounded-xl font-bold text-sm sm:text-base">
+              <span class="text-emerald-300 print-black">8. CURRENT PAYMENT DUE (Line 6 less Line 7)</span>
+              <strong class="text-emerald-400 print-black text-lg">${{ "{:,.2f}".format(pay_app.current_payment_due) }}</strong>
+            </div>
+            <div class="flex justify-between py-1 border-b border-gray-800/80 text-gray-400 print-black text-xs">
+              <span>9. BALANCE TO FINISH, PLUS RETAINAGE (Line 3 less Line 6)</span>
+              <strong class="text-gray-300 print-black">${{ "{:,.2f}".format(pay_app.balance_to_finish_plus_retainage) }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTRACTOR AFFIDAVIT & ARCHITECT CERTIFICATION BLOCKS -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-800 text-xs">
+
+        <!-- Contractor Notarized Affidavit -->
+        <div class="p-4 rounded-2xl bg-gray-900/60 print-card border border-gray-800 space-y-3">
+          <span class="text-[10px] uppercase font-mono font-bold text-cyan-400 print-black block">Contractor's Signed Affidavit</span>
+          <p class="text-[11px] text-gray-400 print-black leading-relaxed">
+            The undersigned Contractor certifies that to the best of the Contractor's knowledge, information and belief the Work covered by this Application for Payment has been completed in accordance with the Contract Documents, that all amounts have been paid by the Contractor for Work for which previous Certificates for Payment were issued, and that current payment shown herein is now due.
+          </p>
+          <div class="pt-4 flex justify-between items-end border-t border-gray-800">
+            <div>
+              <span class="block font-mono text-[10px] text-gray-500">CONTRACTOR: {{ tenant.name }}</span>
+              <div class="font-serif italic text-lg text-emerald-400 print-black">Authorized Officer Signature</div>
+            </div>
+            <div class="text-right">
+              <span class="block font-mono text-[10px] text-gray-500">Date Signed:</span>
+              <span class="font-mono text-gray-300 print-black">{{ pay_app.period_to }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Architect's Certificate for Payment -->
+        <div class="p-4 rounded-2xl bg-gray-900/60 print-card border border-gray-800 space-y-3">
+          <span class="text-[10px] uppercase font-mono font-bold text-blue-400 print-black block">Architect's Certificate for Payment</span>
+          <p class="text-[11px] text-gray-400 print-black leading-relaxed">
+            In accordance with the Contract Documents, based on on-site observations and the data comprising this application, the Architect certifies to the Owner that to the best of the Architect's knowledge, information and belief the Work has progressed as indicated, the quality of the Work is in accordance with the Contract Documents, and the Contractor is entitled to payment of the AMOUNT CERTIFIED.
+          </p>
+          <div class="p-2 rounded bg-gray-950 print-card flex justify-between font-mono text-xs font-bold text-white print-black">
+            <span>AMOUNT CERTIFIED:</span>
+            <span class="text-emerald-400 print-black">${{ "{:,.2f}".format(pay_app.current_payment_due) }}</span>
+          </div>
+          <div class="pt-2 flex justify-between items-end border-t border-gray-800">
+            <div>
+              <span class="block font-mono text-[10px] text-gray-500">ARCHITECT: {{ pay_app.architect_name }}</span>
+              <div class="font-serif italic text-base text-cyan-400 print-black">Project Architect Seal &amp; Sig</div>
+            </div>
+            <div class="text-right">
+              <span class="block font-mono text-[10px] text-gray-500">Issuance Date:</span>
+              <span class="font-mono text-gray-300 print-black">{{ pay_app.period_to }}</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ==================== AIA DOCUMENT G703 CONTINUATION SHEET ==================== -->
+    <div class="glass-card print-card rounded-3xl p-6 sm:p-8 border border-gray-800 space-y-4">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b-2 border-gray-700 pb-3">
+        <div>
+          <h2 class="text-xl font-black uppercase tracking-tight text-white print-black">AIA Document G703™ &ndash; Continuation Sheet</h2>
+          <p class="text-xs uppercase font-mono tracking-widest text-gray-400 print-black">Schedule of Values (SOV) Trade Breakdown</p>
+        </div>
+        <div class="text-xs font-mono text-gray-400 print-black">
+          App No. {{ pay_app.application_number }} &bull; Period To: {{ pay_app.period_to }}
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-[11px] font-mono print-table">
+          <thead>
+            <tr class="bg-gray-900 border-b border-gray-700 text-gray-400 uppercase text-[10px]">
+              <th class="py-2.5 px-2">A: Item</th>
+              <th class="py-2.5 px-3">B: Description of Work</th>
+              <th class="py-2.5 px-2 text-right">C: Sched. Val</th>
+              <th class="py-2.5 px-2 text-right">D: Prev. Comp</th>
+              <th class="py-2.5 px-2 text-right">E: This Period</th>
+              <th class="py-2.5 px-2 text-right">F: Stored Mat</th>
+              <th class="py-2.5 px-2 text-right">G: Tot. Comp (D+E+F)</th>
+              <th class="py-2.5 px-2 text-center">H: % (G/C)</th>
+              <th class="py-2.5 px-2 text-right">I: Balance</th>
+              <th class="py-2.5 px-2 text-right text-amber-400 print-black">Retainage (10%)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-800/80">
+            {% for item in pay_app.line_items %}
+              <tr class="hover:bg-gray-800/40 transition">
+                <td class="py-2.5 px-2 font-bold text-cyan-400 print-black">{{ item.item_number }}</td>
+                <td class="py-2.5 px-3 font-sans text-gray-200 print-black">{{ item.description }}</td>
+                <td class="py-2.5 px-2 text-right text-white print-black">${{ "{:,.2f}".format(item.scheduled_value) }}</td>
+                <td class="py-2.5 px-2 text-right text-gray-400 print-black">${{ "{:,.2f}".format(item.work_completed_previous) }}</td>
+                <td class="py-2.5 px-2 text-right text-emerald-400 print-black">${{ "{:,.2f}".format(item.work_completed_this_period) }}</td>
+                <td class="py-2.5 px-2 text-right text-gray-400 print-black">${{ "{:,.2f}".format(item.materials_stored) }}</td>
+                <td class="py-2.5 px-2 text-right font-bold text-white print-black">${{ "{:,.2f}".format(item.total_completed_stored) }}</td>
+                <td class="py-2.5 px-2 text-center">
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold {% if item.percent_complete >= 100 %}bg-emerald-950 text-emerald-300 border border-emerald-800{% else %}bg-cyan-950 text-cyan-300 border border-cyan-800{% endif %} print-black badge-print">
+                    {{ item.percent_complete }}%
+                  </span>
+                </td>
+                <td class="py-2.5 px-2 text-right text-gray-300 print-black">${{ "{:,.2f}".format(item.balance_to_finish) }}</td>
+                <td class="py-2.5 px-2 text-right text-amber-400 print-black">${{ "{:,.2f}".format(item.retainage_amount) }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="bg-gray-900 border-t-2 border-gray-700 font-bold text-white print-black">
+              <td class="py-3 px-2" colspan="2">TOTAL CONTINUATION SHEET</td>
+              <td class="py-3 px-2 text-right">${{ "{:,.2f}".format(pay_app.contract_sum_to_date) }}</td>
+              <td class="py-3 px-2 text-right text-gray-400 print-black">${{ "{:,.2f}".format(pay_app.line_items|sum(attribute='work_completed_previous')) }}</td>
+              <td class="py-3 px-2 text-right text-emerald-400 print-black">${{ "{:,.2f}".format(pay_app.line_items|sum(attribute='work_completed_this_period')) }}</td>
+              <td class="py-3 px-2 text-right text-gray-400 print-black">${{ "{:,.2f}".format(pay_app.line_items|sum(attribute='materials_stored')) }}</td>
+              <td class="py-3 px-2 text-right text-cyan-300 print-black">${{ "{:,.2f}".format(pay_app.total_completed_stored) }}</td>
+              <td class="py-3 px-2 text-center">{{ "{:.1f}".format((pay_app.total_completed_stored / (pay_app.contract_sum_to_date or 1) * 100)) }}%</td>
+              <td class="py-3 px-2 text-right">${{ "{:,.2f}".format(pay_app.line_items|sum(attribute='balance_to_finish')) }}</td>
+              <td class="py-3 px-2 text-right text-amber-400 print-black">${{ "{:,.2f}".format(pay_app.total_retainage) }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center text-xs text-gray-500 pt-4 no-print">
+      &copy; 2026 {{ tenant.name }} &bull; Commercial AIA G702/G703 Progress Billing Engine
+    </div>
+
+  </div>
+
+</body>
+</html>

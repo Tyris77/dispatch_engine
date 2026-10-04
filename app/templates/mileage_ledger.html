@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ report.tenant_name }} - IRS Fleet Mileage Tax Ledger ({{ report.tax_year }})</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfeff',
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0B0F19;
+      color: #f3f4f6;
+    }
+    .glass-card {
+      background: #111827;
+      border: 1px solid rgba(55, 65, 81, 0.7);
+    }
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .glass-card {
+        background: transparent !important;
+        border: 1px solid #cccccc !important;
+        color: #000000 !important;
+        box-shadow: none !important;
+      }
+      table, th, td {
+        border-color: #dddddd !important;
+        color: #000000 !important;
+      }
+      .print-black {
+        color: #000000 !important;
+      }
+      .badge-print {
+        border: 1px solid #999999 !important;
+        background: transparent !important;
+        color: #000000 !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans antialiased text-slate-100 flex flex-col p-4 sm:p-8">
+
+  <div class="w-full max-w-7xl mx-auto space-y-6">
+
+    <!-- Top Action Nav (Hidden in Print) -->
+    <div class="no-print flex flex-wrap items-center justify-between gap-4 pb-2 border-b border-slate-800">
+      <div class="flex items-center gap-3">
+        <a
+          href="/dashboard/{{ report.tenant_slug }}"
+          class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors flex items-center gap-1.5"
+        >
+          <span>←</span>
+          <span>Operations Dashboard</span>
+        </a>
+        <a
+          href="/portal/{{ report.tenant_slug }}"
+          class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors"
+        >
+          Client Portal
+        </a>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          onclick="window.print()"
+          class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 transition-all flex items-center gap-1.5 shadow-sm"
+        >
+          <span>🖨️</span>
+          <span>Print / PDF Ledger</span>
+        </button>
+        <a
+          href="/api/v1/mileage/{{ report.tenant_slug }}/export.csv"
+          download
+          class="px-4 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-500/20"
+        >
+          <span>📥</span>
+          <span>Export IRS CPA CSV</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Official Header Banner -->
+    <header class="glass-card rounded-2xl p-6 relative overflow-hidden">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[11px] font-mono uppercase tracking-wider font-bold">
+            <span>IRS Publication 463 Standard Mileage Compliance</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">{{ report.tenant_name }}</h1>
+          <p class="text-xs sm:text-sm text-slate-400">
+            Contemporaneous Business Vehicle Odometer Log &bull; Form 1040 Schedule C / Form 1120-S Tax Filing Ledger
+          </p>
+        </div>
+
+        <div class="text-left md:text-right font-mono text-xs text-slate-400 space-y-1">
+          <div>Tax Year: <strong class="text-white text-base">{{ report.tax_year }}</strong></div>
+          <div>Tenant Slug: <span class="text-cyan-400">{{ report.tenant_slug }}</span></div>
+          <div>Report Generated: <span class="text-slate-300">{{ report.generated_at[:10] }} {{ report.generated_at[11:16] }} UTC</span></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Key Deduction Counters & Metrics -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Total Miles -->
+      <div class="glass-card rounded-2xl p-5 border-slate-800 space-y-2">
+        <div class="flex items-center justify-between text-xs text-slate-400 font-semibold uppercase tracking-wider">
+          <span>Total Business Miles</span>
+          <span class="text-base">🚗</span>
+        </div>
+        <div class="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">
+          {{ "{:,.1f}".format(report.total_business_miles) }}
+          <span class="text-xs text-slate-400 font-sans font-normal">mi</span>
+        </div>
+        <div class="text-[11px] text-slate-400">
+          Verified dispatch & logistics road travel
+        </div>
+      </div>
+
+      <!-- IRS Deduction Rate -->
+      <div class="glass-card rounded-2xl p-5 border-slate-800 space-y-2">
+        <div class="flex items-center justify-between text-xs text-slate-400 font-semibold uppercase tracking-wider">
+          <span>IRS Standard Rate</span>
+          <span class="text-base">⚖️</span>
+        </div>
+        <div class="text-2xl sm:text-3xl font-black text-cyan-400 font-mono tracking-tight">
+          ${{ "{:,.2f}".format(report.irs_rate) }}
+          <span class="text-xs text-slate-400 font-sans font-normal">/ mile</span>
+        </div>
+        <div class="text-[11px] text-slate-400">
+          IRS Notice 2026 vehicle allowance rate
+        </div>
+      </div>
+
+      <!-- Total Tax Deduction Savings Counter -->
+      <div class="glass-card rounded-2xl p-5 border-emerald-500/40 bg-emerald-950/20 space-y-2">
+        <div class="flex items-center justify-between text-xs text-emerald-400 font-semibold uppercase tracking-wider">
+          <span>Federal Tax Deduction</span>
+          <span class="text-base">💰</span>
+        </div>
+        <div class="text-2xl sm:text-3xl font-black text-emerald-400 font-mono tracking-tight">
+          ${{ "{:,.2f}".format(report.total_tax_deduction_dollars) }}
+        </div>
+        <div class="text-[11px] text-emerald-300/80">
+          Direct Schedule C / corporate taxable write-off
+        </div>
+      </div>
+
+      <!-- Total Dispatches / Trips -->
+      <div class="glass-card rounded-2xl p-5 border-slate-800 space-y-2">
+        <div class="flex items-center justify-between text-xs text-slate-400 font-semibold uppercase tracking-wider">
+          <span>Logged Vehicle Trips</span>
+          <span class="text-base">📋</span>
+        </div>
+        <div class="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">
+          {{ report.total_trips }}
+        </div>
+        <div class="text-[11px] text-slate-400">
+          100% itemized contemporaneous audit log
+        </div>
+      </div>
+    </div>
+
+    <!-- Search & Filter Controls (No Print) -->
+    <div class="no-print glass-card rounded-2xl p-4 border-slate-800 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-2 flex-1 min-w-[240px]">
+        <span class="text-slate-400 text-sm">🔍</span>
+        <input
+          type="text"
+          id="search-input"
+          onkeyup="filterTrips()"
+          placeholder="Filter by driver, destination address, or trip ID..."
+          class="w-full bg-[#0B0F19] border border-slate-700 rounded-lg px-3 py-1.5 text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-400"
+        >
+      </div>
+
+      <div class="flex items-center gap-1.5 overflow-x-auto text-xs">
+        <button
+          type="button"
+          onclick="filterPurpose('ALL')"
+          class="purpose-btn px-2.5 py-1 rounded-lg font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
+        >
+          All ({{ report.trips|length }})
+        </button>
+        <button
+          type="button"
+          onclick="filterPurpose('Emergency Dispatch')"
+          class="purpose-btn px-2.5 py-1 rounded-lg font-semibold bg-slate-800 text-slate-400 hover:text-white border border-transparent"
+        >
+          🚨 Emergency
+        </button>
+        <button
+          type="button"
+          onclick="filterPurpose('Estimate Inspection')"
+          class="purpose-btn px-2.5 py-1 rounded-lg font-semibold bg-slate-800 text-slate-400 hover:text-white border border-transparent"
+        >
+          🔍 Inspections
+        </button>
+        <button
+          type="button"
+          onclick="filterPurpose('Will-Call Parts Pickup')"
+          class="purpose-btn px-2.5 py-1 rounded-lg font-semibold bg-slate-800 text-slate-400 hover:text-white border border-transparent"
+        >
+          📦 Parts Pickup
+        </button>
+      </div>
+    </div>
+
+    <!-- Itemized Mileage Ledger Table -->
+    <div class="glass-card rounded-2xl overflow-hidden border-slate-800">
+      <div class="p-4 bg-slate-900/60 border-b border-slate-800 flex items-center justify-between">
+        <h2 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+          <span>📑</span>
+          <span>Itemized Trip &amp; Odometer Deduction Register</span>
+        </h2>
+        <span class="text-xs text-slate-400 font-mono">
+          Showing <span id="visible-count">{{ report.trips|length }}</span> of {{ report.trips|length }} Trips
+        </span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs sm:text-sm" id="mileage-table">
+          <thead>
+            <tr class="border-b border-slate-800 text-[11px] font-bold text-slate-400 uppercase tracking-wider bg-slate-900/40">
+              <th class="py-3 px-4">Trip ID &amp; Date</th>
+              <th class="py-3 px-4">Driver / Tech</th>
+              <th class="py-3 px-4">Origin &bull; Destination</th>
+              <th class="py-3 px-4">Business Purpose</th>
+              <th class="py-3 px-4 text-right">Miles</th>
+              <th class="py-3 px-4 text-right">Rate</th>
+              <th class="py-3 px-4 text-right">Deduction ($)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/60 font-sans" id="trips-tbody">
+            {% for trip in report.trips %}
+            <tr class="trip-row hover:bg-slate-800/30 transition-colors" data-purpose="{{ trip.business_purpose }}" data-search="{{ trip.trip_id }} {{ trip.driver_name }} {{ trip.destination_address }} {{ trip.business_purpose }}">
+              <!-- Trip ID & Date -->
+              <td class="py-3 px-4 whitespace-nowrap">
+                <div class="font-mono font-bold text-cyan-400">{{ trip.trip_id }}</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">{{ trip.date }}</div>
+              </td>
+
+              <!-- Driver -->
+              <td class="py-3 px-4 whitespace-nowrap">
+                <div class="font-bold text-slate-200">{{ trip.driver_name }}</div>
+                <div class="text-[11px] text-slate-400">Field Technician</div>
+              </td>
+
+              <!-- Origin & Destination -->
+              <td class="py-3 px-4 max-w-xs">
+                <div class="text-slate-400 text-[11px] truncate flex items-center gap-1">
+                  <span class="text-slate-500">From:</span>
+                  <span class="truncate">{{ trip.origin_address }}</span>
+                </div>
+                <div class="text-white font-medium truncate flex items-center gap-1 mt-0.5">
+                  <span class="text-slate-400">To:</span>
+                  <span class="truncate">{{ trip.destination_address }}</span>
+                </div>
+              </td>
+
+              <!-- Purpose Badge -->
+              <td class="py-3 px-4 whitespace-nowrap">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider inline-block badge-print
+                  {% if 'Emergency' in trip.business_purpose %}
+                    bg-rose-500/20 text-rose-300 border border-rose-500/40
+                  {% elif 'Inspection' in trip.business_purpose %}
+                    bg-cyan-500/20 text-cyan-300 border border-cyan-500/40
+                  {% elif 'Parts' in trip.business_purpose %}
+                    bg-purple-500/20 text-purple-300 border border-purple-500/40
+                  {% else %}
+                    bg-emerald-500/20 text-emerald-300 border border-emerald-500/40
+                  {% endif %}
+                ">
+                  {{ trip.business_purpose }}
+                </span>
+              </td>
+
+              <!-- Miles -->
+              <td class="py-3 px-4 text-right font-mono font-bold text-white whitespace-nowrap">
+                {{ "{:,.1f}".format(trip.miles_driven) }}
+              </td>
+
+              <!-- Rate -->
+              <td class="py-3 px-4 text-right font-mono text-slate-400 whitespace-nowrap">
+                ${{ "{:,.2f}".format(trip.irs_rate) }}
+              </td>
+
+              <!-- Deduction Value -->
+              <td class="py-3 px-4 text-right font-mono font-bold text-emerald-400 whitespace-nowrap">
+                ${{ "{:,.2f}".format(trip.deductible_dollars) }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="bg-slate-900/80 font-bold border-t-2 border-slate-700">
+              <td colspan="4" class="py-3.5 px-4 text-slate-300 uppercase tracking-wider text-xs">
+                Ledger Totals (Tax Year {{ report.tax_year }})
+              </td>
+              <td class="py-3.5 px-4 text-right font-mono text-white text-sm">
+                {{ "{:,.1f}".format(report.total_business_miles) }} mi
+              </td>
+              <td class="py-3.5 px-4 text-right font-mono text-slate-400 text-xs">
+                Avg Rate
+              </td>
+              <td class="py-3.5 px-4 text-right font-mono text-emerald-400 text-base">
+                ${{ "{:,.2f}".format(report.total_tax_deduction_dollars) }}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- IRS Audit Compliance Legal Notice -->
+    <div class="glass-card rounded-2xl p-5 border-slate-800 text-xs text-slate-400 space-y-2">
+      <div class="flex items-center gap-2 font-bold text-slate-300">
+        <span>⚖️</span>
+        <span>IRS Recordkeeping Certification &amp; Legal Compliance Statement</span>
+      </div>
+      <p class="leading-relaxed">
+        This document serves as an IRS-compliant contemporaneous written record of vehicle usage under Internal Revenue Code &sect; 162 and Treasury Regulation &sect; 1.274-5T. All mileage calculations are determined via GPS route verification or road odometer telemetry at dispatch time. Retain this report along with annual tax filings for a minimum of 7 years.
+      </p>
+      <div class="flex flex-wrap items-center justify-between text-[11px] text-slate-500 pt-2 border-t border-slate-800">
+        <span>Certified by DispatchEngine Fleet Telemetry</span>
+        <span>Form 1040 Schedule C / Form 1120-S Ready</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let activePurpose = 'ALL';
+
+    function filterPurpose(purpose) {
+      activePurpose = purpose;
+      const btns = document.querySelectorAll('.purpose-btn');
+      btns.forEach(b => {
+        if ((purpose === 'ALL' && b.innerText.includes('All')) || b.innerText.includes(purpose)) {
+          b.className = 'purpose-btn px-2.5 py-1 rounded-lg font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40';
+        } else {
+          b.className = 'purpose-btn px-2.5 py-1 rounded-lg font-semibold bg-slate-800 text-slate-400 hover:text-white border border-transparent';
+        }
+      });
+      applyFilters();
+    }
+
+    function filterTrips() {
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const query = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
+      const rows = document.querySelectorAll('.trip-row');
+      let visible = 0;
+
+      rows.forEach(row => {
+        const rowPurpose = row.getAttribute('data-purpose') || '';
+        const searchData = (row.getAttribute('data-search') || '').toLowerCase();
+
+        const matchesPurpose = (activePurpose === 'ALL') || (rowPurpose.toLowerCase().includes(activePurpose.toLowerCase()));
+        const matchesSearch = !query || searchData.includes(query);
+
+        if (matchesPurpose && matchesSearch) {
+          row.style.display = '';
+          visible++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      const countDisplay = document.getElementById('visible-count');
+      if (countDisplay) {
+        countDisplay.innerText = visible;
+      }
+    }
+  </script>
+</body>
+</html>
