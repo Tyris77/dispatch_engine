@@ -56,6 +56,11 @@ COPY --chown=appuser:appgroup alembic/ ./alembic
 COPY --chown=appuser:appgroup app/ ./app
 COPY --chown=appuser:appgroup scripts/ ./scripts
 
+# Ensure application directory and tmp have full write permissions for the runtime user
+RUN chown -R appuser:appgroup /app && \
+    chmod -R 777 /app && \
+    chmod 777 /tmp
+
 # Drop root privileges
 USER appuser
 

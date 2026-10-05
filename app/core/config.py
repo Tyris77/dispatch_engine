@@ -1,3 +1,4 @@
+import os
 from typing import List, Optional, Union
 from pydantic import AnyHttpUrl, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -20,9 +21,18 @@ class Settings(BaseSettings):
 
     # Database URLs
     # Async URL for FastAPI runtime (PostgreSQL asyncpg or SQLite aiosqlite)
-    DATABASE_URL: str = "sqlite+aiosqlite:///./dispatch.db"
+    # Default to /tmp/dispatch.db on Linux/container environments to prevent permission errors
+    DATABASE_URL: str = (
+        "sqlite+aiosqlite:///./dispatch.db"
+        if os.name == "nt"
+        else "sqlite+aiosqlite:////tmp/dispatch.db"
+    )
     # Synchronous URL for Alembic CLI migrations
-    SYNC_DATABASE_URL: str = "sqlite:///./dispatch.db"
+    SYNC_DATABASE_URL: str = (
+        "sqlite:///./dispatch.db"
+        if os.name == "nt"
+        else "sqlite:////tmp/dispatch.db"
+    )
 
     # Security
     SECRET_KEY: str = "default-insecure-secret-key-change-me"
