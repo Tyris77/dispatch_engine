@@ -78,13 +78,17 @@
       </a>
 
       <!-- Desktop Nav Links -->
-      <nav class="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-300">
-        <a href="#demo" class="hover:text-white transition-colors">Live Splitter Demo</a>
+      <nav class="hidden lg:flex items-center space-x-7 text-sm font-semibold text-slate-300">
+        <a href="#call-demo" class="text-sky-400 font-bold hover:text-white transition-colors flex items-center space-x-1">
+          <span>⚡ Test Call Me</span>
+        </a>
+        <a href="/speed-to-lead/apex-roofing" class="hover:text-white transition-colors">Speed-to-Lead</a>
+        <a href="/audit" class="text-amber-300 hover:text-white transition-colors">Leak Audit</a>
+        <a href="#demo" class="hover:text-white transition-colors">Call Splitter</a>
         <a href="#bilingual" class="hover:text-white transition-colors">Bilingual Triage</a>
         <a href="#roi" class="hover:text-white transition-colors">ROI Comparison</a>
-        <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
         <a href="/docs" target="_blank" class="hover:text-sky-400 transition-colors flex items-center space-x-1">
-          <span>API Docs</span>
+          <span>API</span>
           <svg class="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
         </a>
       </nav>
@@ -161,6 +165,127 @@
             <p class="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono">3.8x</p>
             <p class="text-xs text-slate-400 mt-1 uppercase tracking-wider font-semibold">Average ROI Lift</p>
           </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== INTERACTIVE "TEST CALL ME" LIVE VOICE DEMO ==================== -->
+    <section id="call-demo" class="py-16 md:py-20 border-b border-slate-800 bg-gradient-to-b from-[#0B0F19] via-[#0E1526] to-[#0B0F19] relative overflow-hidden">
+      <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-sky-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        
+        <div class="text-center max-w-3xl mx-auto mb-10">
+          <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-sky-950/80 text-sky-400 border border-sky-800/80 text-xs font-mono font-bold uppercase tracking-wider mb-3">
+            <span class="h-2 w-2 rounded-full bg-sky-400 animate-ping"></span>
+            <span>⚡ Interactive Live Voice Demo</span>
+          </div>
+          <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+            Experience the <span class="bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent">1.2-Second Answer</span> on Your Own Phone
+          </h2>
+          <p class="text-slate-300 text-sm sm:text-base mt-3">
+            Enter your mobile number below. Our neural voice agent will call your phone right now, greet you by trade, and demonstrate after-hours emergency triage live.
+          </p>
+        </div>
+
+        <div class="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          
+          <!-- Test Call Form Card -->
+          <div class="lg:col-span-6 slate-card rounded-3xl p-6 sm:p-8 border border-sky-500/30 shadow-2xl shadow-sky-950/50 flex flex-col justify-between">
+            <div class="space-y-5">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-3.5">
+                <span class="text-xs font-mono text-slate-400 uppercase tracking-wider font-semibold">1-Tap Voice Test</span>
+                <span class="text-xs font-mono text-emerald-400 flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  Twilio Trunk Ready
+                </span>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-200 mb-1.5">Your Mobile Phone Number</label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 font-mono text-xs">📞</span>
+                  <input type="tel" id="demo_phone" placeholder="+1 (202) 555-0199" required class="w-full bg-[#0B0F19] border border-slate-700 rounded-xl pl-9 pr-4 py-3 text-sm text-white font-mono placeholder:text-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:outline-none">
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1">We never share your number or spam you. Single demo call only.</p>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3.5">
+                <div>
+                  <label class="block text-xs font-bold text-slate-200 mb-1.5">Trade Category</label>
+                  <select id="demo_trade" class="w-full bg-[#0B0F19] border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                    <option value="Plumbing">Plumbing</option>
+                    <option value="HVAC">HVAC</option>
+                    <option value="Electrical">Electrical</option>
+                    <option value="Roofing">Roofing</option>
+                    <option value="Water Mitigation">Water Mitigation</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-200 mb-1.5">Voice Persona</label>
+                  <select id="demo_lang" class="w-full bg-[#0B0F19] border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                    <option value="en">🇺🇸 Polly Danielle (EN)</option>
+                    <option value="es">🇲🇽 Polly Lupe (ES)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-200 mb-1.5">Your Name / Company (Optional)</label>
+                <input type="text" id="demo_name" placeholder="Apex Mechanical" class="w-full bg-[#0B0F19] border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+              </div>
+            </div>
+
+            <div class="pt-6">
+              <button type="button" id="demo-call-btn" onclick="triggerTestCall()" class="w-full py-4 px-6 rounded-2xl text-sm font-extrabold text-white bg-gradient-to-r from-sky-500 via-indigo-600 to-sky-500 hover:from-sky-400 hover:to-indigo-500 shadow-xl shadow-sky-500/25 active:scale-[0.98] transition-all flex items-center justify-center space-x-2">
+                <span>⚡ Call My Phone Now</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Live Status & Transcript Preview Box -->
+          <div class="lg:col-span-6 slate-card rounded-3xl p-6 sm:p-8 border border-slate-800 bg-[#0E1526]/80 flex flex-col justify-between space-y-6">
+            <div>
+              <div class="flex items-center justify-between border-b border-slate-800 pb-3.5 mb-4">
+                <span class="text-xs font-mono font-bold text-sky-400 uppercase tracking-wider">Voice Agent Telemetry</span>
+                <span id="call-status-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-800 text-slate-300">
+                  STANDBY
+                </span>
+              </div>
+
+              <div id="call-live-telemetry" class="space-y-4">
+                <div class="p-4 rounded-2xl bg-[#0B0F19] border border-slate-800/80">
+                  <div class="flex items-center justify-between text-xs mb-2">
+                    <span class="text-slate-400 font-mono">Speed-to-Answer:</span>
+                    <span class="text-emerald-400 font-mono font-bold">⚡ 1.18 seconds</span>
+                  </div>
+                  <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                    <div class="bg-gradient-to-r from-emerald-500 to-sky-500 h-2 rounded-full w-[24%]"></div>
+                  </div>
+                  <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                    <span>DispatchEngine (1.2s)</span>
+                    <span>Industry Voicemail (30s+)</span>
+                  </div>
+                </div>
+
+                <!-- Dynamic Transcript Card -->
+                <div class="space-y-2">
+                  <span class="text-xs font-bold text-slate-300">Neural Greeting Script:</span>
+                  <div id="transcript-box" class="p-4 rounded-2xl bg-[#0B0F19] border border-slate-800 text-xs text-slate-300 font-sans leading-relaxed min-h-[110px] flex items-center">
+                    <span class="text-slate-500 italic">Enter your phone number and press "Call My Phone Now" to receive the live voice broadcast.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-[#0B0F19]/80 border border-slate-800 flex items-center justify-between text-xs">
+              <span class="text-slate-400 font-mono text-[11px]">Audio Simulation Mode:</span>
+              <span class="text-sky-400 font-mono font-semibold">Twilio IVR + Amazon Polly</span>
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -764,13 +889,74 @@
     function closeModal() {
       document.getElementById('onboarding-modal').classList.add('hidden');
     }
-    function handleModalSubmit(e) {
-      e.preventDefault();
-      const feedback = document.getElementById('modal-feedback');
-      feedback.classList.remove('hidden');
-      setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 1000);
+    // Test Call Me Live Voice Demo Handler
+    async function triggerTestCall() {
+      const phoneInput = document.getElementById('demo_phone');
+      const phone = phoneInput.value.trim();
+      if (!phone) {
+        alert('Please enter your phone number to receive the test call.');
+        phoneInput.focus();
+        return;
+      }
+
+      const btn = document.getElementById('demo-call-btn');
+      const badge = document.getElementById('call-status-badge');
+      const transcriptBox = document.getElementById('transcript-box');
+
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳ Connecting to Twilio Trunk...</span>';
+      badge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 animate-pulse';
+      badge.innerText = 'DISPATCHING CALL...';
+
+      transcriptBox.innerHTML = '<span class="text-sky-400 font-mono text-xs flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span> Synthesizing neural speech in under 1.2 seconds...</span>';
+
+      try {
+        const payload = {
+          phone: phone,
+          trade: document.getElementById('demo_trade').value,
+          language: document.getElementById('demo_lang').value,
+          name: document.getElementById('demo_name').value || "Contractor"
+        };
+
+        const res = await fetch('/api/v1/demo/call-me', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.detail || 'Failed to trigger call');
+        }
+
+        const data = await res.json();
+
+        badge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 animate-pulse';
+        badge.innerText = '⚡ RINGING YOUR PHONE NOW';
+
+        transcriptBox.innerHTML = `
+          <div class="space-y-2 w-full">
+            <div class="flex items-center justify-between text-[11px] font-mono text-emerald-400 border-b border-slate-800 pb-1">
+              <span>● Call SID: ${data.call_sid}</span>
+              <span>Pickup: ⚡ 1.18s</span>
+            </div>
+            <p class="text-white font-sans text-xs italic">"${data.greeting_text}"</p>
+          </div>
+        `;
+
+        btn.innerHTML = '<span>✔ Call Dispatched to ' + data.dialed_number + '</span>';
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = '<span>⚡ Call My Phone Again</span>';
+        }, 5000);
+
+      } catch (err) {
+        badge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-rose-500/20 text-rose-400 border border-rose-500/40';
+        badge.innerText = 'CALL FAILED';
+        transcriptBox.innerHTML = `<span class="text-rose-400 text-xs font-mono">Error: ${err.message}</span>`;
+        btn.disabled = false;
+        btn.innerHTML = '<span>⚡ Call My Phone Now</span>';
+      }
     }
   </script>
 </body>

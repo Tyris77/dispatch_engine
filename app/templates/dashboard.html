@@ -117,6 +117,18 @@
           </select>
         </form>
 
+        <!-- Speed-to-Lead Telemetry Button -->
+        <a href="/speed-to-lead/{{ active_tenant_slug or (current_tenant.slug if current_tenant else 'apex-roofing') }}" class="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 border border-sky-500/40 shadow-sm transition-all flex items-center space-x-1.5" title="Autonomous Speed-to-Lead Ingestion Engine">
+          <span>⚡</span>
+          <span>Speed-to-Lead</span>
+        </a>
+
+        <!-- Revenue Leak Audit Button -->
+        <a href="/audit/{{ active_tenant_slug or (current_tenant.slug if current_tenant else 'apex-roofing') }}" class="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 border border-rose-500/40 shadow-sm transition-all flex items-center space-x-1.5" title="Missed Call Revenue Leak Audit Calculator">
+          <span>💰</span>
+          <span>Leak Audit</span>
+        </a>
+
         <!-- Permit Radar Button -->
         <a href="/permits/{{ active_tenant_slug or (current_tenant.slug if current_tenant else 'apex-roofing') }}" class="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 border border-blue-500/40 shadow-sm transition-all flex items-center space-x-1.5">
           <span>📡</span>

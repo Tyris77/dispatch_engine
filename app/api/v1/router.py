@@ -43,6 +43,9 @@ from app.api.v1.w9 import router as w9_router
 from app.api.v1.pay_app import router as pay_app_router
 from app.api.v1.partner_exchange import router as partner_exchange_router
 from app.api.v1.autopilot import router as autopilot_router
+from app.api.v1.demo_call import router as demo_call_router
+from app.api.v1.speed_to_lead import router as speed_to_lead_router
+from app.api.v1.audit import router as audit_router
 
 api_v1_router = APIRouter()
 
@@ -90,6 +93,9 @@ api_v1_router.include_router(w9_router, tags=["Subcontractor Digital W-9 E-Sign 
 api_v1_router.include_router(pay_app_router, tags=["Commercial AIA G702/G703 Progress Billing Engine"])
 api_v1_router.include_router(partner_exchange_router, tags=["Cross-Trade B2B Partner Exchange & Finder Fee Splitter"])
 api_v1_router.include_router(autopilot_router, tags=["24/7 Autonomous Autopilot Worker"])
+api_v1_router.include_router(demo_call_router, tags=["Interactive Live Voice Test Call Demo"])
+api_v1_router.include_router(speed_to_lead_router, tags=["Autonomous Speed-to-Lead Ingestion Engine"])
+api_v1_router.include_router(audit_router, tags=["Missed Call Revenue Leak Audit Calculator"])
 
 
 

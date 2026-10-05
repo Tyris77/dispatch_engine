@@ -111,6 +111,8 @@ class LeadActionCreate(BaseModel):
     backfill_data: Optional[Dict[str, Any]] = None
     arbitrage_data: Optional[Dict[str, Any]] = None
     storyboard_data: Optional[Dict[str, Any]] = None
+    partner_exchange_data: Optional[Dict[str, Any]] = None
+    speed_to_lead_data: Optional[Dict[str, Any]] = None
 
 
 class LeadActionRead(BaseModel):
@@ -156,6 +158,8 @@ class LeadActionRead(BaseModel):
     backfill_data: Optional[Dict[str, Any]] = None
     arbitrage_data: Optional[Dict[str, Any]] = None
     storyboard_data: Optional[Dict[str, Any]] = None
+    partner_exchange_data: Optional[Dict[str, Any]] = None
+    speed_to_lead_data: Optional[Dict[str, Any]] = None
     created_at: datetime
     updated_at: datetime
 

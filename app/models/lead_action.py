@@ -195,6 +195,11 @@ class LeadAction(Base, UUIDPrimaryKeyMixin, TimestampMixin, TenantScopedMixin):
         nullable=True,
         default=None,
     )
+    speed_to_lead_data: Mapped[Optional[Dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=True,
+        default=None,
+    )
 
 
 

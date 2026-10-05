@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speed-to-Lead Telemetry — {{ tenant_name or 'Contractor HQ' }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #030712;
+      color: #f3f4f6;
+    }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(55, 65, 81, 0.6);
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #374151;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans selection:bg-sky-500 selection:text-black">
+
+  <!-- Header Navigation -->
+  <header class="border-b border-gray-800/80 bg-gray-950/80 sticky top-0 z-50 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="/" class="h-9 w-9 rounded-lg bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </a>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-bold text-lg tracking-tight text-white">Speed-to-Lead</span>
+            <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Sub-5s Guarantee</span>
+          </div>
+          <p class="text-[11px] text-gray-400 font-mono">{{ tenant_name or 'Apex Roofing & Mechanical' }} ({{ tenant_slug }})</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <a href="/dashboard" class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white bg-gray-900 border border-gray-700 hover:border-gray-600 transition-all flex items-center space-x-1.5">
+          <span>📊</span>
+          <span>Operations Console</span>
+        </a>
+        <a href="/audit/{{ tenant_slug }}" class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-amber-300 hover:text-amber-200 bg-amber-950/40 border border-amber-800/60 hover:border-amber-700 transition-all flex items-center space-x-1.5">
+          <span>💰</span>
+          <span>Leak Audit</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- KPI Summary Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+      <!-- Average Response Time -->
+      <div class="glass-card rounded-2xl p-5 border border-sky-500/30 relative overflow-hidden">
+        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-sky-500/10 rounded-full blur-xl pointer-events-none"></div>
+        <p class="text-xs font-mono font-semibold uppercase text-sky-400 tracking-wider">Avg Lead-to-SMS Speed</p>
+        <p class="text-3xl font-extrabold text-white font-mono mt-2 flex items-baseline gap-1">
+          <span id="metric-avg-latency">{{ metrics.average_response_time_seconds }}</span><span class="text-base text-gray-400 font-normal">sec</span>
+        </p>
+        <div class="mt-3 flex items-center text-xs text-emerald-400 font-medium">
+          <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+          <span>99.2% faster than 15-min industry norm</span>
+        </div>
+      </div>
+
+      <!-- Fastest Latency -->
+      <div class="glass-card rounded-2xl p-5 border border-emerald-500/30 relative overflow-hidden">
+        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl pointer-events-none"></div>
+        <p class="text-xs font-mono font-semibold uppercase text-emerald-400 tracking-wider">Fastest Sub-Second Record</p>
+        <p class="text-3xl font-extrabold text-white font-mono mt-2 flex items-baseline gap-1">
+          <span id="metric-fastest-latency">{{ metrics.fastest_response_time_seconds }}</span><span class="text-base text-gray-400 font-normal">sec</span>
+        </p>
+        <div class="mt-3 text-xs text-gray-400">
+          Instant Webhook &rarr; Two-Way Twilio Handshake
+        </div>
+      </div>
+
+      <!-- Sub-5s Ad Compliance -->
+      <div class="glass-card rounded-2xl p-5 border border-indigo-500/30 relative overflow-hidden">
+        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-indigo-500/10 rounded-full blur-xl pointer-events-none"></div>
+        <p class="text-xs font-mono font-semibold uppercase text-indigo-400 tracking-wider">Sub-5s SLAs Preserved</p>
+        <p class="text-3xl font-extrabold text-white font-mono mt-2 flex items-baseline gap-1">
+          <span id="metric-under-5s">{{ metrics.leads_under_5s_pct }}</span><span class="text-base text-gray-400 font-normal">%</span>
+        </p>
+        <div class="mt-3 text-xs text-indigo-300">
+          Zero ad spend wasted on abandoned leads
+        </div>
+      </div>
+
+      <!-- Ad Spend Preserved -->
+      <div class="glass-card rounded-2xl p-5 border border-amber-500/30 relative overflow-hidden">
+        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-amber-500/10 rounded-full blur-xl pointer-events-none"></div>
+        <p class="text-xs font-mono font-semibold uppercase text-amber-400 tracking-wider">Ad Spend Preserved (ROI)</p>
+        <p class="text-3xl font-extrabold text-amber-400 font-mono mt-2 flex items-baseline gap-1">
+          $<span id="metric-ad-spend">{{ metrics.ad_spend_preserved }}</span>
+        </p>
+        <div class="mt-3 text-xs text-gray-400">
+          Saved from competitor capture
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Simulator & Platform Breakdown -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Interactive Webhook Test Simulator -->
+      <div class="lg:col-span-1 glass-card rounded-2xl p-6 border border-gray-800 space-y-4">
+        <div class="flex items-center space-x-2">
+          <span class="text-lg">⚡</span>
+          <h2 class="font-bold text-white text-base">Test Live Ingestion Webhook</h2>
+        </div>
+        <p class="text-xs text-gray-400 leading-relaxed">
+          Simulate an instantaneous lead payload from Google Guaranteed or Angi. Measure round-trip execution latency in real time.
+        </p>
+
+        <form id="ingest-sim-form" onsubmit="handleSimulateIngest(event)" class="space-y-3.5 pt-2">
+          <div>
+            <label class="block text-xs font-medium text-gray-300 mb-1">Ad Channel Platform</label>
+            <select id="sim_platform" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-xs text-white focus:ring-2 focus:ring-sky-500 focus:outline-none">
+              <option value="google_lsa">Google Local Services Ads (LSA)</option>
+              <option value="angi">Angi Leads / HomeAdvisor</option>
+              <option value="thumbtack">Thumbtack Pro</option>
+              <option value="generic">Emergency Webhook Form</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-gray-300 mb-1">Homeowner Name</label>
+            <input type="text" id="sim_name" required value="Rachel Morrison" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-xs text-white focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-gray-300 mb-1">Homeowner Phone</label>
+            <input type="tel" id="sim_phone" required value="+1 (202) 555-0174" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-xs text-white font-mono focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-gray-300 mb-1">Trade & Emergency Details</label>
+            <input type="text" id="sim_job" required value="Emergency Main Line Leak in Basement" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-xs text-white focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+
+          <button type="submit" id="sim-submit-btn" class="w-full py-3 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 shadow-md shadow-sky-500/20 active:scale-[0.98] transition-all flex items-center justify-center space-x-2">
+            <span>⚡ Fire Ingestion Webhook</span>
+          </button>
+        </form>
+
+        <div id="sim-result-box" class="hidden p-3.5 rounded-xl bg-gray-900/90 border border-sky-500/40 space-y-2 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-emerald-400 flex items-center gap-1.5">
+              <span class="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
+              Dispatched in <span id="res-latency" class="font-mono text-white font-bold">0.84s</span>!
+            </span>
+            <span class="text-[10px] font-mono text-gray-400 uppercase" id="res-status">INSTANT_DISPATCHED</span>
+          </div>
+          <p class="text-gray-300 text-[11px]" id="res-sms"></p>
+        </div>
+      </div>
+
+      <!-- Platform Source Attribution & Speed Distribution -->
+      <div class="lg:col-span-2 glass-card rounded-2xl p-6 border border-gray-800 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-bold text-white text-base">Channel Lead Ingestion Attribution</h2>
+            <span class="text-xs font-mono text-gray-400">Total Leads: <strong class="text-white" id="total-count">{{ metrics.total_leads_ingested }}</strong></span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-6">
+            <div class="p-3.5 rounded-xl bg-gray-900 border border-gray-800">
+              <div class="flex items-center space-x-1.5 mb-1">
+                <span class="h-2 w-2 rounded-full bg-blue-400"></span>
+                <span class="text-[11px] font-semibold text-gray-300">Google LSA</span>
+              </div>
+              <p class="text-xl font-bold font-mono text-white">{{ metrics.platform_breakdown.get('google_lsa', 0) }}</p>
+              <p class="text-[10px] text-gray-500 mt-0.5">$55.00 avg cost/lead</p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-gray-900 border border-gray-800">
+              <div class="flex items-center space-x-1.5 mb-1">
+                <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+                <span class="text-[11px] font-semibold text-gray-300">Angi Leads</span>
+              </div>
+              <p class="text-xl font-bold font-mono text-white">{{ metrics.platform_breakdown.get('angi', 0) }}</p>
+              <p class="text-[10px] text-gray-500 mt-0.5">$38.00 avg cost/lead</p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-gray-900 border border-gray-800">
+              <div class="flex items-center space-x-1.5 mb-1">
+                <span class="h-2 w-2 rounded-full bg-sky-400"></span>
+                <span class="text-[11px] font-semibold text-gray-300">Thumbtack</span>
+              </div>
+              <p class="text-xl font-bold font-mono text-white">{{ metrics.platform_breakdown.get('thumbtack', 0) }}</p>
+              <p class="text-[10px] text-gray-500 mt-0.5">$42.00 avg cost/lead</p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-gray-900 border border-gray-800">
+              <div class="flex items-center space-x-1.5 mb-1">
+                <span class="h-2 w-2 rounded-full bg-indigo-400"></span>
+                <span class="text-[11px] font-semibold text-gray-300">Generic Forms</span>
+              </div>
+              <p class="text-xl font-bold font-mono text-white">{{ metrics.platform_breakdown.get('generic', 0) }}</p>
+              <p class="text-[10px] text-gray-500 mt-0.5">$35.00 avg cost/lead</p>
+            </div>
+          </div>
+
+          <!-- Speed SLA Banner -->
+          <div class="p-4 rounded-xl bg-gradient-to-r from-sky-950/60 to-indigo-950/60 border border-sky-800/60 flex items-center justify-between">
+            <div class="space-y-0.5">
+              <p class="text-xs font-bold text-white flex items-center gap-1.5">
+                <span>⏱️ The 5-Minute Rule: Why Sub-5s Wins 78% of Deals</span>
+              </p>
+              <p class="text-[11px] text-sky-200/80">
+                MIT lead response research proves calling or texting within 5 seconds makes you 21x more likely to convert before the homeowner calls a second contractor.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Ingestion Stream Table -->
+    <div class="glass-card rounded-2xl border border-gray-800 overflow-hidden">
+      <div class="p-5 border-b border-gray-800 flex items-center justify-between bg-gray-950/50">
+        <div>
+          <h3 class="font-bold text-white text-base">Real-Time Ingestion-to-Dispatch Logs</h3>
+          <p class="text-xs text-gray-400">Timestamped telemetry across all connected paid marketing feeds</p>
+        </div>
+        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          ● Live Active Webhook Feeds
+        </span>
+      </div>
+
+      <div class="overflow-x-auto custom-scroll">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-gray-900/80 text-gray-400 font-mono uppercase text-[10px] tracking-wider border-b border-gray-800">
+            <tr>
+              <th class="py-3 px-4">Time</th>
+              <th class="py-3 px-4">Source</th>
+              <th class="py-3 px-4">Homeowner</th>
+              <th class="py-3 px-4">Trade</th>
+              <th class="py-3 px-4">Response Latency</th>
+              <th class="py-3 px-4">Technician Assigned</th>
+              <th class="py-3 px-4">Status</th>
+            </tr>
+          </thead>
+          <tbody id="dispatches-table-body" class="divide-y divide-gray-800/60">
+            {% for item in metrics.recent_dispatches %}
+            <tr class="hover:bg-gray-800/40 transition-colors">
+              <td class="py-3.5 px-4 font-mono text-gray-400">{{ item.created_at }}</td>
+              <td class="py-3.5 px-4">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold font-mono {% if 'google' in item.platform %}bg-blue-500/20 text-blue-400 border border-blue-500/40{% elif 'angi' in item.platform %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/40{% elif 'thumbtack' in item.platform %}bg-sky-500/20 text-sky-400 border border-sky-500/40{% else %}bg-indigo-500/20 text-indigo-400 border border-indigo-500/40{% endif %}">
+                  {{ item.platform_display }}
+                </span>
+              </td>
+              <td class="py-3.5 px-4">
+                <span class="font-medium text-white">{{ item.customer_name }}</span>
+                <span class="block text-[10px] font-mono text-gray-400">{{ item.customer_phone }}</span>
+              </td>
+              <td class="py-3.5 px-4 text-gray-300">{{ item.trade }}</td>
+              <td class="py-3.5 px-4 font-mono font-bold {% if item.latency_seconds <= 2.0 %}text-emerald-400{% else %}text-sky-400{% endif %}">
+                ⚡ {{ item.latency_seconds }}s
+              </td>
+              <td class="py-3.5 px-4 text-gray-300 font-mono text-[11px]">{{ item.technician }}</td>
+              <td class="py-3.5 px-4">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                  INSTANT_DISPATCHED
+                </span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    async function handleSimulateIngest(event) {
+      event.preventDefault();
+      const submitBtn = document.getElementById('sim-submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>⏳ Qualifying & Dispatching...</span>';
+
+      const payload = {
+        platform: document.getElementById('sim_platform').value,
+        customer_name: document.getElementById('sim_name').value,
+        customer_phone: document.getElementById('sim_phone').value,
+        job_description: document.getElementById('sim_job').value,
+        trade: "Emergency Repair",
+        tenant_slug: "{{ tenant_slug }}"
+      };
+
+      try {
+        const platformEndpoint = payload.platform === 'google_lsa' 
+          ? '/api/v1/leads/ingest/google-lsa'
+          : (payload.platform === 'angi' ? '/api/v1/leads/ingest/angi' : (payload.platform === 'thumbtack' ? '/api/v1/leads/ingest/thumbtack' : '/api/v1/leads/ingest/generic'));
+
+        const res = await fetch(platformEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        // Reveal simulation result
+        const resultBox = document.getElementById('sim-result-box');
+        resultBox.classList.remove('hidden');
+        document.getElementById('res-latency').innerText = data.latency_seconds + 's';
+        document.getElementById('res-status').innerText = data.status;
+        document.getElementById('res-sms').innerText = 'SMS Sent: "' + data.sms_preview + '"';
+
+        // Prepend to table
+        const tbody = document.getElementById('dispatches-table-body');
+        const newRow = document.createElement('tr');
+        newRow.className = 'hover:bg-gray-800/40 transition-colors bg-sky-950/20';
+        newRow.innerHTML = `
+          <td class="py-3.5 px-4 font-mono text-gray-400">Just now</td>
+          <td class="py-3.5 px-4">
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-sky-500/20 text-sky-400 border border-sky-500/40">
+              ${data.platform.toUpperCase()}
+            </span>
+          </td>
+          <td class="py-3.5 px-4">
+            <span class="font-medium text-white">${payload.customer_name}</span>
+            <span class="block text-[10px] font-mono text-gray-400">${payload.customer_phone}</span>
+          </td>
+          <td class="py-3.5 px-4 text-gray-300">${payload.trade}</td>
+          <td class="py-3.5 px-4 font-mono font-bold text-emerald-400">
+            ⚡ ${data.latency_seconds}s
+          </td>
+          <td class="py-3.5 px-4 text-gray-300 font-mono text-[11px]">${data.technician_assigned}</td>
+          <td class="py-3.5 px-4">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+              ${data.status}
+            </span>
+          </td>
+        `;
+        tbody.insertBefore(newRow, tbody.firstChild);
+
+      } catch (err) {
+        alert('Failed to simulate lead ingestion: ' + err);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>⚡ Fire Ingestion Webhook</span>';
+      }
+    }
+  </script>
+</body>
+</html>

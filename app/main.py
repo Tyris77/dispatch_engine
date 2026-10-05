@@ -45,6 +45,9 @@ from app.api.v1.w9 import router as w9_router
 from app.api.v1.pay_app import router as pay_app_router
 from app.api.v1.partner_exchange import router as partner_exchange_router
 from app.api.v1.autopilot import router as autopilot_router
+from app.api.v1.demo_call import router as demo_call_router
+from app.api.v1.speed_to_lead import router as speed_to_lead_router
+from app.api.v1.audit import router as audit_router
 from app.api.v1.router import api_v1_router
 from app.services.autopilot import autopilot_service
 
@@ -297,6 +300,15 @@ def create_application() -> FastAPI:
 
     # Mount Cross-Trade B2B Partner Exchange & Finder Fee Splitter (/partner-exchange/{tenant_slug})
     application.include_router(partner_exchange_router)
+
+    # Mount Interactive Live Voice Test Call Demo (/demo/call-me)
+    application.include_router(demo_call_router)
+
+    # Mount Autonomous Speed-to-Lead Ingestion Engine (/speed-to-lead/{tenant_slug})
+    application.include_router(speed_to_lead_router)
+
+    # Mount Missed Call Revenue Leak Audit Calculator (/audit and /audit/{tenant_slug})
+    application.include_router(audit_router)
 
     # Mount API v1 router under /api/v1
     application.include_router(api_v1_router, prefix=settings.API_V1_STR)

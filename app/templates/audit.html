@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Missed Call Revenue Leak Audit — {{ tenant_name or 'Contractor HQ' }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #030712;
+      color: #f3f4f6;
+    }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(55, 65, 81, 0.6);
+    }
+    input[type=range] {
+      accent-color: #0ea5e9;
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans selection:bg-rose-500 selection:text-white">
+
+  <!-- Header Navigation -->
+  <header class="border-b border-gray-800/80 bg-gray-950/80 sticky top-0 z-50 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="/" class="h-9 w-9 rounded-lg bg-gradient-to-tr from-rose-500 to-amber-600 flex items-center justify-center shadow-lg shadow-rose-500/20">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </a>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-bold text-lg tracking-tight text-white">Revenue Leak Audit</span>
+            <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/30">DMV Benchmark Engine</span>
+          </div>
+          <p class="text-[11px] text-gray-400 font-mono">{{ tenant_name or 'Apex Roofing & Mechanical' }}</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <a href="/dashboard" class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white bg-gray-900 border border-gray-700 hover:border-gray-600 transition-all">
+          <span>📊 Operations Console</span>
+        </a>
+        <a href="/speed-to-lead/{{ tenant_slug }}" class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-sky-400 hover:text-sky-300 bg-sky-950/40 border border-sky-800/60 hover:border-sky-700 transition-all">
+          <span>⚡ Speed-to-Lead</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+
+    <!-- Top Headline Banner -->
+    <div class="text-center max-w-3xl mx-auto space-y-3">
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-mono font-bold bg-rose-950/80 text-rose-300 border border-rose-800/80">
+        🚨 28% Of Emergency Calls Never Reach A Live Human
+      </span>
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+        Calculate Exactly How Much Revenue <span class="text-rose-400 underline decoration-rose-500/40">Leaks to Your Competitors</span>
+      </h1>
+      <p class="text-sm sm:text-base text-gray-300 leading-relaxed">
+        Adjust the sliders below to your fleet size and ticket values. Watch DispatchEngine model the exact dollar leakage stolen by competing shops while your phone rings out.
+      </p>
+    </div>
+
+    <!-- Interactive Calculator & Results Dual Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <!-- LEFT: Interactive Control Sliders -->
+      <div class="lg:col-span-6 glass-card rounded-3xl p-6 sm:p-8 border border-gray-800 space-y-6">
+        <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+          <h2 class="font-bold text-white text-lg">Shop Operational Parameters</h2>
+          <span class="text-xs font-mono text-gray-400">Live Model</span>
+        </div>
+
+        <!-- Trade Specialty Selector -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Trade Category</label>
+          <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
+            <button type="button" onclick="setTrade('Plumbing', 850)" class="trade-btn py-2 px-3 rounded-xl text-xs font-bold bg-sky-500/20 text-sky-400 border border-sky-500/50" data-trade="Plumbing">Plumbing</button>
+            <button type="button" onclick="setTrade('HVAC', 1250)" class="trade-btn py-2 px-3 rounded-xl text-xs font-bold bg-gray-900 text-gray-300 border border-gray-800" data-trade="HVAC">HVAC</button>
+            <button type="button" onclick="setTrade('Electrical', 680)" class="trade-btn py-2 px-3 rounded-xl text-xs font-bold bg-gray-900 text-gray-300 border border-gray-800" data-trade="Electrical">Electric</button>
+            <button type="button" onclick="setTrade('Roofing', 2200)" class="trade-btn py-2 px-3 rounded-xl text-xs font-bold bg-gray-900 text-gray-300 border border-gray-800" data-trade="Roofing">Roofing</button>
+            <button type="button" onclick="setTrade('Restoration', 3800)" class="trade-btn py-2 px-3 rounded-xl text-xs font-bold bg-gray-900 text-gray-300 border border-gray-800" data-trade="Restoration">Mitigation</button>
+          </div>
+        </div>
+
+        <!-- Slider 1: Active Service Trucks -->
+        <div class="space-y-2">
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-semibold text-gray-300">Fleet Service Trucks</span>
+            <span class="font-mono text-base font-bold text-sky-400"><span id="val-trucks">{{ report.truck_count }}</span> Trucks</span>
+          </div>
+          <input type="range" id="input-trucks" min="1" max="50" value="{{ report.truck_count }}" oninput="recalc()" class="w-full h-2 bg-gray-800 rounded-lg cursor-pointer">
+          <div class="flex justify-between text-[10px] text-gray-500 font-mono">
+            <span>1 Truck (Solo)</span>
+            <span>25 Trucks</span>
+            <span>50 Trucks</span>
+          </div>
+        </div>
+
+        <!-- Slider 2: Monthly Inbound Phone Calls -->
+        <div class="space-y-2">
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-semibold text-gray-300">Monthly Inbound Call Volume</span>
+            <span class="font-mono text-base font-bold text-sky-400"><span id="val-calls">{{ report.monthly_call_volume }}</span> Calls/mo</span>
+          </div>
+          <input type="range" id="input-calls" min="20" max="1500" step="10" value="{{ report.monthly_call_volume }}" oninput="recalc()" class="w-full h-2 bg-gray-800 rounded-lg cursor-pointer">
+          <div class="flex justify-between text-[10px] text-gray-500 font-mono">
+            <span>20 Calls</span>
+            <span>750 Calls</span>
+            <span>1,500 Calls</span>
+          </div>
+        </div>
+
+        <!-- Slider 3: Average Ticket Revenue -->
+        <div class="space-y-2">
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-semibold text-gray-300">Average Revenue Per Ticket</span>
+            <span class="font-mono text-base font-bold text-emerald-400">$<span id="val-ticket">{{ report.average_ticket }}</span></span>
+          </div>
+          <input type="range" id="input-ticket" min="150" max="4000" step="50" value="{{ report.average_ticket }}" oninput="recalc()" class="w-full h-2 bg-gray-800 rounded-lg cursor-pointer">
+          <div class="flex justify-between text-[10px] text-gray-500 font-mono">
+            <span>$150 (Service Call)</span>
+            <span>$2,000 (Replacement)</span>
+            <span>$4,000+ (Full Job)</span>
+          </div>
+        </div>
+
+        <!-- ZIP Code Input -->
+        <div class="pt-2">
+          <label class="block text-xs font-semibold text-gray-300 mb-1">Contractor Primary Service ZIP Code</label>
+          <input type="text" id="input-zip" value="{{ report.zip_code }}" onchange="recalc()" class="w-40 bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white font-mono focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        </div>
+      </div>
+
+      <!-- RIGHT: Real-time Live Recalculating Metrics -->
+      <div class="lg:col-span-6 space-y-6">
+
+        <!-- Big Hero Revenue Leak Card -->
+        <div class="glass-card rounded-3xl p-6 sm:p-8 border border-rose-500/40 relative overflow-hidden bg-gradient-to-br from-rose-950/30 via-gray-900 to-gray-950">
+          <div class="absolute -right-8 -top-8 w-40 h-40 bg-rose-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+          <div class="flex items-center justify-between">
+            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase font-mono bg-rose-500/20 text-rose-300 border border-rose-500/40">
+              🚨 Monthly Revenue Leaking
+            </span>
+            <span class="text-xs font-mono text-gray-400">28% After-Hours Factor</span>
+          </div>
+
+          <p class="text-4xl sm:text-6xl font-extrabold text-white font-mono mt-4 tracking-tight">
+            $<span id="out-monthly-leak">{{ "{:,.2f}".format(report.monthly_leak_revenue) }}</span>
+          </p>
+          <p class="text-xs sm:text-sm text-gray-300 mt-2">
+            Lost per month to competing contractors when lines are busy or after-hours.
+          </p>
+
+          <div class="mt-6 pt-6 border-t border-gray-800 grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-[11px] font-mono uppercase text-gray-400">Annual Net Profit Lost</p>
+              <p class="text-2xl font-bold font-mono text-rose-400 mt-0.5">
+                $<span id="out-annual-profit">{{ "{:,.2f}".format(report.annual_lost_profit) }}</span>
+              </p>
+            </div>
+            <div>
+              <p class="text-[11px] font-mono uppercase text-gray-400">Competitor Defection Risk</p>
+              <p class="text-2xl font-bold font-mono text-amber-400 mt-0.5">
+                <span id="out-capture-index">{{ report.competitor_capture_index }}</span><span class="text-sm font-normal text-gray-400">/100</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Projected Recovery Stats -->
+        <div class="glass-card rounded-3xl p-6 border border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-gray-900 to-gray-950">
+          <div class="flex items-center space-x-2 text-emerald-400 text-xs font-bold font-mono uppercase tracking-wider mb-2">
+            <span>✅ Autonomous Recovery Projection</span>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+            <div>
+              <span class="text-xs text-gray-400 block">7-Day Pilot Immediate Recovery</span>
+              <span class="text-3xl font-extrabold text-white font-mono">
+                $<span id="out-7day-recovery">{{ "{:,.2f}".format(report.projected_7_day_recovery) }}</span>
+              </span>
+            </div>
+            <div class="text-right sm:text-right">
+              <span class="text-xs text-gray-400 block">Annual Protected Volume</span>
+              <span class="text-2xl font-bold text-emerald-400 font-mono">
+                $<span id="out-annual-recovered">{{ "{:,.2f}".format(report.projected_annual_recovered_revenue) }}</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5-Step Recovery Blueprint -->
+        <div class="glass-card rounded-3xl p-6 border border-gray-800 space-y-3">
+          <h3 class="font-bold text-white text-sm">Automated 5-Step Revenue Recapture Plan</h3>
+          <ul id="out-recovery-plan" class="space-y-2 text-xs text-gray-300">
+            {% for step in report.recovery_plan %}
+            <li class="flex items-start space-x-2">
+              <span class="text-emerald-400 mt-0.5">✔</span>
+              <span>{{ step }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <!-- Claim Pilot Button CTA -->
+        <button onclick="claimPilot()" class="w-full py-4 px-6 rounded-2xl text-sm font-extrabold text-white bg-gradient-to-r from-emerald-500 via-teal-500 to-sky-500 hover:from-emerald-400 hover:to-sky-400 shadow-xl shadow-emerald-500/25 active:scale-[0.99] transition-all flex items-center justify-center space-x-2">
+          <span>🚀 Claim Your 7-Day Revenue Recovery Pilot</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    let currentTrade = 'Plumbing';
+
+    function setTrade(trade, defaultTicket) {
+      currentTrade = trade;
+      document.querySelectorAll('.trade-btn').forEach(btn => {
+        if (btn.getAttribute('data-trade') === trade) {
+          btn.className = 'trade-btn py-2 px-3 rounded-xl text-xs font-bold bg-sky-500/20 text-sky-400 border border-sky-500/50';
+        } else {
+          btn.className = 'trade-btn py-2 px-3 rounded-xl text-xs font-bold bg-gray-900 text-gray-300 border border-gray-800';
+        }
+      });
+      document.getElementById('input-ticket').value = defaultTicket;
+      recalc();
+    }
+
+    async function recalc() {
+      const trucks = parseInt(document.getElementById('input-trucks').value);
+      const calls = parseInt(document.getElementById('input-calls').value);
+      const ticket = parseFloat(document.getElementById('input-ticket').value);
+      const zip = document.getElementById('input-zip').value;
+
+      document.getElementById('val-trucks').innerText = trucks;
+      document.getElementById('val-calls').innerText = calls;
+      document.getElementById('val-ticket').innerText = ticket;
+
+      try {
+        const res = await fetch('/api/v1/audit/calculate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            trade: currentTrade,
+            truck_count: trucks,
+            monthly_call_volume: calls,
+            average_ticket: ticket,
+            zip_code: zip
+          })
+        });
+
+        const data = await res.json();
+        document.getElementById('out-monthly-leak').innerText = data.monthly_leak_revenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('out-annual-profit').innerText = data.annual_lost_profit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('out-capture-index').innerText = data.competitor_capture_index;
+        document.getElementById('out-7day-recovery').innerText = data.projected_7_day_recovery.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('out-annual-recovered').innerText = data.projected_annual_recovered_revenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        const planList = document.getElementById('out-recovery-plan');
+        planList.innerHTML = '';
+        data.recovery_plan.forEach(step => {
+          const li = document.createElement('li');
+          li.className = 'flex items-start space-x-2';
+          li.innerHTML = `<span class="text-emerald-400 mt-0.5">✔</span><span>${step}</span>`;
+          planList.appendChild(li);
+        });
+
+      } catch (err) {
+        console.error('Recalculation error:', err);
+      }
+    }
+
+    function claimPilot() {
+      const trucks = document.getElementById('val-trucks').innerText;
+      const leak = document.getElementById('out-monthly-leak').innerText;
+      alert(`🎉 7-Day Pilot Activated for ${trucks} Trucks!\nEstimated monthly revenue saved: $${leak}.\nAn onboarding engineer will contact your shop to connect your Twilio or phone line within 1 business day.`);
+    }
+  </script>
+</body>
+</html>
