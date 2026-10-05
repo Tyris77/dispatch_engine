@@ -96,6 +96,8 @@ api_v1_router.include_router(autopilot_router, tags=["24/7 Autonomous Autopilot 
 api_v1_router.include_router(demo_call_router, tags=["Interactive Live Voice Test Call Demo"])
 api_v1_router.include_router(speed_to_lead_router, tags=["Autonomous Speed-to-Lead Ingestion Engine"])
 api_v1_router.include_router(audit_router, tags=["Missed Call Revenue Leak Audit Calculator"])
+from app.api.v1.onboard import router as onboard_router
+api_v1_router.include_router(onboard_router, tags=["Self-Serve Instant Contractor Onboarding & Activation Engine"])
 
 
 
