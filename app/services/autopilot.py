@@ -312,7 +312,7 @@ class AutopilotService:
                 self.execution_logs.insert(0, l)
             self.execution_logs = self.execution_logs[:50]
 
-            logger.info(f"✅ [24/7 Autopilot] Completed cycle ({total_items} items processed across {len(cycle_logs)} tasks)")
+            logger.info(f"[24/7 Autopilot] Completed cycle ({total_items} items processed across {len(cycle_logs)} tasks)")
 
             return AutopilotRunNowResponse(
                 status="CYCLE_EXECUTED",
