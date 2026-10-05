@@ -49,6 +49,7 @@ from app.api.v1.demo_call import router as demo_call_router
 from app.api.v1.speed_to_lead import router as speed_to_lead_router
 from app.api.v1.audit import router as audit_router
 from app.api.v1.onboard import router as onboard_router
+from app.api.v1.seo import router as seo_router
 from app.api.v1.router import api_v1_router
 from app.services.autopilot import autopilot_service
 
@@ -313,6 +314,9 @@ def create_application() -> FastAPI:
 
     # Mount Self-Serve Instant Contractor Onboarding & Activation Engine (/onboard)
     application.include_router(onboard_router)
+
+    # Mount Programmatic SEO & Local Organic Lead-Capture Engine (/solutions, /sitemap.xml, /robots.txt)
+    application.include_router(seo_router)
 
     # Mount API v1 router under /api/v1
     application.include_router(api_v1_router, prefix=settings.API_V1_STR)

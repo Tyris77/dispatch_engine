@@ -98,6 +98,8 @@ api_v1_router.include_router(speed_to_lead_router, tags=["Autonomous Speed-to-Le
 api_v1_router.include_router(audit_router, tags=["Missed Call Revenue Leak Audit Calculator"])
 from app.api.v1.onboard import router as onboard_router
 api_v1_router.include_router(onboard_router, tags=["Self-Serve Instant Contractor Onboarding & Activation Engine"])
+from app.api.v1.seo import router as seo_router
+api_v1_router.include_router(seo_router, tags=["Programmatic SEO & Local Organic Lead-Capture Engine"])
 
 
 
