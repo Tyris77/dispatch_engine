@@ -31,8 +31,11 @@ wheels/
 
 # Database
 *.db
+*.db-*
 *.sqlite
 *.sqlite3
+uploads/
+
 
 # Testing & Coverage
 .pytest_cache/

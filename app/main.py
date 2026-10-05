@@ -67,7 +67,10 @@ def _sync_sqlite_columns(sync_conn):
         for col_name in target_cols:
             if col_name not in existing_cols:
                 col_type = "FLOAT" if col_name == "trip_mileage" else "JSON"
-                sync_conn.execute(text(f"ALTER TABLE lead_actions ADD COLUMN {col_name} {col_type}"))
+                try:
+                    sync_conn.execute(text(f"ALTER TABLE lead_actions ADD COLUMN {col_name} {col_type}"))
+                except Exception as col_err:
+                    logger.warning(f"Column {col_name} sync warning: {col_err}")
     except Exception as exc:
         logger.warning(f"SQLite auto-column sync warning: {exc}")
 
@@ -77,25 +80,37 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application startup and shutdown lifespan handler."""
     logger.info(f"Starting {settings.PROJECT_NAME} in [{settings.ENVIRONMENT}] mode...")
 
-    # For local/testing run, automatically ensure tables exist if using SQLite
-    if settings.DATABASE_URL.startswith("sqlite"):
-        from sqlalchemy import text
-        async with async_engine.begin() as conn:
-            await conn.execute(text("PRAGMA journal_mode=WAL;"))
-            await conn.execute(text("PRAGMA synchronous=NORMAL;"))
-            await conn.execute(text("PRAGMA busy_timeout=30000;"))
-            await conn.run_sync(Base.metadata.create_all)
-            await conn.run_sync(_sync_sqlite_columns)
-        logger.info("Local SQLite database schema initialized with WAL mode.")
-
-
+    # Ensure database schema exists without blocking container boot
+    try:
+        if settings.DATABASE_URL.startswith("sqlite"):
+            from sqlalchemy import text
+            async with async_engine.begin() as conn:
+                try:
+                    await conn.execute(text("PRAGMA journal_mode=WAL;"))
+                    await conn.execute(text("PRAGMA synchronous=NORMAL;"))
+                    await conn.execute(text("PRAGMA busy_timeout=30000;"))
+                except Exception as pragma_err:
+                    logger.warning(f"SQLite PRAGMA warning: {pragma_err}")
+                await conn.run_sync(Base.metadata.create_all)
+                await conn.run_sync(_sync_sqlite_columns)
+            logger.info("Local SQLite database schema initialized with WAL mode.")
+        else:
+            async with async_engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+            logger.info("Production database schema synchronized successfully.")
+    except Exception as db_init_exc:
+        logger.warning(f"Database schema initialization warning (continuing startup): {db_init_exc}")
 
     # Verify database connection
-    db_alive = await check_db_connection()
-    if db_alive:
-        logger.info("Database connection established successfully.")
-    else:
-        logger.warning("Database connection could not be established at startup.")
+    try:
+        db_alive = await check_db_connection()
+        if db_alive:
+            logger.info("Database connection established successfully.")
+        else:
+            logger.warning("Database connection could not be established at startup.")
+    except Exception as exc:
+        logger.warning(f"Database connection verification warning: {exc}")
+
 
     # Start 24/7 Autonomous Autopilot Worker background loop
     stop_event = asyncio.Event()
