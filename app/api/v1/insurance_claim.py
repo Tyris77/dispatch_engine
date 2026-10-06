@@ -36,14 +36,22 @@ templates = Jinja2Templates(directory=TEMPLATES_DIR)
     include_in_schema=False,
 )
 async def generate_supplement_endpoint(
-    action_id: uuid.UUID,
+    action_id: str,
     request_data: Optional[ClaimGenerateRequest] = None,
     db: AsyncSession = Depends(get_db),
 ) -> InsuranceClaimSupplementReport:
+    try:
+        action_uuid = uuid.UUID(str(action_id))
+    except (ValueError, AttributeError):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Dispatch lead '{action_id}' not found",
+        )
+
     stmt = (
         select(LeadAction)
         .options(selectinload(LeadAction.tenant))
-        .where(LeadAction.id == action_id)
+        .where(LeadAction.id == action_uuid)
     )
     action = (await db.execute(stmt)).scalar_one_or_none()
     if not action:
@@ -68,18 +76,31 @@ async def generate_supplement_endpoint(
     summary="Interactive Insurance Claim Supplement Dossier",
     description="Renders luxury print/PDF-ready insurance supplement report with Xactimate line items, IRC code citations, and formal Adjuster Demand Letter.",
 )
+@router.get(
+    "/api/v1/claims/{action_id}",
+    response_class=HTMLResponse,
+    include_in_schema=False,
+)
 async def view_claim_supplement(
-    action_id: uuid.UUID,
+    action_id: str,
     request: Request,
     db: AsyncSession = Depends(get_db),
     carrier: Optional[str] = Query(None),
     claim_num: Optional[str] = Query(None),
     orig_amount: Optional[float] = Query(None),
 ) -> Response:
+    try:
+        action_uuid = uuid.UUID(str(action_id))
+    except (ValueError, AttributeError):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Dispatch lead '{action_id}' not found",
+        )
+
     stmt = (
         select(LeadAction)
         .options(selectinload(LeadAction.tenant))
-        .where(LeadAction.id == action_id)
+        .where(LeadAction.id == action_uuid)
     )
     action = (await db.execute(stmt)).scalar_one_or_none()
     if not action:
@@ -144,13 +165,21 @@ async def view_claim_supplement(
     include_in_schema=False,
 )
 async def get_claim_supplement_json(
-    action_id: uuid.UUID,
+    action_id: str,
     db: AsyncSession = Depends(get_db),
 ) -> InsuranceClaimSupplementReport:
+    try:
+        action_uuid = uuid.UUID(str(action_id))
+    except (ValueError, AttributeError):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Dispatch lead '{action_id}' not found",
+        )
+
     stmt = (
         select(LeadAction)
         .options(selectinload(LeadAction.tenant))
-        .where(LeadAction.id == action_id)
+        .where(LeadAction.id == action_uuid)
     )
     action = (await db.execute(stmt)).scalar_one_or_none()
     if not action:
@@ -176,6 +205,11 @@ async def get_claim_supplement_json(
     response_class=HTMLResponse,
     summary="Multi-Job Insurance Recovery Vault",
     description="Tracks multi-job insurance supplements, total dollars recovered, pending adjuster approvals, and carrier metrics.",
+)
+@router.get(
+    "/api/v1/claims-vault/{tenant_slug}",
+    response_class=HTMLResponse,
+    include_in_schema=False,
 )
 async def get_claims_vault(
     tenant_slug: str,

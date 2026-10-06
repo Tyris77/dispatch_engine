@@ -230,3 +230,101 @@ async def test_get_claims_vault_html_view(
     assert "Autonomous Insurance Recovery Vault" in html
     assert "Total Supplement Dollars Recovered" in html
     assert "Supplement Recovery by Insurance Carrier" in html
+
+
+@pytest.fixture
+async def seeded_hvac_action(sample_tenant: dict, db_session: AsyncSession) -> LeadAction:
+    """Fixture providing a seeded HVAC compressor burnout & drainage failure lead action."""
+    tenant = sample_tenant["tenant"]
+
+    action = LeadAction(
+        id=uuid.uuid4(),
+        tenant_id=tenant.id,
+        lead_external_id="+15557778899",
+        qualification_score=0.92,
+        qualification_summary="Attic air handler compressor electrical burnout with contaminated line set and missing drain pan float switch.",
+        action_type="HVAC_COMPRESSOR_REPLACEMENT",
+        dispatch_status="QUEUED",
+        crm_sync_status="PENDING",
+        metadata_payload={
+            "sender_name": "Marcus Aurelius",
+            "address": "1600 Pennsylvania Ave NW, Washington, DC 20500",
+            "phone": "+15557778899",
+        },
+        diagnostic_data={
+            "equipment_type": "Split Heat Pump System",
+            "failure_mode": "Compressor Burnout & Acid Contamination",
+        },
+        proposal_data={
+            "original_adjuster_amount": 1850.0,
+            "selected_tier": "silver",
+        },
+    )
+    db_session.add(action)
+    await db_session.commit()
+    await db_session.refresh(action)
+    return action
+
+
+def test_hvac_line_items_and_imc_citations(seeded_hvac_action: LeadAction):
+    """Verify HVAC trade generates required line items and IMC Section 307.2.3 citations."""
+    report = insurance_claim_service.generate_claim_supplement(
+        action=seeded_hvac_action,
+        request_data=ClaimGenerateRequest(
+            insurance_carrier="USAA",
+            claim_number="CLM-HVAC-990",
+            policyholder_name="Marcus Aurelius",
+            original_adjuster_amount=1850.0,
+        ),
+        tenant_name="Apex Mechanical",
+    )
+
+    codes = [item.item_code for item in report.line_items]
+    assert "HVC LINE" in codes
+    assert "HVC COND" in codes
+
+    # Citations check
+    citations_text = " ".join(report.code_citations)
+    assert "IMC" in citations_text
+    assert "307.2.3" in citations_text
+    assert "Clean Air Act" in citations_text
+
+    # Letter verification
+    assert "USAA" in report.adjuster_demand_letter
+    assert "CLM-HVAC-990" in report.adjuster_demand_letter
+    assert "Marcus Aurelius" in report.adjuster_demand_letter
+
+
+def test_water_mitigation_dynamic_synthesis_from_data(seeded_mitigation_action: LeadAction):
+    """Verify water mitigation line items dynamically size quantities from diagnostic and mitigation data."""
+    report = insurance_claim_service.generate_claim_supplement(
+        action=seeded_mitigation_action,
+        tenant_name="Apex Restoration",
+    )
+
+    item_map = {item.item_code: item for item in report.line_items}
+    # From seeded_mitigation_action: affected_area_sqft = 450
+    assert item_map["WTR EXTW"].quantity == 450.0
+    assert item_map["WTR GRM"].quantity == 450.0
+    # From seeded_mitigation_action: dehumidifiers_deployed = 4
+    assert item_map["WTR DHM"].quantity == 4.0
+    # From seeded_mitigation_action: air_movers_deployed = 12
+    assert item_map["WTR DRY"].quantity == 12.0
+
+
+@pytest.mark.asyncio
+async def test_claims_unknown_ids_return_404(client: AsyncClient):
+    """Verify endpoints return 404 for nonexistent action ID and tenant slug."""
+    fake_id = uuid.uuid4()
+    resp1 = await client.get(f"/claims/{fake_id}")
+    assert resp1.status_code == 404
+
+    resp2 = await client.get(f"/api/v1/claims/{fake_id}/json")
+    assert resp2.status_code == 404
+
+    resp3 = await client.post(f"/api/v1/claims/generate-supplement/{fake_id}", json={"insurance_carrier": "Allstate"})
+    assert resp3.status_code == 404
+
+    resp4 = await client.get("/claims-vault/completely-non-existent-tenant-slug")
+    assert resp4.status_code == 404
+

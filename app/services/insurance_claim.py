@@ -84,7 +84,7 @@ TRADE_XACTIMATE_CATALOGS = {
             unit="LF",
             unit_price=4.20,
             total_price=672.00,
-            code_justification="2021 International Residential Code (IRC) Section R905.2.8.5 mandates drip edge flashing at eaves and gables.",
+            code_justification="2021 International Residential Code (IRC) Section R905.2.8.5 / Section R905.2.8.3 requires drip edge along eaves and rake edges.",
         ),
         XactimateLineItem(
             item_code="RFG ICE",
@@ -94,7 +94,7 @@ TRADE_XACTIMATE_CATALOGS = {
             unit="SF",
             unit_price=1.85,
             total_price=703.00,
-            code_justification="2021 IRC Section R905.1.2 mandates self-adhering ice barrier extending at least 24 inches inside the exterior wall line.",
+            code_justification="IRC Section R905.1.2 mandates self-adhering ice barrier extending at least 24 inches inside the exterior wall line in freeze zones.",
         ),
         XactimateLineItem(
             item_code="RFG FLSTEP",
@@ -104,7 +104,7 @@ TRADE_XACTIMATE_CATALOGS = {
             unit="LF",
             unit_price=14.50,
             total_price=783.00,
-            code_justification="2021 International Residential Code (IRC) Section R905.2.8.5 mandates replacement of corroded, damaged or nail-fatigued step flashing upon roof replacement.",
+            code_justification="2021 International Residential Code (IRC) Section R905.2.8.5 mandates replacement of corroded or damaged step flashing.",
         ),
         XactimateLineItem(
             item_code="RFG RIDGE",
@@ -172,6 +172,8 @@ class InsuranceClaimService:
             text_corpus += " " + str(action.diagnostic_data)
         if action.mitigation_data:
             text_corpus += " " + str(action.mitigation_data)
+        if action.proposal_data:
+            text_corpus += " " + str(action.proposal_data)
 
         text_lower = text_corpus.lower()
         if any(w in text_lower for w in ["water", "mitigation", "extraction", "flood", "sewer", "dehumid", "dryout", "drying", "psychrometric"]):
@@ -240,13 +242,16 @@ class InsuranceClaimService:
     def generate_claim_supplement(
         self,
         action: LeadAction,
-        request_data: Optional[ClaimGenerateRequest] = None,
+        request_data: Optional[Any] = None,
         tenant_name: Optional[str] = None,
     ) -> InsuranceClaimSupplementReport:
         """
         Synthesizes onsite action data, detects trade, generates line items,
         calculates financial totals, and builds the adjuster demand package.
         """
+        if isinstance(request_data, dict):
+            request_data = ClaimGenerateRequest(**request_data)
+
         carrier = request_data.insurance_carrier if request_data else "State Farm"
         claim_num = (request_data.claim_number if request_data and request_data.claim_number else None) or f"CLM-2026-{uuid.uuid4().hex[:6].upper()}"
         policyholder = (
@@ -265,11 +270,37 @@ class InsuranceClaimService:
         catalog = TRADE_XACTIMATE_CATALOGS.get(trade_key, TRADE_XACTIMATE_CATALOGS["water_mitigation"])
         trade_label = trade_key.replace("_", " ").title()
 
-        # Build line items
-        line_items = list(catalog)
+        # Build dynamic line items synthesized from diagnostic, mitigation, and proposal data
+        line_items = [item.model_copy() for item in catalog]
+        if trade_key == "water_mitigation":
+            diag = action.diagnostic_data or {}
+            mit = action.mitigation_data or {}
+            sqft = float(diag.get("affected_area_sqft") or mit.get("affected_area_sqft") or 0.0)
+            dehumids = float(mit.get("dehumidifiers_deployed") or 0.0)
+            fans = float(mit.get("air_movers_deployed") or 0.0)
+            for item in line_items:
+                if item.item_code in ("WTR EXTW", "WTR GRM") and sqft > 0:
+                    item.quantity = sqft
+                    item.total_price = round(item.quantity * item.unit_price, 2)
+                elif item.item_code == "WTR DHM" and dehumids > 0:
+                    item.quantity = dehumids
+                    item.total_price = round(item.quantity * item.unit_price, 2)
+                elif item.item_code == "WTR DRY" and fans > 0:
+                    item.quantity = fans
+                    item.total_price = round(item.quantity * item.unit_price, 2)
+
         supplement_amount = sum(item.total_price for item in line_items)
 
-        orig_amount = request_data.original_adjuster_amount if (request_data and request_data.original_adjuster_amount is not None and request_data.original_adjuster_amount > 0) else 1450.0
+        # Baseline carrier estimate synthesis
+        if request_data and request_data.original_adjuster_amount is not None and request_data.original_adjuster_amount > 0:
+            orig_amount = float(request_data.original_adjuster_amount)
+        elif action.proposal_data and isinstance(action.proposal_data, dict) and action.proposal_data.get("original_adjuster_amount"):
+            orig_amount = float(action.proposal_data["original_adjuster_amount"])
+        elif request_data and request_data.original_adjuster_amount == 0.0:
+            orig_amount = 0.0
+        else:
+            orig_amount = 1450.0
+
         total_val = orig_amount + supplement_amount
 
         # Extract citations
@@ -283,7 +314,7 @@ class InsuranceClaimService:
             "roofing": [
                 "2021 International Residential Code (IRC) Section R905.2.8.5: Mandatory replacement of corroded or damaged step flashing",
                 "IRC Section R905.1.2: Ice barrier requirements in freeze zones",
-                "2021 International Residential Code (IRC) Section R905.2.8.5: Eave & Rake Drip Edge Mandate",
+                "2021 International Residential Code (IRC) Section R905.2.8.3: Drip edge flashing required along eaves and rake edges",
                 "OSHA 1926.501(b)(11): Steep-slope fall protection requirement",
             ],
             "hvac": [
