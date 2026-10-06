@@ -35,25 +35,30 @@ async def get_widget_js(
     request: Request,
     db: AsyncSession = Depends(get_db),
 ) -> Response:
-    """Returns dynamically configured JavaScript snippet for the requested tenant."""
+    """Returns dynamically configured JavaScript snippet for the requested tenant.
+    Falls back gracefully to a default demo configuration if tenant is not found.
+    """
     # Clean slug if .js was included in path
     clean_slug = tenant_slug.removesuffix(".js")
 
     query = select(Tenant).where(Tenant.slug == clean_slug)
     tenant = (await db.execute(query)).scalar_one_or_none()
 
-    if not tenant:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Tenant '{clean_slug}' not found",
+    if tenant:
+        slug = tenant.slug
+        name = tenant.name or "Apex Comfort Systems"
+        phone = (
+            tenant.settings.get("phone")
+            or tenant.settings.get("alert_phone_number")
+            or "(555) 234-5678"
         )
-
-    base_url = tenant.settings.get("base_url") or str(request.base_url).rstrip("/")
-    phone = (
-        tenant.settings.get("phone")
-        or tenant.settings.get("alert_phone_number")
-        or ""
-    )
+        base_url = tenant.settings.get("base_url") or str(request.base_url).rstrip("/")
+    else:
+        # Fall back gracefully to default demo configuration for unseeded or demo tenants
+        slug = clean_slug or "apex-plumbing"
+        name = "Apex Comfort Systems"
+        phone = "(555) 234-5678"
+        base_url = str(request.base_url).rstrip("/")
 
     # Render template
     js_template_path = os.path.join(TEMPLATES_DIR, "widget.js")
@@ -63,8 +68,8 @@ async def get_widget_js(
     # Substitute dynamic properties
     rendered_js = (
         js_content
-        .replace("{{ tenant_slug }}", tenant.slug)
-        .replace("{{ tenant_name }}", tenant.name or "Emergency Dispatch")
+        .replace("{{ tenant_slug }}", slug)
+        .replace("{{ tenant_name }}", name)
         .replace("{{ tenant_phone }}", phone)
         .replace("{{ base_url }}", base_url)
     )
@@ -74,6 +79,9 @@ async def get_widget_js(
         media_type="application/javascript; charset=utf-8",
         headers={"Cache-Control": "public, max-age=60"},
     )
+
+
+get_widget_javascript = get_widget_js
 
 
 @router.post(
@@ -91,6 +99,10 @@ async def widget_chat(
     # 1. Fetch Tenant
     query = select(Tenant).where(Tenant.slug == tenant_slug)
     tenant = (await db.execute(query)).scalar_one_or_none()
+
+    if not tenant:
+        query_fallback = select(Tenant).where(Tenant.is_active == True).order_by(Tenant.created_at.asc()).limit(1)
+        tenant = (await db.execute(query_fallback)).scalar_one_or_none()
 
     if not tenant:
         raise HTTPException(

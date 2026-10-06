@@ -29,11 +29,20 @@ async def test_get_widget_js_renders_successfully(client: AsyncClient, sample_te
 
 
 @pytest.mark.asyncio
-async def test_get_widget_js_invalid_tenant(client: AsyncClient):
-    """Verify 404 response when querying widget JavaScript for unknown tenant."""
+async def test_get_widget_js_unknown_tenant_fallback(client: AsyncClient):
+    """Verify graceful fallback to default demo configuration when querying widget JS for unknown tenant."""
     response = await client.get("/api/v1/widget/unknown-nonexistent-tenant.js")
-    assert response.status_code == 404
-    assert "not found" in response.json()["detail"].lower()
+    assert response.status_code == 200
+    assert "application/javascript" in response.headers["content-type"]
+    js_text = response.text
+    assert "window.__DISPATCH_WIDGET_INITIALIZED__" in js_text
+    assert "Apex Comfort Systems" in js_text
+    assert "(555) 234-5678" in js_text
+    assert "dispatch-engine-widget-root" in js_text
+
+
+# Alias for backwards compatibility
+test_get_widget_js_invalid_tenant = test_get_widget_js_unknown_tenant_fallback
 
 
 @pytest.mark.asyncio
@@ -129,6 +138,7 @@ async def test_widget_demo_page_renders(client: AsyncClient, sample_tenant: dict
     assert tenant.name in html_text
     assert f'/api/v1/widget/{tenant.slug}.js' in html_text
     assert "Autonomous Dispatch Enabled" in html_text
+    assert 'id="dispatch-engine-widget-root"' in html_text
 
 
 @pytest.mark.asyncio

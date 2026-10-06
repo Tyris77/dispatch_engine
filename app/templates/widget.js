@@ -12,11 +12,12 @@
     var style = document.createElement("style");
     style.id = "dispatch-widget-styles";
     style.textContent = `
+        #dispatch-engine-widget-root,
         #dispatch-widget-root {
             position: fixed;
             bottom: 24px;
             right: 24px;
-            z-index: 999999;
+            z-index: 99999;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             color: #F8FAFC;
         }
@@ -274,9 +275,13 @@
     `;
     document.head.appendChild(style);
 
-    // Create root container
-    var root = document.createElement("div");
-    root.id = "dispatch-widget-root";
+    // Create root container or mount to existing element
+    var root = document.getElementById("dispatch-engine-widget-root") || document.getElementById("dispatch-widget-root");
+    if (!root) {
+        root = document.createElement("div");
+        root.id = "dispatch-engine-widget-root";
+        root.className = "dispatch-widget-root";
+    }
 
     var telHref = TENANT_PHONE ? "tel:" + TENANT_PHONE : "javascript:alert('Direct phone dispatch connecting...');";
 
@@ -340,7 +345,9 @@
         </div>
     `;
 
-    document.body.appendChild(root);
+    if (!document.body.contains(root)) {
+        document.body.appendChild(root);
+    }
 
     // Event handlers
     var bubble = document.getElementById("dispatch-widget-bubble");
