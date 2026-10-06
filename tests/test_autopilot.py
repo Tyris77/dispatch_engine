@@ -81,8 +81,8 @@ async def test_autopilot_cycle_execution(db_session: AsyncSession):
     )
 
     assert result.cycle_status == "COMPLETED"
-    assert result.total_tasks_run == 5
-    assert len(result.logs) == 5
+    assert result.total_tasks_run == 6
+    assert len(result.logs) == 6
 
     task_names = [log.task_name for log in result.logs]
     assert "48h Dead Lead Reactivation" in task_names
@@ -90,6 +90,7 @@ async def test_autopilot_cycle_execution(db_session: AsyncSession):
     assert "Next-Day Fleet Route Clustering" in task_names
     assert "Weekly Executive ROI Digest" in task_names
     assert "Zero-Touch Contractor Discovery & Outreach" in task_names
+    assert "Autonomous B2B Drip & Territory Follow-Up" in task_names
 
 
     # Check status report was updated
@@ -135,7 +136,7 @@ async def test_api_autopilot_status(client: AsyncClient):
     assert "recent_logs" in data
     assert "next_scheduled_run" in data
     assert isinstance(data["active_tasks"], list)
-    assert len(data["active_tasks"]) == 5
+    assert len(data["active_tasks"]) == 6
 
 
 @pytest.mark.asyncio
@@ -157,5 +158,5 @@ async def test_api_autopilot_run_now(client: AsyncClient, db_session: AsyncSessi
     assert response.status_code == 200
     data = response.json()
     assert data["cycle_status"] == "COMPLETED"
-    assert data["total_tasks_run"] == 5
-    assert len(data["logs"]) == 5
+    assert data["total_tasks_run"] == 6
+    assert len(data["logs"]) == 6

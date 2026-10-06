@@ -290,8 +290,155 @@
 
         </div>
 
+        <!-- In-Browser Live Audio Receptionist Simulator Card (No Phone Number Needed) -->
+        <div class="mt-12 text-left bg-gradient-to-b from-[#0E1526] to-[#0B0F19] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-800/80 mb-6">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mb-1">
+                <span>🎧 1-Click Instant Audio Demo</span>
+                <span>• No Phone Number Required</span>
+              </div>
+              <h3 class="text-lg sm:text-xl font-extrabold text-white">Hear Danielle Rescue a 2:15 AM Pipe Burst Emergency</h3>
+              <p class="text-xs text-slate-400 mt-0.5">Sub-second pickup, emergency triage, photo scanner link, and priority master tech dispatch.</p>
+            </div>
+            <a href="/demo/audio" class="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-400 hover:text-cyan-300 bg-cyan-950/40 border border-cyan-800/60 px-3.5 py-2 rounded-xl transition flex-shrink-0">
+              <span>Full Screen Player</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </a>
+          </div>
+
+          <!-- Player Controls & Waveform -->
+          <div class="flex items-center gap-5 mb-6">
+            <button id="landing-audio-btn" type="button" class="w-14 h-14 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 flex items-center justify-center text-slate-950 font-bold shadow-xl shadow-cyan-500/30 flex-shrink-0 transition transform hover:scale-105 active:scale-95" aria-label="Play 2:15 AM demo call">
+              <svg id="landing-play-svg" class="w-6 h-6 translate-x-0.5 fill-current" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <svg id="landing-pause-svg" class="w-6 h-6 fill-current hidden" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+            </button>
+            <div class="flex-1">
+              <div class="flex justify-between text-xs text-slate-400 font-mono mb-2">
+                <span id="landing-audio-cur">00:00</span>
+                <span class="text-slate-500 hidden sm:inline">2:15 AM Burst Pipe & Flood Call</span>
+                <span>00:32</span>
+              </div>
+              <div id="landing-waveform" class="h-10 bg-slate-950 rounded-xl border border-slate-800 px-2 flex items-center justify-between gap-1 cursor-pointer overflow-hidden relative">
+                <div id="landing-progress" class="absolute top-0 left-0 bottom-0 bg-cyan-500/20 pointer-events-none transition-all duration-75" style="width: 0%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <audio id="landing-audio-el" src="/api/v1/demo/sample-audio" preload="metadata"></audio>
+
+          <!-- Synchronized Transcript Stepper -->
+          <div class="space-y-3" id="landing-transcript">
+            <div class="landing-turn p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 transition-all text-xs" data-start="0" data-end="4">
+              <div class="flex items-center justify-between font-bold text-amber-400 mb-1">
+                <span>👵 Mrs. Higgins (00:00 - 00:04):</span>
+                <span class="font-mono text-[10px] text-slate-500">Panicked Caller</span>
+              </div>
+              <p class="text-slate-200">"Help! There is water pouring through my living room ceiling right now! The pipe burst in the upstairs bathroom and it's flooding everywhere!"</p>
+            </div>
+            <div class="landing-turn p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 transition-all text-xs" data-start="4" data-end="18">
+              <div class="flex items-center justify-between font-bold text-cyan-400 mb-1">
+                <span>🎙️ Danielle (00:04 - 00:18):</span>
+                <span class="font-mono text-[10px] text-slate-500">AI Receptionist</span>
+              </div>
+              <p class="text-slate-200">"I'm right here with you, Mrs. Higgins. Please shut off your main water valve if it is safe to do so. Our emergency dispatch fee is $189 and our on-call master technician is ready. I just sent an instant photo upload link to your phone so you can show our team the leak while they drive."</p>
+            </div>
+            <div class="landing-turn p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 transition-all text-xs" data-start="18" data-end="32">
+              <div class="flex items-center justify-between font-bold text-emerald-400 mb-1">
+                <span>🚨 Danielle (00:18 - 00:32):</span>
+                <span class="font-mono text-[10px] text-slate-500">Priority Dispatch</span>
+              </div>
+              <p class="text-slate-200">"Master Technician Carlos Gomez in Truck #09 has accepted your priority dispatch. His live GPS arrival link has been texted to you—he is 18 minutes away. Hang tight, help is en route!"</p>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
+
+    <script>
+      (function() {
+        const audio = document.getElementById("landing-audio-el");
+        const btn = document.getElementById("landing-audio-btn");
+        const playSvg = document.getElementById("landing-play-svg");
+        const pauseSvg = document.getElementById("landing-pause-svg");
+        const curEl = document.getElementById("landing-audio-cur");
+        const progressEl = document.getElementById("landing-progress");
+        const waveContainer = document.getElementById("landing-waveform");
+        const turns = document.querySelectorAll(".landing-turn");
+
+        if (!audio || !btn || !waveContainer) return;
+
+        const barCount = 40;
+        const heights = [30, 45, 60, 40, 20, 80, 95, 85, 90, 70, 50, 25, 60, 75, 85, 75, 65, 80, 90, 80, 60, 40, 60, 75, 85, 70, 50, 30, 65, 85, 95, 80, 65, 45, 30, 45, 60, 45, 25, 15];
+        for (let i = 0; i < barCount; i++) {
+          const b = document.createElement("div");
+          b.className = "landing-bar flex-1 bg-slate-700 rounded-full";
+          b.style.height = (heights[i] || 35) + "%";
+          waveContainer.appendChild(b);
+        }
+
+        btn.addEventListener("click", function() {
+          if (audio.paused) {
+            audio.play().then(() => {
+              playSvg.classList.add("hidden");
+              pauseSvg.classList.remove("hidden");
+            }).catch(e => console.warn(e));
+          } else {
+            audio.pause();
+            playSvg.classList.remove("hidden");
+            pauseSvg.classList.add("hidden");
+          }
+        });
+
+        audio.addEventListener("timeupdate", function() {
+          const cur = audio.currentTime;
+          const dur = audio.duration || 32;
+          const m = Math.floor(cur / 60);
+          const s = Math.floor(cur % 60);
+          curEl.textContent = (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+          const pct = (cur / dur) * 100;
+          progressEl.style.width = pct + "%";
+
+          const bars = waveContainer.querySelectorAll(".landing-bar");
+          const activeIdx = Math.floor((pct / 100) * barCount);
+          bars.forEach((bar, idx) => {
+            if (idx <= activeIdx) {
+              bar.classList.remove("bg-slate-700");
+              bar.classList.add("bg-cyan-400");
+            } else {
+              bar.classList.remove("bg-cyan-400");
+              bar.classList.add("bg-slate-700");
+            }
+          });
+
+          turns.forEach(t => {
+            const start = parseFloat(t.dataset.start);
+            const end = parseFloat(t.dataset.end);
+            if (cur >= start && cur <= end) {
+              t.classList.add("border-cyan-500", "bg-cyan-950/30", "shadow-md");
+              t.classList.remove("border-slate-800", "bg-slate-950/60");
+            } else {
+              t.classList.remove("border-cyan-500", "bg-cyan-950/30", "shadow-md");
+              t.classList.add("border-slate-800", "bg-slate-950/60");
+            }
+          });
+        });
+
+        audio.addEventListener("ended", function() {
+          playSvg.classList.remove("hidden");
+          pauseSvg.classList.add("hidden");
+          progressEl.style.width = "0%";
+          curEl.textContent = "00:00";
+        });
+
+        waveContainer.addEventListener("click", function(e) {
+          const rect = waveContainer.getBoundingClientRect();
+          const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+          audio.currentTime = pct * (audio.duration || 32);
+        });
+      })();
+    </script>
 
     <!-- ==================== INTERACTIVE CALL-SPLITTING DEMO ==================== -->
     <section id="demo" class="py-20 border-b border-slate-800 bg-[#0B0F19]">

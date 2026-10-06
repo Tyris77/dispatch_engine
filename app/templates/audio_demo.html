@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2:15 AM Live Emergency Audio Receptionist Simulator - DispatchEngine</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #030712; color: #f3f4f6; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .wave-bar {
+      transition: height 0.08s ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#030712] text-slate-100 flex flex-col justify-between selection:bg-cyan-500 selection:text-black">
+
+  <!-- Top Announcement -->
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="/" class="flex items-center space-x-2">
+          <div class="h-9 w-9 rounded-lg bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center font-bold text-white shadow-lg shadow-cyan-500/20">
+            ⚡
+          </div>
+          <span class="font-extrabold text-white text-lg tracking-tight">DispatchEngine</span>
+        </a>
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-500/10 text-red-400 border border-red-500/20">
+          ● Live Audio Simulation
+        </span>
+      </div>
+      <div class="flex items-center space-x-4 text-sm font-semibold">
+        <a href="/audit" class="text-slate-400 hover:text-white transition">Missed Call Audit</a>
+        <a href="/onboard" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-4 py-2 rounded-lg font-bold transition shadow-lg shadow-cyan-500/20">
+          1-Click Activation
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 py-12 flex-1 w-full">
+    <!-- Header Hero -->
+    <div class="text-center max-w-3xl mx-auto mb-10">
+      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold uppercase tracking-wider mb-4">
+        <span>🌙 Sub-Second After-Hours Response</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
+        Hear Danielle Rescue a $1,250 Emergency Call at 2:15 AM
+      </h1>
+      <p class="text-slate-400 text-base sm:text-lg">
+        No phone number required. Click Play below to listen to a live simulation of a burst-pipe flood call answered in 0.4 seconds.
+      </p>
+    </div>
+
+    <!-- Live Audio Player Card -->
+    <div class="bg-gradient-to-b from-slate-900/90 to-slate-950/90 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur relative overflow-hidden mb-10">
+      <!-- Glow effect -->
+      <div class="absolute -top-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Call Meta Banner -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pb-6 mb-6 border-b border-slate-800 text-xs">
+        <div>
+          <span class="text-slate-500 block font-medium">Caller</span>
+          <span class="text-white font-bold">{{ scenario.caller_name }}</span>
+        </div>
+        <div>
+          <span class="text-slate-500 block font-medium">Answer Speed</span>
+          <span class="text-emerald-400 font-bold mono">⚡ {{ scenario.metrics.pickup_time }}</span>
+        </div>
+        <div>
+          <span class="text-slate-500 block font-medium">Ticket Value</span>
+          <span class="text-cyan-400 font-bold mono">{{ scenario.metrics.estimated_ticket }}</span>
+        </div>
+        <div>
+          <span class="text-slate-500 block font-medium">On-Call Tech Assigned</span>
+          <span class="text-amber-400 font-bold">{{ scenario.metrics.assigned_tech }}</span>
+        </div>
+      </div>
+
+      <!-- Controls & Waveform -->
+      <div class="flex flex-col sm:flex-row items-center gap-6 mb-8">
+        <!-- Play / Pause Button -->
+        <button id="audio-play-btn" class="w-16 h-16 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 flex items-center justify-center text-slate-950 font-bold shadow-xl shadow-cyan-500/30 transition transform hover:scale-105 active:scale-95 flex-shrink-0" aria-label="Play sample emergency call">
+          <svg id="play-icon" class="w-7 h-7 translate-x-0.5 fill-current" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          <svg id="pause-icon" class="w-7 h-7 fill-current hidden" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+        </button>
+
+        <!-- Waveform Visualizer & Scrubber -->
+        <div class="flex-1 w-full">
+          <div class="flex items-center justify-between text-xs text-slate-400 mono mb-2">
+            <span id="current-time">00:00</span>
+            <span class="text-slate-500 font-medium">2:15 AM Live Emergency Intercept</span>
+            <span id="total-time">00:32</span>
+          </div>
+
+          <!-- Animated Waveform Bars -->
+          <div id="waveform-container" class="h-14 bg-slate-950/80 rounded-xl border border-slate-800/80 px-3 flex items-center justify-between gap-1 cursor-pointer overflow-hidden relative">
+            <div id="progress-overlay" class="absolute top-0 left-0 bottom-0 bg-cyan-500/10 pointer-events-none transition-all duration-100" style="width: 0%;"></div>
+            <!-- Dynamically generated bars -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Hidden Native Audio Element -->
+      <audio id="demo-audio-player" src="/api/v1/demo/sample-audio" preload="metadata"></audio>
+
+      <!-- Synchronized Scrolling Transcript -->
+      <div class="space-y-4 pt-2">
+        <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+          <span>📜 Synchronized Live Dialogue Transcript</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        </h3>
+
+        <div id="transcript-container" class="space-y-3">
+          {% for turn in scenario.turns %}
+          <div class="transcript-turn p-4 rounded-xl border transition-all duration-200 border-slate-800/80 bg-slate-950/40"
+               data-start="{{ turn.start_seconds }}"
+               data-end="{{ turn.end_seconds }}"
+               id="turn-{{ turn.index }}">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center space-x-2">
+                <span class="text-lg">{{ turn.avatar }}</span>
+                <span class="text-sm font-bold text-white">{{ turn.speaker }}</span>
+                <span class="text-xs text-slate-400">({{ turn.role }})</span>
+              </div>
+              <span class="text-xs mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+                00:{{ "%02d"|format(turn.start_seconds|int) }} - 00:{{ "%02d"|format(turn.end_seconds|int) }}
+              </span>
+            </div>
+            <p class="text-sm text-slate-200 leading-relaxed">{{ turn.text }}</p>
+            <div class="mt-2 text-xs text-cyan-400 font-semibold flex items-center gap-1.5">
+              <span>⚡</span> <span>{{ turn.highlight }}</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Conversion Banner -->
+    <div class="bg-gradient-to-r from-cyan-950/40 via-indigo-950/40 to-slate-900/60 border border-cyan-800/40 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+      <div>
+        <h3 class="text-xl font-bold text-white mb-2">Never Lose an After-Hours Emergency Call Again</h3>
+        <p class="text-sm text-slate-300 max-w-xl">
+          Set up your contractor profile in 60 seconds. Danielle will answer your after-hours overflow, quote your fees, and text your on-call techs with 1-tap accept.
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-3 flex-shrink-0">
+        <a href="/audit" class="px-5 py-3 rounded-xl border border-slate-700 bg-slate-900/80 hover:bg-slate-800 text-slate-200 font-semibold text-sm transition">
+          Calculate Revenue Leak
+        </a>
+        <a href="/onboard" class="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm shadow-lg shadow-cyan-500/20 transition">
+          Activate 1-Click Setup
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="border-t border-slate-800 bg-slate-950 py-6 text-center text-xs text-slate-500">
+    <p>&copy; 2026 DispatchEngine Autonomous Field Operations. All rights reserved.</p>
+  </footer>
+
+  <!-- Script for Waveform Animation and Transcript Sync -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const audio = document.getElementById("demo-audio-player");
+      const playBtn = document.getElementById("audio-play-btn");
+      const playIcon = document.getElementById("play-icon");
+      const pauseIcon = document.getElementById("pause-icon");
+      const currentTimeEl = document.getElementById("current-time");
+      const totalTimeEl = document.getElementById("total-time");
+      const waveformContainer = document.getElementById("waveform-container");
+      const progressOverlay = document.getElementById("progress-overlay");
+      const turns = document.querySelectorAll(".transcript-turn");
+
+      // Generate 48 waveform bars with realistic voice profile heights
+      const barCount = 48;
+      const barHeights = [
+        30, 45, 50, 40, 20, 70, 85, 95, 80, 90, 75, 60, 40,
+        25, 55, 65, 80, 75, 70, 85, 90, 80, 65, 50, 40, 60,
+        75, 85, 70, 55, 35, 20, 65, 80, 95, 85, 70, 50, 35,
+        25, 45, 60, 50, 35, 25, 20, 15, 10
+      ];
+
+      for (let i = 0; i < barCount; i++) {
+        const bar = document.createElement("div");
+        bar.className = "wave-bar flex-1 bg-slate-700 rounded-full";
+        const h = barHeights[i] || 30;
+        bar.style.height = h + "%";
+        bar.dataset.index = i;
+        waveformContainer.appendChild(bar);
+      }
+
+      function formatTime(secs) {
+        const m = Math.floor(secs / 60);
+        const s = Math.floor(secs % 60);
+        return (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+      }
+
+      playBtn.addEventListener("click", function() {
+        if (audio.paused) {
+          audio.play().then(() => {
+            playIcon.classList.add("hidden");
+            pauseIcon.classList.remove("hidden");
+          }).catch(err => {
+            console.warn("Audio playback error:", err);
+          });
+        } else {
+          audio.pause();
+          playIcon.classList.remove("hidden");
+          pauseIcon.classList.add("hidden");
+        }
+      });
+
+      audio.addEventListener("timeupdate", function() {
+        const current = audio.currentTime;
+        const duration = audio.duration || 32;
+        currentTimeEl.textContent = formatTime(current);
+
+        const pct = (current / duration) * 100;
+        progressOverlay.style.width = pct + "%";
+
+        // Highlight active wave bars
+        const bars = waveformContainer.querySelectorAll(".wave-bar");
+        const activeBarIdx = Math.floor((pct / 100) * barCount);
+        bars.forEach((bar, idx) => {
+          if (idx <= activeBarIdx) {
+            bar.classList.remove("bg-slate-700");
+            bar.classList.add("bg-cyan-400");
+          } else {
+            bar.classList.remove("bg-cyan-400");
+            bar.classList.add("bg-slate-700");
+          }
+        });
+
+        // Synchronize transcript highlighting
+        turns.forEach(turn => {
+          const start = parseFloat(turn.dataset.start);
+          const end = parseFloat(turn.dataset.end);
+          if (current >= start && current <= end) {
+            turn.classList.remove("border-slate-800/80", "bg-slate-950/40");
+            turn.classList.add("border-cyan-500", "bg-cyan-950/20", "shadow-lg", "shadow-cyan-500/10");
+          } else {
+            turn.classList.remove("border-cyan-500", "bg-cyan-950/20", "shadow-lg", "shadow-cyan-500/10");
+            turn.classList.add("border-slate-800/80", "bg-slate-950/40");
+          }
+        });
+      });
+
+      audio.addEventListener("ended", function() {
+        playIcon.classList.remove("hidden");
+        pauseIcon.classList.add("hidden");
+        progressOverlay.style.width = "0%";
+        currentTimeEl.textContent = "00:00";
+      });
+
+      // Waveform scrubber click
+      waveformContainer.addEventListener("click", function(e) {
+        const rect = waveformContainer.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const pct = Math.max(0, Math.min(1, clickX / rect.width));
+        const duration = audio.duration || 32;
+        audio.currentTime = pct * duration;
+      });
+    });
+  </script>
+</body>
+</html>

@@ -18,6 +18,7 @@ from app.services.analytics import generate_weekly_roi_digest
 from app.services.reactivation import reactivation_service
 from app.services.route_optimizer import route_optimizer_service
 from app.services.weather_dispatch import weather_dispatch_service
+from app.services.drip import drip_service
 
 # Regional contractor discovery seed targets across DC/MD/VA
 DC_MD_VA_TARGET_CONTRACTORS: List[AutonomousOutreachTarget] = [
@@ -89,6 +90,7 @@ class AutopilotService:
             "Next-Day Fleet Route Clustering (Daily 19:00)",
             "Weekly Executive ROI Digest (Sunday 18:00)",
             "Autonomous Contractor Discovery & Zero-Touch Growth",
+            "Autonomous B2B Drip & Territory Follow-Up (48h Audit / Day-5 Onboard)",
         ]
 
         return AutopilotStatusReport(
@@ -306,6 +308,30 @@ class AutopilotService:
                         details=str(exc),
                     )
                 cycle_logs.append(log5)
+
+                # -------------------------------------------------------------
+                # Task 6: Autonomous B2B Drip & Territory Follow-Up
+                # -------------------------------------------------------------
+                try:
+                    drip_res = await drip_service.evaluate_drip_schedules(db=db, force_all=force_all)
+                    log6 = AutopilotTaskLog(
+                        task_name="Autonomous B2B Drip & Territory Follow-Up",
+                        executed_at=time_str,
+                        items_processed=drip_res.followups_dispatched,
+                        status="SUCCESS",
+                        details=f"Evaluated {drip_res.evaluated_count} DMV contractor leads. Dispatched {drip_res.followups_dispatched} scheduled value/closing follow-ups.",
+                    )
+                    total_items += drip_res.followups_dispatched
+                except Exception as exc:
+                    logger.error(f"[Autopilot] Task 6 error: {exc}")
+                    log6 = AutopilotTaskLog(
+                        task_name="Autonomous B2B Drip & Territory Follow-Up",
+                        executed_at=time_str,
+                        items_processed=0,
+                        status="ERROR",
+                        details=str(exc),
+                    )
+                cycle_logs.append(log6)
 
             # Store recent logs (prepend so newest are first)
             for l in reversed(cycle_logs):

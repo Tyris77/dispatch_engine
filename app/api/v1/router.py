@@ -100,6 +100,13 @@ from app.api.v1.onboard import router as onboard_router
 api_v1_router.include_router(onboard_router, tags=["Self-Serve Instant Contractor Onboarding & Activation Engine"])
 from app.api.v1.seo import router as seo_router
 api_v1_router.include_router(seo_router, tags=["Programmatic SEO & Local Organic Lead-Capture Engine"])
+from app.api.v1.drip import router as drip_router
+api_v1_router.include_router(drip_router, tags=["Autonomous B2B Drip & Territory Follow-Up Engine"])
+from app.api.v1.audio_demo import router as audio_demo_router
+api_v1_router.include_router(audio_demo_router, tags=["In-Browser Live Audio Receptionist Simulator"])
+from app.api.v1.sms_bridge import router as sms_bridge_router
+api_v1_router.include_router(sms_bridge_router, tags=["Two-Way SMS Technician Dispatch Bridge"])
+
 
 
 

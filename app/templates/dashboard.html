@@ -123,6 +123,24 @@
           <span>Solutions</span>
         </a>
 
+        <!-- B2B Drip Pipeline Button -->
+        <a href="/api/v1/drip/pipeline" target="_blank" class="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 border border-purple-500/40 shadow-sm transition-all flex items-center space-x-1.5" title="Autonomous B2B Drip & Territory Follow-Up Pipeline (48h Audit / Day-5 Onboard)">
+          <span>📧</span>
+          <span>Drip Pipeline</span>
+        </a>
+
+        <!-- Two-Way SMS Bridge Button -->
+        <a href="/api/v1/sms/status" target="_blank" class="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 border border-emerald-500/40 shadow-sm transition-all flex items-center space-x-1.5" title="Two-Way SMS Technician Dispatch Bridge ('Reply 1 to Accept')">
+          <span>📲</span>
+          <span>SMS Bridge</span>
+        </a>
+
+        <!-- Live Audio Demo Simulator Button -->
+        <a href="/demo/audio" target="_blank" class="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 border border-cyan-500/40 shadow-sm transition-all flex items-center space-x-1.5" title="2:15 AM Live Emergency Audio Receptionist Simulator">
+          <span>🎙️</span>
+          <span>Audio Demo</span>
+        </a>
+
         <!-- Speed-to-Lead Telemetry Button -->
         <a href="/speed-to-lead/{{ active_tenant_slug or (current_tenant.slug if current_tenant else 'apex-roofing') }}" class="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 border border-sky-500/40 shadow-sm transition-all flex items-center space-x-1.5" title="Autonomous Speed-to-Lead Ingestion Engine">
           <span>⚡</span>
@@ -425,6 +443,44 @@
           <span class="text-blue-300">$6,840 Saved</span>
           <span class="text-gray-600">&bull;</span>
           <span class="text-emerald-400">$50 Route Credits</span>
+        </div>
+      </div>
+
+      <!-- Autonomous B2B Drip Pipeline Card -->
+      <div class="glass-card rounded-2xl p-5 relative overflow-hidden transition-all duration-300 glass-card-hover border border-purple-500/30">
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">B2B Drip Pipeline</p>
+          <a href="/api/v1/drip/pipeline" target="_blank" class="p-2 rounded-lg bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 transition">
+            <span class="text-base">📧</span>
+          </a>
+        </div>
+        <div class="mt-3 flex items-baseline space-x-2">
+          <span class="text-3xl font-extrabold text-purple-400 tracking-tight">12 Shops</span>
+          <span class="text-xs text-gray-400 font-mono">Enrolled</span>
+        </div>
+        <div class="mt-1 flex items-center space-x-2 text-[11px] font-mono">
+          <span class="text-purple-300">48h Audit &bull; Day 5 Onboard</span>
+          <span class="text-gray-600">&bull;</span>
+          <span class="text-emerald-400">Every 15m Autopilot</span>
+        </div>
+      </div>
+
+      <!-- Two-Way SMS Dispatch Bridge Card -->
+      <div class="glass-card rounded-2xl p-5 relative overflow-hidden transition-all duration-300 glass-card-hover border border-emerald-500/30">
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">Two-Way SMS Bridge</p>
+          <a href="/api/v1/sms/status" target="_blank" class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition">
+            <span class="text-base">📲</span>
+          </a>
+        </div>
+        <div class="mt-3 flex items-baseline space-x-2">
+          <span class="text-3xl font-extrabold text-emerald-400 tracking-tight">Reply "1"</span>
+          <span class="text-xs text-gray-400 font-mono">Accept</span>
+        </div>
+        <div class="mt-1 flex items-center space-x-2 text-[11px] font-mono">
+          <span class="text-emerald-300">Sub-second Tech SMS</span>
+          <span class="text-gray-600">&bull;</span>
+          <span class="text-cyan-400">Auto Live GPS Link</span>
         </div>
       </div>
     </section>
