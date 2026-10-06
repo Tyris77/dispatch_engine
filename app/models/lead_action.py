@@ -200,6 +200,11 @@ class LeadAction(Base, UUIDPrimaryKeyMixin, TimestampMixin, TenantScopedMixin):
         nullable=True,
         default=None,
     )
+    claim_supplement_data: Mapped[Optional[Dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=True,
+        default=None,
+    )
 
 
 

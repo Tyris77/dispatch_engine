@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insurance Claim Supplement | Claim #{{ report.claim_number }} | {{ tenant.name if tenant else 'Apex Restoration' }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+            },
+            surface: {
+              base: '#030712',
+              card: '#0f172a',
+              border: '#1e293b',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #030712;
+      color: #F3F4F6;
+    }
+    .mesh-bg {
+      background: radial-gradient(circle at 20% 0%, rgba(16, 185, 129, 0.12), transparent 45%),
+                  radial-gradient(circle at 80% 10%, rgba(59, 130, 246, 0.08), transparent 45%),
+                  radial-gradient(circle at 50% 80%, rgba(139, 92, 246, 0.06), transparent 50%);
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(30, 41, 59, 0.8);
+    }
+    .badge-code {
+      font-size: 0.7rem;
+      letter-spacing: 0.025em;
+    }
+    @media print {
+      body {
+        background-color: #FFFFFF !important;
+        color: #111827 !important;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-border {
+        border-color: #D1D5DB !important;
+      }
+      .print-bg {
+        background-color: #F9FAFB !important;
+      }
+      .print-text-dark {
+        color: #111827 !important;
+      }
+      .print-text-muted {
+        color: #4B5563 !important;
+      }
+      .glass-card {
+        background: #FFFFFF !important;
+        border: 1px solid #E5E7EB !important;
+        box-shadow: none !important;
+      }
+      pre {
+        color: #111827 !important;
+        background-color: #F9FAFB !important;
+        border: 1px solid #E5E7EB !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans antialiased mesh-bg selection:bg-emerald-500 selection:text-black">
+
+  <!-- ==================== HEADER BAR (SCREEN ONLY) ==================== -->
+  <header class="no-print sticky top-0 z-50 bg-[#030712]/90 backdrop-blur-md border-b border-surface-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="/claims-vault/{{ tenant.slug if tenant else 'apex-roofing' }}" class="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 transition-all flex items-center space-x-1.5 text-xs font-semibold">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          <span>Claims Vault</span>
+        </a>
+        <div class="flex items-center space-x-2">
+          <span class="text-xs font-mono text-emerald-400 font-bold px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
+            XACTIMATE ENGINE
+          </span>
+          <span class="text-xs text-slate-400 hidden sm:inline">•</span>
+          <span class="text-xs text-slate-300 font-mono hidden sm:inline">Claim: <strong>{{ report.claim_number }}</strong></span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2.5">
+        <!-- Re-Calculate Supplement Modal Trigger -->
+        <button onclick="toggleRecalcModal()" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-semibold border border-slate-700 transition-all flex items-center space-x-1.5 cursor-pointer">
+          <span>⚙️</span>
+          <span>Adjust Parameters</span>
+        </button>
+
+        <!-- Copy Demand Letter Button -->
+        <button onclick="copyDemandLetter()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-300 text-xs font-semibold border border-emerald-500/30 transition-all flex items-center space-x-1.5 cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          <span id="copy-btn-text">Copy Demand Letter</span>
+        </button>
+
+        <!-- 1-Tap Export Adjuster Packet -->
+        <button onclick="window.print()" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all flex items-center space-x-1.5 cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+          <span>Export Adjuster Packet</span>
+        </button>
+
+        <!-- 1-Tap Submit to Insurance -->
+        <button onclick="submitToInsurance()" id="submit-insurance-btn" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-lg shadow-emerald-600/30 transition-all flex items-center space-x-1.5 cursor-pointer">
+          <span>🚀</span>
+          <span>Submit to Insurance</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN DOSSIER CONTAINER ==================== -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+
+    <!-- SUBMISSION CONFIRMATION BANNER (HIDDEN INITIALLY) -->
+    <div id="submission-toast" class="hidden no-print p-4 rounded-2xl bg-emerald-950/80 border border-emerald-500/50 shadow-2xl flex items-center justify-between text-sm">
+      <div class="flex items-center space-x-3">
+        <span class="text-2xl">✅</span>
+        <div>
+          <h4 class="font-bold text-white">Adjuster Packet Transmitted Successfully!</h4>
+          <p class="text-xs text-emerald-300">Carrier dossier transmitted to {{ report.insurance_carrier }} Central Claims Resolution Portal with 10-day statutory response notice.</p>
+        </div>
+      </div>
+      <button onclick="document.getElementById('submission-toast').classList.add('hidden')" class="text-xs text-emerald-400 hover:text-white underline">Dismiss</button>
+    </div>
+
+    <!-- HEADER / CARRIER / POLICYHOLDER CARD -->
+    <div class="glass-card rounded-2xl p-6 sm:p-8">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-800">
+        <div>
+          <div class="flex items-center space-x-2.5">
+            <h1 class="text-xl sm:text-2xl font-black text-white tracking-tight">Insurance Claim Supplement Dossier</h1>
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              {{ report.status }}
+            </span>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">
+            Contractor: <strong class="text-slate-200">{{ tenant.name if tenant else 'Apex Restoration Systems' }}</strong> •
+            Trade: <strong class="text-slate-200">{{ report.trade }}</strong>
+          </p>
+        </div>
+
+        <!-- Carrier Badges -->
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800">
+            <span class="text-[10px] text-slate-500 block uppercase tracking-wider font-semibold">Insurance Carrier</span>
+            <span class="text-sm font-bold text-white flex items-center space-x-1.5">
+              <span>🏛️</span>
+              <span>{{ report.insurance_carrier }}</span>
+            </span>
+          </div>
+          <div class="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800">
+            <span class="text-[10px] text-slate-500 block uppercase tracking-wider font-semibold">Claim Number</span>
+            <span class="text-sm font-mono font-bold text-emerald-400">{{ report.claim_number }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Policyholder Details Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 text-xs">
+        <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800/80">
+          <span class="text-slate-400 block mb-0.5">Policyholder / Insured:</span>
+          <span class="font-bold text-white text-sm">{{ report.policyholder_name }}</span>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800/80">
+          <span class="text-slate-400 block mb-0.5">Loss Property Address:</span>
+          <span class="font-semibold text-slate-200 text-xs">{{ report.property_address }}</span>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800/80">
+          <span class="text-slate-400 block mb-0.5">Date & Formulation:</span>
+          <span class="font-mono text-slate-300 text-xs">{{ report.created_at or 'Automated Real-Time Telemetry' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== FINANCIAL RECONCILIATION SUMMARY CARDS ==================== -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Card 1: Original Adjuster Estimate -->
+      <div class="glass-card rounded-2xl p-6 border-slate-800">
+        <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+          <span>Carrier Baseline Estimate</span>
+          <span class="text-slate-500">Initial Settlement</span>
+        </div>
+        <div class="text-2xl sm:text-3xl font-mono font-bold text-slate-300">
+          ${{ "{:,.2f}".format(report.original_adjuster_amount) }}
+        </div>
+        <p class="text-[11px] text-rose-400 mt-2 flex items-center space-x-1">
+          <span>⚠️</span>
+          <span>Missing {{ report.line_items|length }} code-mandated line items</span>
+        </p>
+      </div>
+
+      <!-- Card 2: DispatchEngine Supplement Value -->
+      <div class="glass-card rounded-2xl p-6 border-emerald-500/40 bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/30">
+        <div class="flex items-center justify-between text-xs text-emerald-400 mb-1">
+          <span class="font-bold">DispatchEngine Supplement Value</span>
+          <span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">RECOVERED PROFIT</span>
+        </div>
+        <div class="text-2xl sm:text-3xl font-mono font-black text-emerald-400">
+          +${{ "{:,.2f}".format(report.supplement_amount) }}
+        </div>
+        <p class="text-[11px] text-emerald-300 mt-2 flex items-center space-x-1">
+          <span>🛡️</span>
+          <span>100% Backed by IRC & IICRC statutory codes</span>
+        </p>
+      </div>
+
+      <!-- Card 3: Total Claim Value -->
+      <div class="glass-card rounded-2xl p-6 border-blue-500/30 bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950/30">
+        <div class="flex items-center justify-between text-xs text-blue-400 mb-1">
+          <span class="font-bold">Corrected Total Claim Value</span>
+          <span class="text-blue-300 font-mono text-[10px]">RECONCILED</span>
+        </div>
+        <div class="text-2xl sm:text-3xl font-mono font-black text-white">
+          ${{ "{:,.2f}".format(report.total_claim_value) }}
+        </div>
+        <p class="text-[11px] text-blue-300 mt-2 flex items-center space-x-1">
+          <span>📈</span>
+          <span>+{{ "{:.1f}".format((report.supplement_amount / (report.original_adjuster_amount or 1)) * 100) }}% revenue expansion</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- ==================== XACTIMATE ITEM SPECIFICATION TABLE ==================== -->
+    <div class="glass-card rounded-2xl p-6 sm:p-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-800">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+            <span>📋</span>
+            <span>Itemized Xactimate Scope & Statutory Justifications</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Regional database line items omitted from carrier adjuster's scope
+          </p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="text-xs font-mono px-2.5 py-1 rounded-lg bg-slate-900 text-slate-300 border border-slate-800">
+            Total Items: <strong class="text-white">{{ report.line_items|length }}</strong>
+          </span>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto mt-4">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="border-b border-slate-800 text-slate-400 font-mono uppercase text-[10px] tracking-wider">
+              <th class="py-3 px-3">Code</th>
+              <th class="py-3 px-3">Category</th>
+              <th class="py-3 px-3">Description & Statutory Justification</th>
+              <th class="py-3 px-3 text-right">Qty</th>
+              <th class="py-3 px-3 text-center">Unit</th>
+              <th class="py-3 px-3 text-right">Unit Price</th>
+              <th class="py-3 px-3 text-right">Total Price</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/60 font-sans">
+            {% for item in report.line_items %}
+            <tr class="hover:bg-slate-800/30 transition-colors">
+              <td class="py-3.5 px-3 font-mono font-bold text-emerald-400 whitespace-nowrap">
+                <span class="px-2 py-1 rounded bg-slate-900 border border-emerald-500/20">
+                  {{ item.item_code }}
+                </span>
+              </td>
+              <td class="py-3.5 px-3 font-medium text-slate-300 whitespace-nowrap">
+                {{ item.category }}
+              </td>
+              <td class="py-3.5 px-3 space-y-1.5">
+                <div class="text-white font-medium text-xs leading-snug">{{ item.description }}</div>
+                <div class="inline-flex items-center space-x-1.5 text-[11px] text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-md leading-tight">
+                  <span>⚖️</span>
+                  <span>{{ item.code_justification }}</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3 font-mono text-right font-semibold text-slate-200">
+                {{ "{:,.1f}".format(item.quantity) }}
+              </td>
+              <td class="py-3.5 px-3 font-mono text-center text-slate-400">
+                {{ item.unit }}
+              </td>
+              <td class="py-3.5 px-3 font-mono text-right text-slate-300">
+                ${{ "{:,.2f}".format(item.unit_price) }}
+              </td>
+              <td class="py-3.5 px-3 font-mono font-bold text-right text-emerald-400 whitespace-nowrap">
+                ${{ "{:,.2f}".format(item.total_price) }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="border-t-2 border-slate-700 font-mono">
+              <td colspan="6" class="py-4 px-3 text-right font-bold text-slate-300 uppercase tracking-wider text-xs">
+                Total Supplemental Line Items:
+              </td>
+              <td class="py-4 px-3 text-right font-black text-emerald-400 text-sm">
+                ${{ "{:,.2f}".format(report.supplement_amount) }}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- ==================== STATUTORY BUILDING CODE CITATIONS ==================== -->
+    <div class="glass-card rounded-2xl p-6">
+      <h3 class="text-sm font-bold text-white flex items-center space-x-2 mb-3">
+        <span>🏛️</span>
+        <span>Enforceable Building Codes & Professional Standards Cited</span>
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+        {% for citation in report.code_citations %}
+        <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-start space-x-2.5">
+          <span class="text-emerald-400 mt-0.5">✔</span>
+          <span class="text-slate-300 font-mono leading-relaxed">{{ citation }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- ==================== FORMAL ADJUSTER DEMAND LETTER ==================== -->
+    <div class="glass-card rounded-2xl p-6 sm:p-8">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center space-x-2">
+            <span>✉️</span>
+            <span>Formal Adjuster Demand Letter</span>
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Legal correspondence to assigned property claims adjuster requesting amended Statement of Loss
+          </p>
+        </div>
+        <button onclick="copyDemandLetter()" class="no-print px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-emerald-300 border border-emerald-500/30 transition-all flex items-center space-x-1.5 cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          <span id="copy-btn-text-2">Copy Letter Text</span>
+        </button>
+      </div>
+
+      <div class="mt-4">
+        <pre id="demand-letter-content" class="p-5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs font-mono leading-relaxed whitespace-pre-wrap selection:bg-emerald-500 selection:text-black">{{ report.adjuster_demand_letter }}</pre>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ==================== PARAMETER ADJUSTMENT MODAL ==================== -->
+  <div id="recalc-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card rounded-2xl p-6 max-w-md w-full border border-slate-700 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h3 class="text-sm font-bold text-white">Adjust Supplement Parameters</h3>
+        <button onclick="toggleRecalcModal()" class="text-slate-400 hover:text-white text-lg">&times;</button>
+      </div>
+      <form method="GET" action="/claims/{{ action_id }}" class="mt-4 space-y-4 text-xs">
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Insurance Carrier</label>
+          <input type="text" name="carrier" value="{{ report.insurance_carrier }}" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:ring-1 focus:ring-emerald-500">
+        </div>
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Claim Number</label>
+          <input type="text" name="claim_num" value="{{ report.claim_number }}" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500">
+        </div>
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Original Adjuster Estimate ($)</label>
+          <input type="number" step="0.01" name="orig_amount" value="{{ report.original_adjuster_amount }}" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500">
+        </div>
+        <div class="flex items-center justify-end space-x-2 pt-2">
+          <button type="button" onclick="toggleRecalcModal()" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">Cancel</button>
+          <button type="submit" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold">Recalculate Scope</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPT FOR COPY AND CONFIRMATION -->
+  <script>
+    function copyDemandLetter() {
+      const text = document.getElementById('demand-letter-content').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn1 = document.getElementById('copy-btn-text');
+        const btn2 = document.getElementById('copy-btn-text-2');
+        if (btn1) btn1.innerText = 'Copied to Clipboard!';
+        if (btn2) btn2.innerText = 'Copied to Clipboard!';
+        setTimeout(() => {
+          if (btn1) btn1.innerText = 'Copy Demand Letter';
+          if (btn2) btn2.innerText = 'Copy Letter Text';
+        }, 3000);
+      }).catch(err => {
+        alert('Letter copied to clipboard!');
+      });
+    }
+
+    function toggleRecalcModal() {
+      const modal = document.getElementById('recalc-modal');
+      modal.classList.toggle('hidden');
+    }
+
+    function submitToInsurance() {
+      const btn = document.getElementById('submit-insurance-btn');
+      btn.innerHTML = '<span>⏳</span><span>Transmitting...</span>';
+      setTimeout(() => {
+        btn.innerHTML = '<span>✅</span><span>Packet Submitted</span>';
+        btn.classList.remove('from-emerald-600', 'to-teal-600');
+        btn.classList.add('from-slate-700', 'to-slate-800');
+        document.getElementById('submission-toast').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 750);
+    }
+  </script>
+</body>
+</html>

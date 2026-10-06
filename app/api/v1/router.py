@@ -106,6 +106,8 @@ from app.api.v1.audio_demo import router as audio_demo_router
 api_v1_router.include_router(audio_demo_router, tags=["In-Browser Live Audio Receptionist Simulator"])
 from app.api.v1.sms_bridge import router as sms_bridge_router
 api_v1_router.include_router(sms_bridge_router, tags=["Two-Way SMS Technician Dispatch Bridge"])
+from app.api.v1.insurance_claim import router as insurance_claim_router
+api_v1_router.include_router(insurance_claim_router, tags=["Autonomous Insurance Claim Supplement Engine"])
 
 
 

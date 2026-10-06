@@ -53,6 +53,7 @@ from app.api.v1.seo import router as seo_router
 from app.api.v1.audio_demo import router as audio_demo_router
 from app.api.v1.drip import router as drip_router
 from app.api.v1.sms_bridge import router as sms_bridge_router
+from app.api.v1.insurance_claim import router as insurance_claim_router
 from app.api.v1.router import api_v1_router
 from app.services.autopilot import autopilot_service
 
@@ -323,6 +324,9 @@ def create_application() -> FastAPI:
 
     # Mount In-Browser Live Audio Receptionist Simulator (/demo/audio)
     application.include_router(audio_demo_router)
+
+    # Mount Autonomous Insurance Claim Supplement & Xactimate Line-Item Engine (/claims/{action_id}, /claims-vault/{tenant_slug})
+    application.include_router(insurance_claim_router)
 
     # Mount API v1 router under /api/v1
     application.include_router(api_v1_router, prefix=settings.API_V1_STR)

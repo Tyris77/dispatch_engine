@@ -113,6 +113,7 @@ class LeadActionCreate(BaseModel):
     storyboard_data: Optional[Dict[str, Any]] = None
     partner_exchange_data: Optional[Dict[str, Any]] = None
     speed_to_lead_data: Optional[Dict[str, Any]] = None
+    claim_supplement_data: Optional[Dict[str, Any]] = None
 
 
 class LeadActionRead(BaseModel):
@@ -160,6 +161,7 @@ class LeadActionRead(BaseModel):
     storyboard_data: Optional[Dict[str, Any]] = None
     partner_exchange_data: Optional[Dict[str, Any]] = None
     speed_to_lead_data: Optional[Dict[str, Any]] = None
+    claim_supplement_data: Optional[Dict[str, Any]] = None
     created_at: datetime
     updated_at: datetime
 
