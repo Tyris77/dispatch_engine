@@ -205,6 +205,11 @@ class LeadAction(Base, UUIDPrimaryKeyMixin, TimestampMixin, TenantScopedMixin):
         nullable=True,
         default=None,
     )
+    locker_reservation_data: Mapped[Optional[Dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=True,
+        default=None,
+    )
 
 
 

@@ -127,6 +127,11 @@
           <span>Insurance Supplement</span>
         </a>
 
+        <a href="/lockers-vault/{{ tenant.slug }}" class="inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 border border-amber-500/50 shadow-lg shadow-amber-500/20 transition-all" title="Autonomous 24/7 Supply House Emergency Locker & After-Hours Parts Reservation Engine">
+          <span>📦</span>
+          <span>Supply Lockers</span>
+        </a>
+
         <a href="/permits/{{ tenant.slug }}" class="inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 border border-blue-500/50 shadow-lg shadow-blue-500/20 transition-all">
           <span>📡</span>
           <span>Permit Radar</span>
@@ -852,6 +857,12 @@
                     <a href="/claims/{{ lead.id }}" target="_blank" class="px-2 py-1.5 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 hover:text-teal-200 border border-teal-500/40 text-[11px] font-mono font-semibold transition-all inline-flex items-center space-x-1" title="View / Generate Autonomous Xactimate Insurance Claim Supplement">
                       <span>📋</span>
                       <span>Supplement</span>
+                    </a>
+
+                    <!-- 24/7 Supply House Emergency Locker Button -->
+                    <a href="/lockers/{{ lead.id }}" target="_blank" class="px-2 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 hover:text-amber-200 border border-amber-500/40 text-[11px] font-mono font-semibold transition-all inline-flex items-center space-x-1" title="Reserve 24/7 Supply House Emergency Locker & Generate Secure Pickup PIN">
+                      <span>📦</span>
+                      <span>Reserve Locker</span>
                     </a>
 
                     <button onclick="openTranscriptModal('{{ lead.lead_external_id }}', '{{ lead.qualification_summary|replace("'", "\\'") }}', '{{ lead.metadata_payload.get('speech_result', '')|replace("'", "\\'") }}', '{{ score }}', '{{ intent }}')" class="p-2 rounded-lg bg-gray-900 hover:bg-gray-800 text-indigo-400 hover:text-indigo-300 border border-gray-800 transition-colors" title="View Call Recording & Transcript">

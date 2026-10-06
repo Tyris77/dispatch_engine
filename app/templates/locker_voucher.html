@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>24/7 Supply House Emergency Locker Voucher | {{ voucher.locker_box_number }} | {{ voucher.distributor.branch_name }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+            },
+            surface: {
+              base: '#030712',
+              card: '#0f172a',
+              border: '#1e293b',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #030712;
+      color: #F3F4F6;
+    }
+    .mesh-bg {
+      background: radial-gradient(circle at 10% 10%, rgba(245, 158, 11, 0.12), transparent 45%),
+                  radial-gradient(circle at 90% 15%, rgba(239, 68, 68, 0.10), transparent 45%),
+                  radial-gradient(circle at 50% 90%, rgba(16, 185, 129, 0.08), transparent 50%);
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(30, 41, 59, 0.8);
+    }
+    .pin-display {
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.35em;
+    }
+    @media print {
+      body {
+        background-color: #FFFFFF !important;
+        color: #111827 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .glass-card {
+        background: #FFFFFF !important;
+        border: 1px solid #D1D5DB !important;
+        box-shadow: none !important;
+        color: #111827 !important;
+      }
+      .pin-box {
+        background: #F3F4F6 !important;
+        border: 2px solid #111827 !important;
+        color: #111827 !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans antialiased mesh-bg selection:bg-amber-500 selection:text-black">
+
+  <!-- ==================== HEADER BAR ==================== -->
+  <header class="no-print sticky top-0 z-50 bg-[#030712]/90 backdrop-blur-md border-b border-surface-border">
+    <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="/lockers-vault/{{ tenant.slug if tenant else 'apex-mechanical' }}" class="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 transition-all flex items-center space-x-1.5 text-xs font-semibold">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          <span class="hidden sm:inline">Fleet Lockers</span>
+        </a>
+        <div class="flex items-center space-x-2">
+          <span class="text-xs font-mono text-amber-400 font-black px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">
+            24/7 PARTS LOCKER
+          </span>
+          <span class="text-xs text-slate-400 hidden sm:inline">•</span>
+          <span class="text-xs text-slate-300 font-mono hidden sm:inline">{{ voucher.reservation_id }}</span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <a href="{{ voucher.navigation_url }}" target="_blank" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-lg shadow-blue-600/30 transition-all flex items-center space-x-1.5 cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <span>Navigate</span>
+        </a>
+        <button onclick="window.print()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition-all flex items-center space-x-1.5 cursor-pointer">
+          <span>🖨️</span>
+          <span class="hidden sm:inline">Print</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CONTAINER ==================== -->
+  <main class="max-w-4xl mx-auto px-4 py-6 space-y-6">
+
+    <!-- HERO ACCESS TOKEN & PIN CARD -->
+    <div class="glass-card rounded-3xl p-6 sm:p-8 border-amber-500/40 relative overflow-hidden shadow-2xl shadow-amber-500/10">
+      <div class="absolute -right-8 -top-8 w-44 h-44 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Live Countdown Banner -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-6 border-b border-slate-800">
+        <div>
+          <span class="inline-flex items-center space-x-1.5 text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full mb-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span>LOCKER STAGED & LOCKED</span>
+          </span>
+          <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">After-Hours Emergency Pickup Voucher</h1>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">
+            Facility: <strong class="text-slate-200">{{ voucher.distributor.branch_name }}</strong>
+          </p>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800 text-right sm:min-w-[170px]">
+          <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Hold Expires At</span>
+          <span class="text-sm font-mono font-bold text-amber-400" id="expiry-display">{{ voucher.expires_at }}</span>
+          <span class="text-[10px] text-slate-500 block">4-Hour Reservation Window</span>
+        </div>
+      </div>
+
+      <!-- HIGH-CONTRAST PIN & BOX CODES -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
+        <!-- Assigned Locker Box -->
+        <div class="p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>ASSIGNED LOCKER BAY</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">SOUTH DOCK</span>
+          </div>
+          <div class="my-3">
+            <div class="text-3xl sm:text-4xl font-mono font-black text-white tracking-wider">
+              {{ voucher.locker_box_number }}
+            </div>
+            <p class="text-[11px] text-slate-400 mt-1">Automated electronic solenoid latch</p>
+          </div>
+          <div class="text-[11px] text-amber-400 flex items-center space-x-1 font-mono">
+            <span>⚡ Red LED Halo Indicator</span>
+          </div>
+        </div>
+
+        <!-- 4-Digit Pickup PIN -->
+        <div class="p-5 rounded-2xl pin-box bg-gradient-to-br from-amber-950/40 via-slate-900 to-slate-950 border-2 border-amber-500/60 flex flex-col justify-between shadow-lg shadow-amber-500/10">
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-amber-400 font-bold">SECURE PICKUP PIN</span>
+            <button onclick="copyPIN()" id="copy-pin-btn" class="px-2 py-0.5 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-[10px] font-mono font-bold border border-amber-500/30 cursor-pointer transition-all">
+              Copy PIN
+            </button>
+          </div>
+          <div class="my-3 text-center">
+            <div class="text-4xl sm:text-5xl font-black text-amber-300 font-mono pin-display" id="pin-value">
+              {{ voucher.secure_pickup_pin }}
+            </div>
+            <p class="text-[11px] text-slate-400 mt-1">Enter PIN on Touchscreen Terminal</p>
+          </div>
+          <div class="text-[11px] text-emerald-400 flex items-center justify-center space-x-1 font-mono">
+            <span>🔒 Single-Use Cryptographic Token</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- GATE ACCESS & FACILITY BADGE -->
+      <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+        <div>
+          <span class="text-slate-400 block mb-0.5">Perimeter Gate Code:</span>
+          <span class="text-base font-mono font-bold text-white bg-slate-950 px-2 py-0.5 rounded border border-slate-800 inline-block">
+            {{ voucher.distributor.emergency_gate_code }}
+          </span>
+        </div>
+        <div>
+          <span class="text-slate-400 block mb-0.5">24/7 Parts Manager Hotline:</span>
+          <a href="tel:{{ voucher.distributor.after_hours_contact_phone }}" class="text-emerald-400 font-mono font-bold hover:underline flex items-center space-x-1">
+            <span>📞</span>
+            <span>{{ voucher.distributor.after_hours_contact_phone }}</span>
+          </a>
+        </div>
+        <div>
+          <span class="text-slate-400 block mb-0.5">Assigned Technician:</span>
+          <span class="text-slate-200 font-semibold">{{ voucher.technician_name or 'On-Call Tech' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TURN-BY-TURN DIRECTIONS & MAP ACTION -->
+    <div class="glass-card rounded-2xl p-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center space-x-2">
+            <span>📍</span>
+            <span>Facility Location & Routing</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            {{ voucher.distributor.address }}, {{ voucher.distributor.city }}, {{ voucher.distributor.state }} {{ voucher.distributor.zip_code }}
+          </p>
+        </div>
+        <a href="{{ voucher.navigation_url }}" target="_blank" class="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/20 inline-flex items-center justify-center space-x-2">
+          <span>Get Turn-by-Turn Directions</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+
+      <!-- Gate Barcode Simulation for Scanner Gates -->
+      <div class="mt-4 p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <span class="text-xs font-bold text-white block">Scanner-Equipped Gate Barcode</span>
+          <span class="text-[11px] text-slate-400">Scan at drive-up optical reader if keypad is disabled</span>
+        </div>
+        <div class="p-2.5 rounded-lg bg-white inline-block">
+          <!-- Procedural Barcode visual -->
+          <div class="flex items-center space-x-1 h-10 px-2 bg-white text-black font-mono font-bold text-xs">
+            <span class="w-1 h-8 bg-black"></span>
+            <span class="w-2 h-8 bg-black"></span>
+            <span class="w-0.5 h-8 bg-black"></span>
+            <span class="w-1.5 h-8 bg-black"></span>
+            <span class="w-2 h-8 bg-black"></span>
+            <span class="w-0.5 h-8 bg-black"></span>
+            <span class="w-1 h-8 bg-black"></span>
+            <span class="w-2.5 h-8 bg-black"></span>
+            <span class="w-1 h-8 bg-black"></span>
+            <span class="w-2 h-8 bg-black"></span>
+            <span class="w-0.5 h-8 bg-black"></span>
+            <span class="w-1.5 h-8 bg-black"></span>
+            <span class="mx-1 text-[11px] tracking-widest">{{ voucher.secure_pickup_pin }}</span>
+            <span class="w-2 h-8 bg-black"></span>
+            <span class="w-1 h-8 bg-black"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ITEMIZED PARTS MANIFEST -->
+    <div class="glass-card rounded-2xl p-6">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+        <h2 class="text-base font-bold text-white flex items-center space-x-2">
+          <span>📦</span>
+          <span>Itemized Wholesale Parts Staged Inside Bay</span>
+        </h2>
+        <span class="text-xs font-mono text-slate-400">Total Items: <strong class="text-white">{{ voucher.items|length }}</strong></span>
+      </div>
+
+      <div class="overflow-x-auto mt-4">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="border-b border-slate-800 text-slate-400 font-mono uppercase text-[10px] tracking-wider">
+              <th class="py-2.5 px-3">SKU</th>
+              <th class="py-2.5 px-3">Component Description</th>
+              <th class="py-2.5 px-3 text-right">Qty</th>
+              <th class="py-2.5 px-3 text-right">Wholesale Unit</th>
+              <th class="py-2.5 px-3 text-right">Total Price</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/60 font-sans">
+            {% for it in voucher.items %}
+            <tr class="hover:bg-slate-800/30 transition-colors">
+              <td class="py-3 px-3 font-mono font-bold text-amber-400 whitespace-nowrap">
+                {{ it.part_sku }}
+              </td>
+              <td class="py-3 px-3 text-white font-medium">
+                {{ it.description }}
+              </td>
+              <td class="py-3 px-3 font-mono text-right text-slate-300">
+                {{ it.quantity }}
+              </td>
+              <td class="py-3 px-3 font-mono text-right text-slate-400">
+                ${{ "{:,.2f}".format(it.unit_price) }}
+              </td>
+              <td class="py-3 px-3 font-mono font-bold text-right text-slate-200">
+                ${{ "{:,.2f}".format(it.total_price) }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="border-t border-slate-800 font-mono text-xs">
+              <td colspan="4" class="py-2.5 px-3 text-right text-slate-400">Parts Material Subtotal:</td>
+              <td class="py-2.5 px-3 text-right font-semibold text-slate-200">${{ "{:,.2f}".format(voucher.material_subtotal) }}</td>
+            </tr>
+            <tr class="font-mono text-xs">
+              <td colspan="4" class="py-2 px-3 text-right text-slate-400">24/7 After-Hours Automated Staging Fee:</td>
+              <td class="py-2 px-3 text-right font-semibold text-amber-400">+${{ "{:,.2f}".format(voucher.emergency_locker_fee) }}</td>
+            </tr>
+            <tr class="border-t-2 border-slate-700 font-mono">
+              <td colspan="4" class="py-3 px-3 text-right font-bold text-white uppercase tracking-wider">Total Charged to Contractor PO:</td>
+              <td class="py-3 px-3 text-right font-black text-emerald-400 text-sm">${{ "{:,.2f}".format(voucher.total_cost) }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- STEP-BY-STEP PICKUP PROTOCOL -->
+    <div class="glass-card rounded-2xl p-6">
+      <h3 class="text-sm font-bold text-white flex items-center space-x-2 mb-3">
+        <span>📖</span>
+        <span>Electronic Locker Access Protocol</span>
+      </h3>
+      <pre class="p-4 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 text-xs font-mono leading-relaxed whitespace-pre-wrap">{{ voucher.access_instructions }}</pre>
+    </div>
+
+  </main>
+
+  <script>
+    function copyPIN() {
+      const pin = document.getElementById('pin-value').innerText.trim();
+      navigator.clipboard.writeText(pin).then(() => {
+        const btn = document.getElementById('copy-pin-btn');
+        btn.innerText = 'COPIED!';
+        setTimeout(() => {
+          btn.innerText = 'Copy PIN';
+        }, 3000);
+      }).catch(() => {
+        alert('PIN: ' + pin);
+      });
+    }
+  </script>
+</body>
+</html>

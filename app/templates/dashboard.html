@@ -123,6 +123,12 @@
           <span>Claims Vault</span>
         </a>
 
+        <!-- Supply Lockers Button -->
+        <a href="/lockers-vault/{{ active_tenant_slug or (current_tenant.slug if current_tenant else 'apex-mechanical') }}" class="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 border border-amber-400/50 shadow-sm transition-all flex items-center space-x-1.5" title="Autonomous 24/7 Supply House Emergency Locker & After-Hours Parts Reservation Engine">
+          <span>📦</span>
+          <span>Supply Lockers</span>
+        </a>
+
         <!-- Solutions Directory Button -->
         <a href="/solutions" class="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-teal-600 to-sky-600 hover:from-teal-500 hover:to-sky-500 border border-teal-500/40 shadow-sm transition-all flex items-center space-x-1.5" title="Programmatic SEO & Local Organic Solutions Directory">
           <span>📍</span>
@@ -905,6 +911,12 @@
                         <a href="/claims/{{ lead.id }}" target="_blank" class="inline-flex items-center space-x-1 px-2 py-1 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 hover:text-teal-200 border border-teal-500/40 text-[11px] font-mono font-semibold transition-all" title="View / Generate Autonomous Xactimate Insurance Claim Supplement">
                           <span>📋</span>
                           <span>Supplement</span>
+                        </a>
+
+                        <!-- 24/7 Supply House Emergency Locker Button -->
+                        <a href="/lockers/{{ lead.id }}" target="_blank" class="inline-flex items-center space-x-1 px-2 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 hover:text-amber-200 border border-amber-500/40 text-[11px] font-mono font-semibold transition-all" title="Reserve 24/7 Supply House Emergency Locker & Generate Secure Pickup PIN">
+                          <span>📦</span>
+                          <span>Reserve Locker</span>
                         </a>
                       </div>
                     </td>

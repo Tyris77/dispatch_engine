@@ -108,6 +108,8 @@ from app.api.v1.sms_bridge import router as sms_bridge_router
 api_v1_router.include_router(sms_bridge_router, tags=["Two-Way SMS Technician Dispatch Bridge"])
 from app.api.v1.insurance_claim import router as insurance_claim_router
 api_v1_router.include_router(insurance_claim_router, tags=["Autonomous Insurance Claim Supplement Engine"])
+from app.api.v1.lockers import router as lockers_router
+api_v1_router.include_router(lockers_router, tags=["24/7 Supply House Emergency Locker & After-Hours Parts Reservation Engine"])
 
 
 
