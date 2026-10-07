@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse
 from app.api.v1.dashboard import router as dashboard_router, templates
 from app.api.v1.health import router as health_router
 from app.api.v1.crews import router as crews_router
@@ -174,6 +174,8 @@ def create_application() -> FastAPI:
             allow_headers=["*"],
         )
 
+    templates.env.globals["settings"] = settings
+
     # Public High-Converting Landing Page
     @application.get(
         "/",
@@ -186,8 +188,28 @@ def create_application() -> FastAPI:
         return templates.TemplateResponse(
             request=request,
             name="landing.html",
-            context={"project_name": settings.PROJECT_NAME},
+            context={
+                "project_name": settings.PROJECT_NAME,
+                "settings": settings,
+            },
         )
+
+    # Static IndexNow Domain Ownership Verification File (/{INDEXNOW_KEY}.txt)
+    @application.get(
+        f"/{settings.INDEXNOW_KEY}.txt",
+        response_class=PlainTextResponse,
+        include_in_schema=False,
+        summary="IndexNow Domain Ownership Verification Key",
+        description="Serves the 32-character hex key verifying domain ownership for search engines.",
+    )
+    async def indexnow_key_verification():
+        return PlainTextResponse(
+            content=settings.INDEXNOW_KEY,
+            media_type="text/plain",
+            headers={"Content-Type": "text/plain; charset=utf-8"},
+        )
+
+
 
     # Mount root /health probe for infrastructure orchestrators (Kubernetes / ECS / Cloud Run)
     application.include_router(health_router, tags=["Health"])

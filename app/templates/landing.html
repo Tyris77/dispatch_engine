@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ project_name or 'DispatchEngine' }} — Autonomous AI Voice & Emergency Dispatch Engine</title>
   <meta name="description" content="DispatchEngine answers inbound calls instantly, qualifies emergencies in real time with Gemini, bridges high-ticket calls to technicians in 1.2s, and texts scheduling links to routine callers.">
+  {% if settings and settings.GOOGLE_SITE_VERIFICATION %}
+  <meta name="google-site-verification" content="{{ settings.GOOGLE_SITE_VERIFICATION }}">
+  {% endif %}
 
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>

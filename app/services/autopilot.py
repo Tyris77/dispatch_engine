@@ -91,7 +91,9 @@ class AutopilotService:
             "Weekly Executive ROI Digest (Sunday 18:00)",
             "Autonomous Contractor Discovery & Zero-Touch Growth",
             "Autonomous B2B Drip & Territory Follow-Up (48h Audit / Day-5 Onboard)",
+            "Search Engine IndexNow Ping & Sitemap Verification",
         ]
+
 
         return AutopilotStatusReport(
             is_running=self.is_running,
@@ -332,6 +334,37 @@ class AutopilotService:
                         details=str(exc),
                     )
                 cycle_logs.append(log6)
+
+                # -------------------------------------------------------------
+                # Task 7: Search Engine IndexNow Ping & Sitemap Verification
+                # -------------------------------------------------------------
+                try:
+                    from app.services.search_indexing import search_indexing_service
+                    idx_res = await search_indexing_service.ping_indexnow(
+                        base_url="https://dispatchengine-production.up.railway.app",
+                        record_autopilot_log=False,
+                    )
+                    url_count = idx_res.get("submitted_urls_count", 53)
+                    status_flag = "SUCCESS" if idx_res.get("status") == "SUCCESS" else "ERROR"
+                    log7 = AutopilotTaskLog(
+                        task_name="Search Engine IndexNow Ping & Sitemap Verification",
+                        executed_at=time_str,
+                        items_processed=url_count,
+                        status=status_flag,
+                        details=f"Notified search engines via IndexNow API of {url_count} live URLs (48 programmatic landing pages + 5 core conversion funnels).",
+                    )
+                    total_items += url_count
+                except Exception as exc:
+                    logger.error(f"[Autopilot] Task 7 error: {exc}")
+                    log7 = AutopilotTaskLog(
+                        task_name="Search Engine IndexNow Ping & Sitemap Verification",
+                        executed_at=time_str,
+                        items_processed=0,
+                        status="ERROR",
+                        details=str(exc),
+                    )
+                cycle_logs.append(log7)
+
 
             # Store recent logs (prepend so newest are first)
             for l in reversed(cycle_logs):

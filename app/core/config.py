@@ -55,6 +55,10 @@ class Settings(BaseSettings):
     STRIPE_SECRET_KEY: Optional[str] = None
     STRIPE_WEBHOOK_SECRET: Optional[str] = None
 
+    # Search Engine Indexing & Verification (IndexNow & Google Search Console)
+    INDEXNOW_KEY: str = "8f7b2a4c1e9d3b5a7c2e4f6a8b0d2e4f"
+    GOOGLE_SITE_VERIFICATION: Optional[str] = None
+
     # CORS
     BACKEND_CORS_ORIGINS: Union[List[str], str] = [
         "http://localhost:3000",

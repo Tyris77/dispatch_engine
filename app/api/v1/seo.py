@@ -3,12 +3,15 @@ from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, HTTPException, Request, Response, status
 from fastapi.responses import HTMLResponse, PlainTextResponse, Response as FastAPIResponse
 from fastapi.templating import Jinja2Templates
+from app.core.config import settings
 from app.services.seo import SEOService, TRADES, HUBS
+from app.services.search_indexing import search_indexing_service
 
 router = APIRouter(tags=["Programmatic SEO & Local Organic Lead-Capture Engine"])
 
 TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "templates")
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
+templates.env.globals["settings"] = settings
 
 
 @router.get(
@@ -22,7 +25,7 @@ async def get_solutions_directory(request: Request) -> FastAPIResponse:
     return templates.TemplateResponse(
         request=request,
         name="solutions_hub.html",
-        context={"matrix": matrix},
+        context={"matrix": matrix, "settings": settings},
     )
 
 
@@ -44,8 +47,9 @@ async def get_solution_landing_page(slug: str, request: Request) -> FastAPIRespo
     return templates.TemplateResponse(
         request=request,
         name="seo_landing.html",
-        context={"page": page_data},
+        context={"page": page_data, "settings": settings},
     )
+
 
 
 @router.get(
@@ -86,3 +90,15 @@ async def get_robots_txt(request: Request) -> PlainTextResponse:
 )
 async def get_seo_matrix() -> Dict[str, Any]:
     return SEOService.get_matrix_by_category()
+
+
+@router.post(
+    "/api/v1/seo/ping-indexnow",
+    summary="Ping IndexNow API with Programmatic SEO & Core URLs",
+    description="Submits 53 total URLs (48 programmatic landing pages + 5 core conversion URLs) to the IndexNow protocol.",
+)
+async def ping_indexnow_endpoint(request: Request) -> Dict[str, Any]:
+    base_url = str(request.base_url).rstrip("/")
+    result = await search_indexing_service.ping_indexnow(base_url=base_url)
+    return result
+
