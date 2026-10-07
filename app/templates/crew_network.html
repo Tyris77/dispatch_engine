@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚡ 1099 Crew Surge Dispatch & Bidding Network &bull; {{ tenant.name }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              400: '#38bdf8',
+              500: '#0284c7',
+            },
+            surge: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .glass-card {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  </style>
+</head>
+<body class="bg-gray-950 text-gray-100 font-sans min-h-screen antialiased selection:bg-amber-500 selection:text-black pb-16">
+
+  <!-- Ambient Backdrop -->
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-56 bg-gradient-to-b from-amber-600/10 via-cyan-600/5 to-transparent blur-3xl pointer-events-none"></div>
+
+  <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 relative space-y-8">
+
+    <!-- Top Navigation Header -->
+    <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-800 pb-5">
+      <div class="flex items-center space-x-3">
+        <a href="/portal/{{ tenant.slug }}" class="p-2.5 rounded-xl bg-gray-900 hover:bg-gray-800 text-gray-400 hover:text-white border border-gray-800 transition">
+          &larr; Portal
+        </a>
+        <div>
+          <div class="flex items-center space-x-2 text-xs font-mono text-amber-400 font-semibold uppercase tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            <span>Autonomous On-Demand 1099 Surge Dispatch</span>
+            <span class="text-gray-600">&bull;</span>
+            <span class="text-gray-400">{{ tenant.name }}</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mt-0.5">
+            1099 Crew Surge Dispatch &amp; Shift Bidding Engine
+          </h1>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <span class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-mono font-bold bg-amber-950/80 text-amber-300 border border-amber-800/60 shadow-inner">
+          <span>⚡</span>
+          <span>65/35 Payout Split Automation</span>
+        </span>
+      </div>
+    </header>
+
+    <!-- KPI Metric Cards Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
+      <div class="glass-card p-4 rounded-2xl space-y-1">
+        <div class="text-[11px] font-mono uppercase text-gray-400 tracking-wider">Enrolled Crews</div>
+        <div class="text-2xl font-bold font-mono text-white">{{ metrics.total_crews }}</div>
+        <div class="text-[11px] text-gray-400">DMV Multi-Trade</div>
+      </div>
+
+      <div class="glass-card p-4 rounded-2xl space-y-1">
+        <div class="text-[11px] font-mono uppercase text-gray-400 tracking-wider">Compliance Rate</div>
+        <div class="text-2xl font-bold font-mono text-emerald-400">{{ metrics.compliance_rate }}%</div>
+        <div class="text-[11px] text-gray-400">{{ metrics.w9_verified_count }}/{{ metrics.total_crews }} W-9 &amp; COI</div>
+      </div>
+
+      <div class="glass-card p-4 rounded-2xl space-y-1">
+        <div class="text-[11px] font-mono uppercase text-gray-400 tracking-wider">Open Surge Bids</div>
+        <div class="text-2xl font-bold font-mono text-amber-400">{{ metrics.open_bids_count }}</div>
+        <div class="text-[11px] text-amber-400/80">15-min countdowns</div>
+      </div>
+
+      <div class="glass-card p-4 rounded-2xl space-y-1">
+        <div class="text-[11px] font-mono uppercase text-gray-400 tracking-wider">Claimed Shifts</div>
+        <div class="text-2xl font-bold font-mono text-cyan-400">{{ metrics.claimed_bids_count }}</div>
+        <div class="text-[11px] text-cyan-400/80">Locked &amp; Dispatched</div>
+      </div>
+
+      <div class="glass-card p-4 rounded-2xl space-y-1">
+        <div class="text-[11px] font-mono uppercase text-gray-400 tracking-wider">Total Crew Payout</div>
+        <div class="text-2xl font-bold font-mono text-emerald-400">${{ "%.2f"|format(metrics.total_subcontractor_payout) }}</div>
+        <div class="text-[11px] text-gray-400">65% 1099 Labor Pool</div>
+      </div>
+
+      <div class="glass-card p-4 rounded-2xl space-y-1">
+        <div class="text-[11px] font-mono uppercase text-gray-400 tracking-wider">Contractor Margin</div>
+        <div class="text-2xl font-bold font-mono text-amber-300">${{ "%.2f"|format(metrics.total_contractor_margin) }}</div>
+        <div class="text-[11px] text-gray-400">35% Gross Retained</div>
+      </div>
+    </div>
+
+    <!-- Active Surge Bids Section -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <span class="text-lg">⚡</span>
+          <h2 class="text-lg font-bold text-white tracking-tight">Active Surge Job Broadcasts</h2>
+          <span class="text-xs font-mono px-2 py-0.5 rounded-full bg-slate-800 text-amber-300 border border-slate-700">
+            {{ bids|length }} Total
+          </span>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl overflow-hidden border border-gray-800">
+        {% if bids %}
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-gray-300">
+            <thead class="bg-gray-900/90 text-gray-400 uppercase font-mono text-[10px] tracking-wider border-b border-gray-800">
+              <tr>
+                <th class="py-3 px-4">Bid ID</th>
+                <th class="py-3 px-4">Trade</th>
+                <th class="py-3 px-4">Location</th>
+                <th class="py-3 px-4">Ticket</th>
+                <th class="py-3 px-4">Payout (65%)</th>
+                <th class="py-3 px-4">Margin (35%)</th>
+                <th class="py-3 px-4">SLA</th>
+                <th class="py-3 px-4">Status</th>
+                <th class="py-3 px-4">Claimant</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800/80 font-sans">
+              {% for b in bids %}
+              <tr class="hover:bg-gray-900/50 transition-colors">
+                <td class="py-3 px-4 font-mono font-semibold text-white">
+                  {{ b.bid_id }}
+                </td>
+                <td class="py-3 px-4 capitalize">
+                  <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono text-[11px]">
+                    {{ b.trade.replace('_', ' ') }}
+                  </span>
+                </td>
+                <td class="py-3 px-4 text-gray-300">
+                  {{ b.location_summary }}
+                </td>
+                <td class="py-3 px-4 font-mono font-medium text-white">
+                  ${{ "%.2f"|format(b.estimated_ticket_value) }}
+                </td>
+                <td class="py-3 px-4 font-mono font-bold text-emerald-400">
+                  ${{ "%.2f"|format(b.subcontractor_payout) }}
+                </td>
+                <td class="py-3 px-4 font-mono font-semibold text-amber-300">
+                  ${{ "%.2f"|format(b.contractor_margin) }}
+                </td>
+                <td class="py-3 px-4 font-mono text-gray-300">
+                  {{ b.arrival_sla_minutes }}m
+                </td>
+                <td class="py-3 px-4 font-mono">
+                  {% if b.status == 'CLAIMED' %}
+                  <span class="px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800 text-[10px] font-bold">
+                    CLAIMED
+                  </span>
+                  {% elif b.status == 'OPEN' %}
+                  <span class="px-2 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-800 text-[10px] font-bold animate-pulse">
+                    OPEN
+                  </span>
+                  {% else %}
+                  <span class="px-2 py-0.5 rounded-full bg-rose-950 text-rose-300 border border-rose-800 text-[10px] font-bold">
+                    EXPIRED
+                  </span>
+                  {% endif %}
+                </td>
+                <td class="py-3 px-4 text-gray-300">
+                  {{ b.claimed_by or '—' }}
+                </td>
+                <td class="py-3 px-4 text-right space-x-1.5 whitespace-nowrap">
+                  <a href="/crew-bid/{{ b.bid_id }}" target="_blank" class="px-2.5 py-1 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[11px] font-mono transition-colors">
+                    Bid View &rarr;
+                  </a>
+                  <a href="/crew-voucher/{{ b.action_id }}" target="_blank" class="px-2.5 py-1 rounded bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] font-mono transition-colors">
+                    Voucher
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="p-8 text-center space-y-2">
+          <div class="text-3xl">⚡</div>
+          <h3 class="text-sm font-semibold text-white">No Active Surge Bids Broadcasted Yet</h3>
+          <p class="text-xs text-gray-400 max-w-sm mx-auto">
+            Surge job broadcasts can be autonomously triggered from the lead pipeline or via the <strong>⚡ Surge Bid</strong> quick action in your dashboard.
+          </p>
+        </div>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- Enrolled 1099 Subcontractor Roster Section -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <span class="text-lg">👷</span>
+          <h2 class="text-lg font-bold text-white tracking-tight">Enrolled DMV 1099 Subcontractor Roster</h2>
+          <span class="text-xs font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+            {{ subcontractors|length }} Vetted Partners
+          </span>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl overflow-hidden border border-gray-800">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-gray-300">
+            <thead class="bg-gray-900/90 text-gray-400 uppercase font-mono text-[10px] tracking-wider border-b border-gray-800">
+              <tr>
+                <th class="py-3 px-4">Subcontractor / Crew</th>
+                <th class="py-3 px-4">Trade Specialty</th>
+                <th class="py-3 px-4">Dispatch Phone</th>
+                <th class="py-3 px-4">IRS W-9</th>
+                <th class="py-3 px-4">ACORD COI</th>
+                <th class="py-3 px-4">Rating</th>
+                <th class="py-3 px-4">Active Jobs</th>
+                <th class="py-3 px-4 text-right">Compliance Action</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800/80 font-sans">
+              {% for sub in subcontractors %}
+              <tr class="hover:bg-gray-900/50 transition-colors">
+                <td class="py-3 px-4">
+                  <div class="font-bold text-white">{{ sub.name }}</div>
+                  <div class="text-[10px] font-mono text-gray-400">{{ sub.subcontractor_id }}</div>
+                </td>
+                <td class="py-3 px-4 capitalize">
+                  <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 font-mono text-[11px]">
+                    {{ sub.trade.replace('_', ' ') }}
+                  </span>
+                </td>
+                <td class="py-3 px-4 font-mono text-gray-300">
+                  {{ sub.phone }}
+                </td>
+                <td class="py-3 px-4">
+                  {% if sub.w9_verified %}
+                  <span class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] font-semibold">
+                    <span>✓</span>
+                    <span>Verified</span>
+                  </span>
+                  {% else %}
+                  <span class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-rose-950 text-rose-400 border border-rose-800 text-[10px] font-semibold">
+                    <span>⚠️</span>
+                    <span>Missing</span>
+                  </span>
+                  {% endif %}
+                </td>
+                <td class="py-3 px-4">
+                  {% if sub.coi_verified %}
+                  <span class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] font-semibold">
+                    <span>✓</span>
+                    <span>Active $1M+</span>
+                  </span>
+                  {% else %}
+                  <span class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-rose-950 text-rose-400 border border-rose-800 text-[10px] font-semibold">
+                    <span>⚠️</span>
+                    <span>Unverified</span>
+                  </span>
+                  {% endif %}
+                </td>
+                <td class="py-3 px-4 font-mono text-amber-300 font-semibold">
+                  ⭐ {{ "%.1f"|format(sub.rating) }}
+                </td>
+                <td class="py-3 px-4 font-mono text-white">
+                  {{ sub.active_jobs_count }}
+                </td>
+                <td class="py-3 px-4 text-right">
+                  <a href="/w9/{{ tenant.slug }}/{{ sub.name }}" target="_blank" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-[11px] font-mono transition-colors">
+                    W-9 Portal &rarr;
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+</body>
+</html>

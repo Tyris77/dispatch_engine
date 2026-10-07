@@ -210,6 +210,12 @@ class LeadAction(Base, UUIDPrimaryKeyMixin, TimestampMixin, TenantScopedMixin):
         nullable=True,
         default=None,
     )
+    surge_crew_bid_data: Mapped[Optional[Dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=True,
+        default=None,
+    )
+
 
 
 

@@ -110,6 +110,8 @@ from app.api.v1.insurance_claim import router as insurance_claim_router
 api_v1_router.include_router(insurance_claim_router, tags=["Autonomous Insurance Claim Supplement Engine"])
 from app.api.v1.lockers import router as lockers_router
 api_v1_router.include_router(lockers_router, tags=["24/7 Supply House Emergency Locker & After-Hours Parts Reservation Engine"])
+from app.api.v1.crew_surge import router as crew_surge_router
+api_v1_router.include_router(crew_surge_router, tags=["Autonomous 1099 Crew Surge Dispatch & Shift Bidding Engine"])
 
 
 

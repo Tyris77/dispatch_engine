@@ -129,6 +129,12 @@
           <span>Supply Lockers</span>
         </a>
 
+        <!-- Surge Crews Button -->
+        <a href="/crew-network/{{ active_tenant_slug or (current_tenant.slug if current_tenant else 'apex-mechanical') }}" class="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-500 border border-amber-400/50 shadow-sm transition-all flex items-center space-x-1.5" title="Autonomous On-Demand 1099 Crew Surge Dispatch & Shift Bidding Engine">
+          <span>⚡</span>
+          <span>Surge Crews</span>
+        </a>
+
         <!-- Solutions Directory Button -->
         <a href="/solutions" class="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-teal-600 to-sky-600 hover:from-teal-500 hover:to-sky-500 border border-teal-500/40 shadow-sm transition-all flex items-center space-x-1.5" title="Programmatic SEO & Local Organic Solutions Directory">
           <span>📍</span>
@@ -918,8 +924,22 @@
                           <span>📦</span>
                           <span>Reserve Locker</span>
                         </a>
+
+                        <!-- Autonomous On-Demand 1099 Crew Surge Bid Button -->
+                        {% if lead.surge_crew_bid_data and lead.surge_crew_bid_data.get('bid_id') %}
+                          <a href="/crew-bid/{{ lead.surge_crew_bid_data.get('bid_id') }}" target="_blank" class="inline-flex items-center space-x-1 px-2 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 hover:text-amber-200 border border-amber-500/40 text-[11px] font-mono font-semibold transition-all" title="View Active 1099 Crew Surge Shift Broadcast">
+                            <span>⚡</span>
+                            <span>Surge Bid</span>
+                          </a>
+                        {% else %}
+                          <button onclick="triggerSurgeBid('{{ lead.id }}')" id="surge-bid-btn-{{ lead.id }}" class="inline-flex items-center space-x-1 px-2 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 border border-amber-500/30 text-[11px] font-mono font-semibold transition-all" title="Broadcast Emergency 1099 Crew Surge Bid (65/35 Split)">
+                            <span>⚡</span>
+                            <span>Surge Bid</span>
+                          </button>
+                        {% endif %}
                       </div>
                     </td>
+
                   </tr>
                   {% endfor %}
                 {% else %}
@@ -1859,6 +1879,33 @@
         autopilotDrawerOpen = false;
       }
     });
+
+    async function triggerSurgeBid(actionId) {
+      const btn = document.getElementById(`surge-bid-btn-${actionId}`);
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳</span><span>Broadcasting...</span>';
+      }
+      try {
+        const res = await fetch(`/api/v1/crew-surge/trigger-bid/${actionId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        if (!res.ok) throw new Error('Failed to trigger surge bid broadcast');
+        const data = await res.json();
+        window.open(`/crew-bid/${data.bid_id}`, '_blank');
+        if (btn) {
+          btn.innerHTML = '<span>⚡</span><span>Surge Active</span>';
+          btn.className = btn.className.replace('bg-amber-500/10', 'bg-amber-500/20');
+        }
+      } catch (err) {
+        alert('Error triggering surge bid: ' + err.message);
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>⚡</span><span>Surge Bid</span>';
+        }
+      }
+    }
 
     setInterval(fetchAutopilotTelemetry, 30000);
   </script>

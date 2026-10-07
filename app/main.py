@@ -55,6 +55,7 @@ from app.api.v1.drip import router as drip_router
 from app.api.v1.sms_bridge import router as sms_bridge_router
 from app.api.v1.insurance_claim import router as insurance_claim_router
 from app.api.v1.lockers import router as lockers_router
+from app.api.v1.crew_surge import router as crew_surge_router
 from app.api.v1.router import api_v1_router
 from app.services.autopilot import autopilot_service
 
@@ -331,6 +332,9 @@ def create_application() -> FastAPI:
 
     # Mount 24/7 Supply House Emergency Locker & After-Hours Parts Reservation Engine (/lockers/{action_id}, /lockers-vault/{tenant_slug})
     application.include_router(lockers_router)
+
+    # Mount Autonomous On-Demand 1099 Crew Surge Dispatch & Shift Bidding Engine (/crew-bid/{bid_id}, /crew-network/{tenant_slug})
+    application.include_router(crew_surge_router)
 
     # Mount API v1 router under /api/v1
     application.include_router(api_v1_router, prefix=settings.API_V1_STR)
